@@ -1,0 +1,2971 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>fpdf.output API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fpdf.output</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># pylint: disable=protected-access
+import logging
+from collections import defaultdict, OrderedDict
+from contextlib import contextmanager
+from io import BytesIO
+
+from .annotations import PDFAnnotation
+from .enums import SignatureFlag
+from .errors import FPDFException
+from .outline import build_outline_objs
+from .sign import Signature, sign_content
+from .syntax import (
+    build_obj_dict,
+    Name,
+    PDFArray,
+    PDFContentStream,
+    PDFObject,
+    PDFString,
+)
+from .syntax import create_dictionary_string as pdf_dict
+from .syntax import create_list_string as pdf_list
+from .syntax import iobj_ref as pdf_ref
+from .util import (
+    enclose_in_parens,
+    format_date,
+)
+
+from fontTools import ttLib
+from fontTools import subset as ftsubset
+
+try:
+    from endesive import signer
+except ImportError:
+    signer = None
+
+
+LOGGER = logging.getLogger(__name__)
+
+ZOOM_CONFIGS = {  # cf. section 8.2.1 &#34;Destinations&#34; of the 2006 PDF spec 1.7:
+    &#34;fullpage&#34;: (&#34;/Fit&#34;,),
+    &#34;fullwidth&#34;: (&#34;/FitH&#34;, &#34;null&#34;),
+    &#34;real&#34;: (&#34;/XYZ&#34;, &#34;null&#34;, &#34;null&#34;, &#34;1&#34;),
+}
+
+
+class ContentWithoutID:
+    def serialize(self, _security_handler=None):
+        pass
+
+
+class PDFHeader(ContentWithoutID):
+    def __init__(self, pdf_version):
+        self.pdf_version = pdf_version
+
+    def serialize(self, _security_handler=None):
+        return f&#34;%PDF-{self.pdf_version}&#34;
+
+
+class PDFFont(PDFObject):
+    def __init__(self, subtype, base_font, encoding=None, d_w=None, w=None):
+        super().__init__()
+        self.type = Name(&#34;Font&#34;)
+        self.subtype = Name(subtype)
+        self.base_font = Name(base_font)
+        self.encoding = Name(encoding) if encoding else None
+        self.d_w = d_w
+        self.w = w
+        self.descendant_fonts = None
+        self.to_unicode = None
+        self.c_i_d_system_info = None
+        self.font_descriptor = None
+        self.c_i_d_to_g_i_d_map = None
+
+
+class PDFFontDescriptor(PDFObject):
+    def __init__(
+        self,
+        ascent,
+        descent,
+        cap_height,
+        flags,
+        font_b_box,
+        italic_angle,
+        stem_v,
+        missing_width,
+    ):
+        super().__init__()
+        self.type = Name(&#34;FontDescriptor&#34;)
+        self.ascent = ascent
+        self.descent = descent
+        self.cap_height = cap_height
+        self.flags = flags
+        self.font_b_box = font_b_box
+        self.italic_angle = italic_angle
+        self.stem_v = stem_v
+        self.missing_width = missing_width
+        self.font_name = None
+
+
+class CIDSystemInfo(PDFObject):
+    def __init__(self, registry, ordering, supplement):
+        super().__init__()
+        self.registry = enclose_in_parens(registry)
+        self.ordering = enclose_in_parens(ordering)
+        self.supplement = supplement
+
+
+class PDFInfo(PDFObject):
+    def __init__(
+        self,
+        title,
+        subject,
+        author,
+        keywords,
+        creator,
+        producer,
+        creation_date,
+    ):
+        super().__init__()
+        self.title = PDFString(title) if title else None
+        self.subject = PDFString(subject) if subject else None
+        self.author = PDFString(author) if author else None
+        self.keywords = PDFString(keywords) if keywords else None
+        self.creator = PDFString(creator) if creator else None
+        self.producer = PDFString(producer) if producer else None
+        self.creation_date = creation_date
+
+
+class AcroForm:
+    def __init__(self, fields, sig_flags):
+        self.fields = fields
+        self.sig_flags = sig_flags
+
+    def serialize(self, _security_handler=None, _obj_id=None):
+        obj_dict = build_obj_dict(
+            {key: getattr(self, key) for key in dir(self)},
+            _security_handler=_security_handler,
+            _obj_id=_obj_id,
+        )
+        return pdf_dict(obj_dict, field_join=&#34; &#34;)
+
+
+class PDFCatalog(PDFObject):
+    def __init__(
+        self, lang=None, page_layout=None, page_mode=None, viewer_preferences=None
+    ):
+        super().__init__()
+        self.type = Name(&#34;Catalog&#34;)
+        self.lang = enclose_in_parens(lang) if lang else None
+        self.page_layout = page_layout
+        self.page_mode = page_mode
+        self.viewer_preferences = viewer_preferences
+        self.pages = None  # Required; shall be an indirect reference
+        self.acro_form = None
+        self.open_action = None
+        self.mark_info = None
+        self.metadata = None
+        self.names = None
+        self.outlines = None
+        self.struct_tree_root = None
+
+
+class PDFResources(PDFObject):
+    def __init__(self, proc_set, font, x_object, ext_g_state):
+        super().__init__()
+        self.proc_set = proc_set
+        self.font = font
+        self.x_object = x_object
+        self.ext_g_state = ext_g_state
+
+
+class PDFFontStream(PDFContentStream):
+    def __init__(self, contents):
+        super().__init__(contents=contents, compress=True)
+        self.length1 = len(contents)
+
+
+class PDFXmpMetadata(PDFContentStream):
+    def __init__(self, contents):
+        super().__init__(contents=contents.encode(&#34;utf-8&#34;))
+        self.type = Name(&#34;Metadata&#34;)
+        self.subtype = Name(&#34;XML&#34;)
+
+
+class PDFXObject(PDFContentStream):
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;_contents&#34;,
+        &#34;filter&#34;,
+        &#34;length&#34;,
+        &#34;type&#34;,
+        &#34;subtype&#34;,
+        &#34;width&#34;,
+        &#34;height&#34;,
+        &#34;color_space&#34;,
+        &#34;bits_per_component&#34;,
+        &#34;decode&#34;,
+        &#34;decode_parms&#34;,
+        &#34;s_mask&#34;,
+    )
+
+    def __init__(
+        self,
+        contents,
+        subtype,
+        width,
+        height,
+        color_space,
+        bits_per_component,
+        img_filter=None,
+        decode=None,
+        decode_parms=None,
+    ):
+        super().__init__(contents=contents)
+        self.type = Name(&#34;XObject&#34;)
+        self.subtype = Name(subtype)
+        self.width = width
+        self.height = height
+        self.color_space = color_space
+        self.bits_per_component = bits_per_component
+        self.filter = Name(img_filter)
+        self.decode = decode
+        self.decode_parms = decode_parms
+        self.s_mask = None
+
+
+class PDFICCPObject(PDFContentStream):
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;_contents&#34;,
+        &#34;filter&#34;,
+        &#34;length&#34;,
+        &#34;n&#34;,
+        &#34;alternate&#34;,
+    )
+
+    def __init__(
+        self,
+        contents,
+        n,
+        alternate,
+    ):
+        super().__init__(contents=contents, compress=True)
+        self.n = n
+        self.alternate = Name(alternate)
+
+
+class PDFPage(PDFObject):
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;type&#34;,
+        &#34;contents&#34;,
+        &#34;dur&#34;,
+        &#34;trans&#34;,
+        &#34;annots&#34;,
+        &#34;group&#34;,
+        &#34;media_box&#34;,
+        &#34;struct_parents&#34;,
+        &#34;resources&#34;,
+        &#34;parent&#34;,
+        &#34;_index&#34;,
+        &#34;_width_pt&#34;,
+        &#34;_height_pt&#34;,
+    )
+
+    def __init__(
+        self,
+        duration,
+        transition,
+        contents,
+        index,
+    ):
+        super().__init__()
+        self.type = Name(&#34;Page&#34;)
+        self.contents = contents
+        self.dur = duration if duration else None
+        self.trans = transition
+        self.annots = PDFArray()  # list of PDFAnnotation
+        self.group = None
+        self.media_box = None
+        self.struct_parents = None
+        self.resources = None  # must always be set before calling .serialize()
+        self.parent = None  # must always be set before calling .serialize()
+        self._index = index
+        self._width_pt, self._height_pt = None, None
+
+    def index(self):
+        return self._index
+
+    def dimensions(self):
+        &#34;Return a pair (width, height) in the unit specified to FPDF constructor&#34;
+        return self._width_pt, self._height_pt
+
+    def set_dimensions(self, width_pt, height_pt):
+        &#34;Accepts a pair (width, height) in the unit specified to FPDF constructor&#34;
+        self._width_pt, self._height_pt = width_pt, height_pt
+
+
+class PDFPagesRoot(PDFObject):
+    def __init__(self, count, media_box):
+        super().__init__()
+        self.type = Name(&#34;Pages&#34;)
+        self.count = count
+        self.media_box = media_box
+        self.kids = None  # must always be set before calling .serialize()
+
+
+class PDFExtGState(PDFObject):
+    def __init__(self, dict_as_str):
+        super().__init__()
+        self._dict_as_str = dict_as_str
+
+    # method override
+    def serialize(self, obj_dict=None, _security_handler=None):
+        return f&#34;{self.id} 0 obj\n{self._dict_as_str}\nendobj&#34;
+
+
+class PDFXrefAndTrailer(ContentWithoutID):
+    def __init__(self, output_builder):
+        self.output_builder = output_builder
+        self.count = output_builder.obj_id + 1
+        # Must be set before the call to serialize():
+        self.catalog_obj = None
+        self.info_obj = None
+        self.encryption_obj = None
+
+    def serialize(self, _security_handler=None):
+        builder = self.output_builder
+        startxref = str(len(builder.buffer))
+        out = []
+        out.append(&#34;xref&#34;)
+        out.append(f&#34;0 {self.count}&#34;)
+        out.append(&#34;0000000000 65535 f &#34;)
+        for obj_id in range(1, self.count):
+            out.append(f&#34;{builder.offsets[obj_id]:010} 00000 n &#34;)
+        out.append(&#34;trailer&#34;)
+        out.append(&#34;&lt;&lt;&#34;)
+        out.append(f&#34;/Size {self.count}&#34;)
+        out.append(f&#34;/Root {pdf_ref(self.catalog_obj.id)}&#34;)
+        out.append(f&#34;/Info {pdf_ref(self.info_obj.id)}&#34;)
+        fpdf = builder.fpdf
+        if self.encryption_obj:
+            out.append(f&#34;/Encrypt {pdf_ref(self.encryption_obj.id)}&#34;)
+            file_id = fpdf._security_handler.file_id
+        else:
+            file_id = fpdf.file_id()
+            if file_id == -1:
+                file_id = fpdf._default_file_id(builder.buffer)
+        if file_id:
+            out.append(f&#34;/ID [{file_id}]&#34;)
+        out.append(&#34;&gt;&gt;&#34;)
+        out.append(&#34;startxref&#34;)
+        out.append(startxref)
+        out.append(&#34;%%EOF&#34;)
+        return &#34;\n&#34;.join(out)
+
+
+class OutputProducer:
+    &#34;Generates the final bytearray representing the PDF document, based on a FPDF instance.&#34;
+
+    def __init__(self, fpdf):
+        self.fpdf = fpdf
+        self.pdf_objs = []
+        self.iccp_i_to_pdf_i = {}
+        self.obj_id = 0  # current PDF object number
+        # array of PDF object offsets in self.buffer, used to build the xref table:
+        self.offsets = {}
+        self.trace_labels_per_obj_id = {}
+        self.sections_size_per_trace_label = defaultdict(int)
+        self.buffer = bytearray()  # resulting output buffer
+
+    def bufferize(self):
+        &#34;&#34;&#34;
+        This method alters the target FPDF instance
+        by assigning IDs to all PDF objects,
+        plus a few other properties on PDFPage instances
+        &#34;&#34;&#34;
+        fpdf = self.fpdf
+
+        # 1. Setup - Insert all PDF objects
+        #    and assign unique consecutive numeric IDs to all of them
+
+        if fpdf._security_handler:
+            # get the file_id and generate passwords needed to encrypt streams and strings
+            file_id = fpdf.file_id()
+            if file_id == -1:
+                # no custom file id - use default file id so enryption passwords can be generated
+                file_id = fpdf._default_file_id(bytearray(0x00))
+            fpdf._security_handler.generate_passwords(file_id)
+
+        self.pdf_objs.append(PDFHeader(fpdf.pdf_version))
+        pages_root_obj = self._add_pages_root()
+        catalog_obj = self._add_catalog()
+        page_objs = self._add_pages()
+        sig_annotation_obj = self._add_annotations_as_objects()
+        for embedded_file in fpdf.embedded_files:
+            self._add_pdf_obj(embedded_file, &#34;embedded_files&#34;)
+        font_objs_per_index = self._add_fonts()
+        img_objs_per_index = self._add_images()
+        gfxstate_objs_per_name = self._add_gfxstates()
+        resources_dict_obj = self._add_resources_dict(
+            font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+        )
+        struct_tree_root_obj = self._add_structure_tree()
+        outline_dict_obj, outline_items = self._add_document_outline()
+        xmp_metadata_obj = self._add_xmp_metadata()
+        info_obj = self._add_info()
+        encryption_obj = self._add_encryption()
+        xref = PDFXrefAndTrailer(self)
+        self.pdf_objs.append(xref)
+
+        # 2. Plumbing - Inject all PDF object references required:
+        pages_root_obj.kids = PDFArray(page_objs)
+        self._finalize_catalog(
+            catalog_obj,
+            pages_root_obj=pages_root_obj,
+            first_page_obj=page_objs[0],
+            sig_annotation_obj=sig_annotation_obj,
+            xmp_metadata_obj=xmp_metadata_obj,
+            struct_tree_root_obj=struct_tree_root_obj,
+            outline_dict_obj=outline_dict_obj,
+        )
+        dests = []
+        for page_obj in page_objs:
+            page_obj.parent = pages_root_obj
+            page_obj.resources = resources_dict_obj
+            for annot in page_obj.annots:
+                page_dests = []
+                if annot.dest:
+                    page_dests.append(annot.dest)
+                if annot.a and hasattr(annot.a, &#34;dest&#34;):
+                    page_dests.append(annot.a.dest)
+                for dest in page_dests:
+                    if dest.page_number &gt; len(page_objs):
+                        raise ValueError(
+                            f&#34;Invalid reference to non-existing page {dest.page_number} present on page {page_obj.index()}: &#34;
+                        )
+                dests.extend(page_dests)
+            if not page_obj.annots:
+                # Avoid serializing an empty PDFArray:
+                page_obj.annots = None
+        for outline_item in outline_items:
+            dests.append(outline_item.dest)
+        # Assigning the .page_ref property of all Destination objects:
+        for dest in dests:
+            dest.page_ref = pdf_ref(page_objs[dest.page_number - 1].id)
+        for struct_elem in fpdf.struct_builder.doc_struct_elem.k:
+            struct_elem.pg = page_objs[struct_elem.page_number() - 1]
+        xref.catalog_obj = catalog_obj
+        xref.info_obj = info_obj
+        xref.encryption_obj = encryption_obj
+
+        # 3. Serializing - Append all PDF objects to the buffer:
+        assert (
+            not self.buffer
+        ), f&#34;Nothing should have been appended to the .buffer at this stage: {self.buffer}&#34;
+        assert (
+            not self.offsets
+        ), f&#34;No offset should have been set at this stage: {len(self.offsets)}&#34;
+
+        for pdf_obj in self.pdf_objs:
+            if isinstance(pdf_obj, ContentWithoutID):
+                # top header, xref table &amp; trailer:
+                trace_label = None
+            else:
+                self.offsets[pdf_obj.id] = len(self.buffer)
+                trace_label = self.trace_labels_per_obj_id.get(pdf_obj.id)
+            if trace_label:
+                with self._trace_size(trace_label):
+                    self._out(
+                        pdf_obj.serialize(_security_handler=fpdf._security_handler)
+                    )
+            else:
+                self._out(pdf_obj.serialize(_security_handler=fpdf._security_handler))
+        self._log_final_sections_sizes()
+
+        if fpdf._sign_key:
+            self.buffer = sign_content(
+                signer,
+                self.buffer,
+                fpdf._sign_key,
+                fpdf._sign_cert,
+                fpdf._sign_extra_certs,
+                fpdf._sign_hashalgo,
+                fpdf._sign_time,
+            )
+        return self.buffer
+
+    def _out(self, data):
+        &#34;Append data to the buffer&#34;
+        if not isinstance(data, bytes):
+            if not isinstance(data, str):
+                data = str(data)
+            data = data.encode(&#34;latin1&#34;)
+        self.buffer += data + b&#34;\n&#34;
+
+    def _add_pdf_obj(self, pdf_obj, trace_label=None):
+        self.obj_id += 1
+        pdf_obj.id = self.obj_id
+        self.pdf_objs.append(pdf_obj)
+        if trace_label:
+            self.trace_labels_per_obj_id[self.obj_id] = trace_label
+        if isinstance(pdf_obj, PDFContentStream) and self.fpdf._security_handler:
+            if not isinstance(pdf_obj.content_stream(), (bytearray, bytes)):
+                pdf_obj._contents = pdf_obj.content_stream().encode(&#34;latin-1&#34;)
+            pdf_obj.encrypt(self.fpdf._security_handler)
+        return self.obj_id
+
+    def _add_pages_root(self):
+        fpdf = self.fpdf
+        pages_root_obj = PDFPagesRoot(
+            count=fpdf.pages_count,
+            media_box=_dimensions_to_mediabox(fpdf.default_page_dimensions),
+        )
+        self._add_pdf_obj(pages_root_obj)
+        return pages_root_obj
+
+    def _add_pages(self, _slice=slice(0, None)):
+        fpdf = self.fpdf
+        page_objs = []
+        for page_obj in list(fpdf.pages.values())[_slice]:
+            if fpdf.pdf_version &gt; &#34;1.3&#34;:
+                page_obj.group = pdf_dict(
+                    {&#34;/Type&#34;: &#34;/Group&#34;, &#34;/S&#34;: &#34;/Transparency&#34;, &#34;/CS&#34;: &#34;/DeviceRGB&#34;},
+                    field_join=&#34; &#34;,
+                )
+            if page_obj.dimensions() != fpdf.default_page_dimensions:
+                page_obj.media_box = _dimensions_to_mediabox(page_obj.dimensions())
+            self._add_pdf_obj(page_obj, &#34;pages&#34;)
+            page_objs.append(page_obj)
+
+            # Extracting the page contents to insert it as a content stream:
+            cs_obj = PDFContentStream(
+                contents=page_obj.contents, compress=fpdf.compress
+            )
+            self._add_pdf_obj(cs_obj, &#34;pages&#34;)
+            page_obj.contents = cs_obj
+        return page_objs
+
+    def _add_annotations_as_objects(self):
+        sig_annotation_obj = None
+        for page_obj in self.fpdf.pages.values():
+            for annot_obj in page_obj.annots:
+                if isinstance(annot_obj, PDFAnnotation):  # distinct from AnnotationDict
+                    self._add_pdf_obj(annot_obj)
+                    if isinstance(annot_obj.v, Signature):
+                        assert (
+                            sig_annotation_obj is None
+                        ), &#34;A /Sig annotation is present on more than 1 page&#34;
+                        sig_annotation_obj = annot_obj
+        return sig_annotation_obj
+
+    def _add_fonts(self):
+        font_objs_per_index = {}
+        for font in sorted(self.fpdf.fonts.values(), key=lambda font: font[&#34;i&#34;]):
+            # Standard font
+            if font[&#34;type&#34;] == &#34;core&#34;:
+                encoding = (
+                    &#34;WinAnsiEncoding&#34;
+                    if font[&#34;name&#34;] not in (&#34;Symbol&#34;, &#34;ZapfDingbats&#34;)
+                    else None
+                )
+                core_font_obj = PDFFont(
+                    subtype=&#34;Type1&#34;, base_font=font[&#34;name&#34;], encoding=encoding
+                )
+                self._add_pdf_obj(core_font_obj, &#34;fonts&#34;)
+                font_objs_per_index[font[&#34;i&#34;]] = core_font_obj
+            elif font[&#34;type&#34;] == &#34;TTF&#34;:
+                fontname = f&#34;MPDFAA+{font[&#39;name&#39;]}&#34;
+
+                # unicode_char -&gt; new_code_char map for chars embedded in the PDF
+                uni_to_new_code_char = font[&#34;subset&#34;].dict()
+
+                # why we delete 0-element?
+                del uni_to_new_code_char[0]
+
+                # ---- FONTTOOLS SUBSETTER ----
+                # recalcTimestamp=False means that it doesn&#39;t modify the &#34;modified&#34; timestamp in head table
+                # if we leave recalcTimestamp=True the tests will break every time
+                fonttools_font = ttLib.TTFont(
+                    file=font[&#34;ttffile&#34;], recalcTimestamp=False, fontNumber=0, lazy=True
+                )
+
+                # 1. get all glyphs in PDF
+                cmap = fonttools_font[&#34;cmap&#34;].getBestCmap()
+                glyph_names = [
+                    cmap[unicode] for unicode in uni_to_new_code_char if unicode in cmap
+                ]
+
+                missing_glyphs = [
+                    chr(unicode)
+                    for unicode in uni_to_new_code_char
+                    if unicode not in cmap
+                ]
+                if len(missing_glyphs) &gt; 0:
+                    LOGGER.warning(
+                        &#34;Font %s is missing the following glyphs: %s&#34;,
+                        fontname,
+                        &#34;, &#34;.join(missing_glyphs),
+                    )
+
+                # 2. make a subset
+                # notdef_outline=True means that keeps the white box for the .notdef glyph
+                # recommended_glyphs=True means that adds the .notdef, .null, CR, and space glyphs
+                options = ftsubset.Options(notdef_outline=True, recommended_glyphs=True)
+                # dropping the tables previous dropped in the old ttfonts.py file #issue 418
+                options.drop_tables += [
+                    &#34;FFTM&#34;,  # FontForge Timestamp table - cf. https://github.com/PyFPDF/fpdf2/issues/600
+                    &#34;GDEF&#34;,  # Glyph Definition table = various glyph properties used in OpenType layout processing
+                    &#34;GPOS&#34;,  # Glyph Positioning table = precise control over glyph placement
+                    #          for sophisticated text layout and rendering in each script and language system
+                    &#34;GSUB&#34;,  # Glyph Substitution table = data for substition of glyphs for appropriate rendering of scripts
+                    &#34;MATH&#34;,  # Mathematical typesetting table = specific information necessary for math formula layout
+                    &#34;hdmx&#34;,  # Horizontal Device Metrics table, stores integer advance widths scaled to particular pixel sizes
+                    #          for OpenType™ fonts with TrueType outlines
+                ]
+                subsetter = ftsubset.Subsetter(options)
+                subsetter.populate(glyphs=glyph_names)
+                subsetter.subset(fonttools_font)
+
+                # 3. make codeToGlyph
+                # is a map Character_ID -&gt; Glyph_ID
+                # it&#39;s used for associating glyphs to new codes
+                # this basically takes the old code of the character
+                # take the glyph associated with it
+                # and then associate to the new code the glyph associated with the old code
+                code_to_glyph = {}
+                for code, new_code_mapped in uni_to_new_code_char.items():
+                    # notdef is associated if no glyph was associated to the old code
+                    # it&#39;s not necessary to do this, it seems to be done by default
+                    glyph_name = cmap.get(code, &#34;.notdef&#34;)
+                    code_to_glyph[new_code_mapped] = fonttools_font.getGlyphID(
+                        glyph_name
+                    )
+
+                # 4. return the ttfile
+                output = BytesIO()
+                fonttools_font.save(output)
+
+                output.seek(0)
+                ttfontstream = output.read()
+
+                # A composite font - a font composed of other fonts,
+                # organized hierarchically
+                composite_font_obj = PDFFont(
+                    subtype=&#34;Type0&#34;, base_font=fontname, encoding=&#34;Identity-H&#34;
+                )
+                self._add_pdf_obj(composite_font_obj, &#34;fonts&#34;)
+                font_objs_per_index[font[&#34;i&#34;]] = composite_font_obj
+
+                # A CIDFont whose glyph descriptions are based on
+                # TrueType font technology
+                cid_font_obj = PDFFont(
+                    subtype=&#34;CIDFontType2&#34;,
+                    base_font=fontname,
+                    d_w=font[&#34;desc&#34;].missing_width,
+                    w=_tt_font_widths(font, max(uni_to_new_code_char)),
+                )
+                self._add_pdf_obj(cid_font_obj, &#34;fonts&#34;)
+                composite_font_obj.descendant_fonts = PDFArray([cid_font_obj])
+
+                # bfChar
+                # This table informs the PDF reader about the unicode
+                # character that each used 16-bit code belongs to. It
+                # allows searching the file and copying text from it.
+                bfChar = []
+                uni_to_new_code_char = font[&#34;subset&#34;].dict()
+                for code, code_mapped in uni_to_new_code_char.items():
+                    if code &gt; 0xFFFF:
+                        # Calculate surrogate pair
+                        code_high = 0xD800 | (code - 0x10000) &gt;&gt; 10
+                        code_low = 0xDC00 | (code &amp; 0x3FF)
+                        bfChar.append(
+                            f&#34;&lt;{code_mapped:04X}&gt; &lt;{code_high:04X}{code_low:04X}&gt;\n&#34;
+                        )
+                    else:
+                        bfChar.append(f&#34;&lt;{code_mapped:04X}&gt; &lt;{code:04X}&gt;\n&#34;)
+
+                to_unicode_obj = PDFContentStream(
+                    &#34;/CIDInit /ProcSet findresource begin\n&#34;
+                    &#34;12 dict begin\n&#34;
+                    &#34;begincmap\n&#34;
+                    &#34;/CIDSystemInfo\n&#34;
+                    &#34;&lt;&lt;/Registry (Adobe)\n&#34;
+                    &#34;/Ordering (UCS)\n&#34;
+                    &#34;/Supplement 0\n&#34;
+                    &#34;&gt;&gt; def\n&#34;
+                    &#34;/CMapName /Adobe-Identity-UCS def\n&#34;
+                    &#34;/CMapType 2 def\n&#34;
+                    &#34;1 begincodespacerange\n&#34;
+                    &#34;&lt;0000&gt; &lt;FFFF&gt;\n&#34;
+                    &#34;endcodespacerange\n&#34;
+                    f&#34;{len(bfChar)} beginbfchar\n&#34;
+                    f&#34;{&#39;&#39;.join(bfChar)}&#34;
+                    &#34;endbfchar\n&#34;
+                    &#34;endcmap\n&#34;
+                    &#34;CMapName currentdict /CMap defineresource pop\n&#34;
+                    &#34;end\n&#34;
+                    &#34;end&#34;
+                )
+                self._add_pdf_obj(to_unicode_obj, &#34;fonts&#34;)
+                composite_font_obj.to_unicode = to_unicode_obj
+
+                cid_system_info_obj = CIDSystemInfo(
+                    registry=&#34;Adobe&#34;, ordering=&#34;UCS&#34;, supplement=0
+                )
+                self._add_pdf_obj(cid_system_info_obj, &#34;fonts&#34;)
+                cid_font_obj.c_i_d_system_info = cid_system_info_obj
+
+                font_descriptor_obj = font[&#34;desc&#34;]
+                font_descriptor_obj.font_name = Name(fontname)
+                self._add_pdf_obj(font_descriptor_obj, &#34;fonts&#34;)
+                cid_font_obj.font_descriptor = font_descriptor_obj
+
+                # Embed CIDToGIDMap
+                # A specification of the mapping from CIDs to glyph indices
+                cid_to_gid_map = [&#34;\x00&#34;] * 256 * 256 * 2
+                for cc, glyph in code_to_glyph.items():
+                    cid_to_gid_map[cc * 2] = chr(glyph &gt;&gt; 8)
+                    cid_to_gid_map[cc * 2 + 1] = chr(glyph &amp; 0xFF)
+                cid_to_gid_map = &#34;&#34;.join(cid_to_gid_map)
+
+                # manage binary data as latin1 until PEP461-like function is implemented
+                cid_to_gid_map_obj = PDFContentStream(
+                    contents=cid_to_gid_map.encode(&#34;latin1&#34;), compress=True
+                )
+                self._add_pdf_obj(cid_to_gid_map_obj, &#34;fonts&#34;)
+                cid_font_obj.c_i_d_to_g_i_d_map = cid_to_gid_map_obj
+
+                font_file_cs_obj = PDFFontStream(contents=ttfontstream)
+                self._add_pdf_obj(font_file_cs_obj, &#34;fonts&#34;)
+                font_descriptor_obj.font_file2 = font_file_cs_obj
+
+        return font_objs_per_index
+
+    def _add_images(self):
+        img_objs_per_index = {}
+        for img in sorted(self.fpdf.images.values(), key=lambda img: img[&#34;i&#34;]):
+            if img[&#34;usages&#34;] &gt; 0:
+                img_objs_per_index[img[&#34;i&#34;]] = self._add_image(img)
+        return img_objs_per_index
+
+    def _ensure_iccp(self, img_info):
+        &#34;&#34;&#34;
+        Returns the PDF object of the ICC profile indexed iccp_i in the FPDF object.
+        Adds it if not present.
+        &#34;&#34;&#34;
+        iccp_i = img_info[&#34;iccp_i&#34;]
+        if iccp_i in self.iccp_i_to_pdf_i:
+            return self.iccp_i_to_pdf_i[iccp_i]
+        iccp_content = None
+        for iccp_c, i in self.fpdf.icc_profiles.items():
+            if iccp_i == i:
+                iccp_content = iccp_c
+                break
+        assert iccp_content is not None
+        # Note: n should be 4 if the profile ColorSpace is CMYK
+        iccp_obj = PDFICCPObject(
+            contents=iccp_content, n=img_info[&#34;dpn&#34;], alternate=img_info[&#34;cs&#34;]
+        )
+        iccp_pdf_i = self._add_pdf_obj(iccp_obj, &#34;iccp&#34;)
+        self.iccp_i_to_pdf_i[iccp_i] = iccp_pdf_i
+        return iccp_pdf_i
+
+    def _add_image(self, info):
+        color_space = Name(info[&#34;cs&#34;])
+        decode = None
+        iccp_i = info.get(&#34;iccp_i&#34;)
+        if color_space == &#34;Indexed&#34;:
+            color_space = PDFArray(
+                [&#34;/Indexed&#34;, &#34;/DeviceRGB&#34;, f&#34;{len(info[&#39;pal&#39;]) // 3 - 1}&#34;]
+            )
+        elif iccp_i is not None:
+            iccp_pdf_i = self._ensure_iccp(info)
+            color_space = PDFArray([&#34;/ICCBased&#34;, str(iccp_pdf_i), str(&#34;0&#34;), &#34;R&#34;])
+        elif color_space == &#34;DeviceCMYK&#34;:
+            decode = &#34;[1 0 1 0 1 0 1 0]&#34;
+            raise NotImplementedError(
+                &#34;fpdf2 does not support DeviceCMYK ColorSpace yet - cf. issue #711&#34;
+            )
+
+        decode_parms = f&#34;&lt;&lt;{info[&#39;dp&#39;]} /BitsPerComponent {info[&#39;bpc&#39;]}&gt;&gt;&#34;
+        img_obj = PDFXObject(
+            subtype=&#34;Image&#34;,
+            contents=info[&#34;data&#34;],
+            width=info[&#34;w&#34;],
+            height=info[&#34;h&#34;],
+            color_space=color_space,
+            bits_per_component=info[&#34;bpc&#34;],
+            img_filter=info[&#34;f&#34;],
+            decode=decode,
+            decode_parms=decode_parms,
+        )
+        self._add_pdf_obj(img_obj, &#34;images&#34;)
+
+        # Soft mask
+        if self.fpdf.allow_images_transparency and &#34;smask&#34; in info:
+            dp = f&#34;/Predictor 15 /Colors 1 /Columns {info[&#39;w&#39;]}&#34;
+            img_obj.s_mask = self._add_image(
+                {
+                    &#34;w&#34;: info[&#34;w&#34;],
+                    &#34;h&#34;: info[&#34;h&#34;],
+                    &#34;cs&#34;: &#34;DeviceGray&#34;,
+                    &#34;bpc&#34;: 8,
+                    &#34;f&#34;: info[&#34;f&#34;],
+                    &#34;dp&#34;: dp,
+                    &#34;data&#34;: info[&#34;smask&#34;],
+                }
+            )
+
+        # Palette
+        if &#34;/Indexed&#34; in color_space:
+            pal_cs_obj = PDFContentStream(
+                contents=info[&#34;pal&#34;], compress=self.fpdf.compress
+            )
+            self._add_pdf_obj(pal_cs_obj, &#34;images&#34;)
+            img_obj.color_space.append(pdf_ref(pal_cs_obj.id))
+
+        return img_obj
+
+    def _add_gfxstates(self):
+        gfxstate_objs_per_name = OrderedDict()
+        for state_dict, name in self.fpdf._drawing_graphics_state_registry.items():
+            gfxstate_obj = PDFExtGState(state_dict)
+            self._add_pdf_obj(gfxstate_obj, &#34;gfxstate&#34;)
+            gfxstate_objs_per_name[name] = gfxstate_obj
+        return gfxstate_objs_per_name
+
+    def _add_resources_dict(
+        self, font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+    ):
+        # From section 10.1, &#34;Procedure Sets&#34;, of PDF 1.7 spec:
+        # &gt; Beginning with PDF 1.4, this feature is considered obsolete.
+        # &gt; For compatibility with existing consumer applications,
+        # &gt; PDF producer applications should continue to specify procedure sets
+        # &gt; (preferably, all of those listed in Table 10.1).
+        proc_set = &#34;[/PDF /Text /ImageB /ImageC /ImageI]&#34;
+        font, x_object, ext_g_state = None, None, None
+
+        if font_objs_per_index:
+            font = pdf_dict(
+                {
+                    f&#34;/F{index}&#34;: pdf_ref(font_obj.id)
+                    for index, font_obj in sorted(font_objs_per_index.items())
+                }
+            )
+
+        if img_objs_per_index:
+            x_object = pdf_dict(
+                {
+                    f&#34;/I{index}&#34;: pdf_ref(img_obj.id)
+                    for index, img_obj in sorted(img_objs_per_index.items())
+                }
+            )
+
+        if gfxstate_objs_per_name:
+            ext_g_state = pdf_dict(
+                {
+                    f&#34;/{name}&#34;: pdf_ref(gfxstate_obj.id)
+                    for name, gfxstate_obj in gfxstate_objs_per_name.items()
+                }
+            )
+
+        resources_obj = PDFResources(
+            proc_set=proc_set, font=font, x_object=x_object, ext_g_state=ext_g_state
+        )
+        self._add_pdf_obj(resources_obj)
+        return resources_obj
+
+    def _add_structure_tree(self):
+        &#34;Builds a Structure Hierarchy, including image alternate descriptions&#34;
+        if self.fpdf.struct_builder.empty():
+            return None
+        struct_tree_root_obj = None
+        for pdf_obj in self.fpdf.struct_builder:
+            if struct_tree_root_obj is None:
+                struct_tree_root_obj = pdf_obj
+            self._add_pdf_obj(pdf_obj, &#34;structure_tree&#34;)
+        return struct_tree_root_obj
+
+    def _add_document_outline(self):
+        if not self.fpdf._outline:
+            return None, ()
+        outline_dict_obj, outline_items = None, []
+        for pdf_obj in build_outline_objs(self.fpdf._outline):
+            if outline_dict_obj is None:
+                outline_dict_obj = pdf_obj
+            else:
+                outline_items.append(pdf_obj)
+            self._add_pdf_obj(pdf_obj, &#34;document_outline&#34;)
+        return outline_dict_obj, outline_items
+
+    def _add_xmp_metadata(self):
+        if not self.fpdf.xmp_metadata:
+            return None
+        xpacket = f&#39;&lt;?xpacket begin=&#34;ï»¿&#34; id=&#34;W5M0MpCehiHzreSzNTczkc9d&#34;?&gt;\n{self.fpdf.xmp_metadata}\n&lt;?xpacket end=&#34;w&#34;?&gt;\n&#39;
+        pdf_obj = PDFXmpMetadata(xpacket)
+        self._add_pdf_obj(pdf_obj)
+        return pdf_obj
+
+    def _add_info(self):
+        fpdf = self.fpdf
+        creation_date = None
+        if fpdf.creation_date:
+            try:
+                creation_date = format_date(fpdf.creation_date, with_tz=True)
+            except Exception as error:
+                raise FPDFException(
+                    f&#34;Could not format date: {fpdf.creation_date}&#34;
+                ) from error
+        info_obj = PDFInfo(
+            title=getattr(fpdf, &#34;title&#34;, None),
+            subject=getattr(fpdf, &#34;subject&#34;, None),
+            author=getattr(fpdf, &#34;author&#34;, None),
+            keywords=getattr(fpdf, &#34;keywords&#34;, None),
+            creator=getattr(fpdf, &#34;creator&#34;, None),
+            producer=getattr(fpdf, &#34;producer&#34;, None),
+            creation_date=creation_date,
+        )
+        self._add_pdf_obj(info_obj)
+        return info_obj
+
+    def _add_encryption(self):
+        if self.fpdf._security_handler:
+            encryption_handler = self.fpdf._security_handler
+            pdf_obj = encryption_handler.get_encryption_obj()
+            self._add_pdf_obj(pdf_obj)
+            return pdf_obj
+        return None
+
+    def _add_catalog(self):
+        fpdf = self.fpdf
+        catalog_obj = PDFCatalog(
+            lang=getattr(fpdf, &#34;lang&#34;, None),
+            page_layout=fpdf.page_layout,
+            page_mode=fpdf.page_mode,
+            viewer_preferences=fpdf.viewer_preferences,
+        )
+        self._add_pdf_obj(catalog_obj)
+        return catalog_obj
+
+    def _finalize_catalog(
+        self,
+        catalog_obj,
+        pages_root_obj,
+        first_page_obj,
+        sig_annotation_obj,
+        xmp_metadata_obj,
+        struct_tree_root_obj,
+        outline_dict_obj,
+    ):
+        fpdf = self.fpdf
+        catalog_obj.pages = pages_root_obj
+        catalog_obj.struct_tree_root = struct_tree_root_obj
+        catalog_obj.outlines = outline_dict_obj
+        catalog_obj.metadata = xmp_metadata_obj
+        if sig_annotation_obj:
+            flags = SignatureFlag.SIGNATURES_EXIST + SignatureFlag.APPEND_ONLY
+            catalog_obj.acro_form = AcroForm(
+                fields=PDFArray([sig_annotation_obj]), sig_flags=flags
+            )
+        if fpdf.zoom_mode in ZOOM_CONFIGS:
+            zoom_config = [
+                pdf_ref(first_page_obj.id),
+                *ZOOM_CONFIGS[fpdf.zoom_mode],
+            ]
+        else:  # zoom_mode is a number, not one of the allowed strings:
+            zoom_config = [&#34;/XYZ&#34;, &#34;null&#34;, &#34;null&#34;, str(fpdf.zoom_mode / 100)]
+        catalog_obj.open_action = pdf_list(zoom_config)
+        if struct_tree_root_obj:
+            catalog_obj.mark_info = pdf_dict({&#34;/Marked&#34;: &#34;true&#34;})
+        if fpdf.embedded_files:
+            file_spec_names = [
+                f&#34;{enclose_in_parens(embedded_file.basename())} {embedded_file.file_spec().serialize()}&#34;
+                for embedded_file in fpdf.embedded_files
+                if embedded_file.globally_enclosed
+            ]
+            catalog_obj.names = pdf_dict(
+                {&#34;/EmbeddedFiles&#34;: pdf_dict({&#34;/Names&#34;: pdf_list(file_spec_names)})}
+            )
+
+    @contextmanager
+    def _trace_size(self, label):
+        prev_size = len(self.buffer)
+        yield
+        self.sections_size_per_trace_label[label] += len(self.buffer) - prev_size
+
+    def _log_final_sections_sizes(self):
+        LOGGER.debug(&#34;Final size summary of the biggest document sections:&#34;)
+        for label, section_size in self.sections_size_per_trace_label.items():
+            LOGGER.debug(&#34;- %s: %s&#34;, label, _sizeof_fmt(section_size))
+
+
+def _tt_font_widths(font, maxUni):
+    rangeid = 0
+    range_ = {}
+    range_interval = {}
+    prevcid = -2
+    prevwidth = -1
+    interval = False
+    startcid = 1
+    cwlen = maxUni + 1
+
+    # for each character
+    subset = font[&#34;subset&#34;].dict()
+    for cid in range(startcid, cwlen):
+        char_width = font[&#34;cw&#34;][cid]
+        if &#34;dw&#34; not in font or (font[&#34;dw&#34;] and char_width != font[&#34;dw&#34;]):
+            cid_mapped = subset.get(cid)
+            if cid_mapped is None:
+                continue
+            if cid_mapped == (prevcid + 1):
+                if char_width == prevwidth:
+                    if char_width == range_[rangeid][0]:
+                        range_.setdefault(rangeid, []).append(char_width)
+                    else:
+                        range_[rangeid].pop()
+                        # new range
+                        rangeid = prevcid
+                        range_[rangeid] = [prevwidth, char_width]
+                    interval = True
+                    range_interval[rangeid] = True
+                else:
+                    if interval:
+                        # new range
+                        rangeid = cid_mapped
+                        range_[rangeid] = [char_width]
+                    else:
+                        range_[rangeid].append(char_width)
+                    interval = False
+            else:
+                rangeid = cid_mapped
+                range_[rangeid] = [char_width]
+                interval = False
+            prevcid = cid_mapped
+            prevwidth = char_width
+    prevk = -1
+    nextk = -1
+    prevint = False
+
+    ri = range_interval
+    for k, ws in sorted(range_.items()):
+        cws = len(ws)
+        if k == nextk and not prevint and (k not in ri or cws &lt; 3):
+            if k in ri:
+                del ri[k]
+            range_[prevk] = range_[prevk] + range_[k]
+            del range_[k]
+        else:
+            prevk = k
+        nextk = k + cws
+        if k in ri:
+            prevint = cws &gt; 3
+            del ri[k]
+            nextk -= 1
+        else:
+            prevint = False
+    w = []
+    for k, ws in sorted(range_.items()):
+        if len(set(ws)) == 1:
+            w.append(f&#34; {k} {k + len(ws) - 1} {ws[0]}&#34;)
+        else:
+            w.append(f&#34; {k} [ {&#39; &#39;.join(str(int(h)) for h in ws)} ]\n&#34;)
+    return f&#34;[{&#39;&#39;.join(w)}]&#34;
+
+
+def _dimensions_to_mediabox(dimensions):
+    width_pt, height_pt = dimensions
+    return f&#34;[0 0 {width_pt:.2f} {height_pt:.2f}]&#34;
+
+
+def _sizeof_fmt(num, suffix=&#34;B&#34;):
+    # Recipe from: https://stackoverflow.com/a/1094933/636849
+    for unit in [&#34;&#34;, &#34;Ki&#34;, &#34;Mi&#34;, &#34;Gi&#34;, &#34;Ti&#34;, &#34;Pi&#34;, &#34;Ei&#34;, &#34;Zi&#34;]:
+        if abs(num) &lt; 1024:
+            return f&#34;{num:3.1f}{unit}{suffix}&#34;
+        num /= 1024
+    return f&#34;{num:.1f}Yi{suffix}&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.output.AcroForm"><code class="flex name class">
+<span>class <span class="ident">AcroForm</span></span>
+<span>(</span><span>fields, sig_flags)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AcroForm:
+    def __init__(self, fields, sig_flags):
+        self.fields = fields
+        self.sig_flags = sig_flags
+
+    def serialize(self, _security_handler=None, _obj_id=None):
+        obj_dict = build_obj_dict(
+            {key: getattr(self, key) for key in dir(self)},
+            _security_handler=_security_handler,
+            _obj_id=_obj_id,
+        )
+        return pdf_dict(obj_dict, field_join=&#34; &#34;)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.output.AcroForm.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
+    obj_dict = build_obj_dict(
+        {key: getattr(self, key) for key in dir(self)},
+        _security_handler=_security_handler,
+        _obj_id=_obj_id,
+    )
+    return pdf_dict(obj_dict, field_join=&#34; &#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.output.CIDSystemInfo"><code class="flex name class">
+<span>class <span class="ident">CIDSystemInfo</span></span>
+<span>(</span><span>registry, ordering, supplement)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CIDSystemInfo(PDFObject):
+    def __init__(self, registry, ordering, supplement):
+        super().__init__()
+        self.registry = enclose_in_parens(registry)
+        self.ordering = enclose_in_parens(ordering)
+        self.supplement = supplement</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.ContentWithoutID"><code class="flex name class">
+<span>class <span class="ident">ContentWithoutID</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ContentWithoutID:
+    def serialize(self, _security_handler=None):
+        pass</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fpdf.linearization.PDFXrefAndTrailer" href="linearization.html#fpdf.linearization.PDFXrefAndTrailer">PDFXrefAndTrailer</a></li>
+<li><a title="fpdf.output.PDFHeader" href="#fpdf.output.PDFHeader">PDFHeader</a></li>
+<li><a title="fpdf.output.PDFXrefAndTrailer" href="#fpdf.output.PDFXrefAndTrailer">PDFXrefAndTrailer</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.output.ContentWithoutID.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self, _security_handler=None):
+    pass</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.output.OutputProducer"><code class="flex name class">
+<span>class <span class="ident">OutputProducer</span></span>
+<span>(</span><span>fpdf)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates the final bytearray representing the PDF document, based on a FPDF instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OutputProducer:
+    &#34;Generates the final bytearray representing the PDF document, based on a FPDF instance.&#34;
+
+    def __init__(self, fpdf):
+        self.fpdf = fpdf
+        self.pdf_objs = []
+        self.iccp_i_to_pdf_i = {}
+        self.obj_id = 0  # current PDF object number
+        # array of PDF object offsets in self.buffer, used to build the xref table:
+        self.offsets = {}
+        self.trace_labels_per_obj_id = {}
+        self.sections_size_per_trace_label = defaultdict(int)
+        self.buffer = bytearray()  # resulting output buffer
+
+    def bufferize(self):
+        &#34;&#34;&#34;
+        This method alters the target FPDF instance
+        by assigning IDs to all PDF objects,
+        plus a few other properties on PDFPage instances
+        &#34;&#34;&#34;
+        fpdf = self.fpdf
+
+        # 1. Setup - Insert all PDF objects
+        #    and assign unique consecutive numeric IDs to all of them
+
+        if fpdf._security_handler:
+            # get the file_id and generate passwords needed to encrypt streams and strings
+            file_id = fpdf.file_id()
+            if file_id == -1:
+                # no custom file id - use default file id so enryption passwords can be generated
+                file_id = fpdf._default_file_id(bytearray(0x00))
+            fpdf._security_handler.generate_passwords(file_id)
+
+        self.pdf_objs.append(PDFHeader(fpdf.pdf_version))
+        pages_root_obj = self._add_pages_root()
+        catalog_obj = self._add_catalog()
+        page_objs = self._add_pages()
+        sig_annotation_obj = self._add_annotations_as_objects()
+        for embedded_file in fpdf.embedded_files:
+            self._add_pdf_obj(embedded_file, &#34;embedded_files&#34;)
+        font_objs_per_index = self._add_fonts()
+        img_objs_per_index = self._add_images()
+        gfxstate_objs_per_name = self._add_gfxstates()
+        resources_dict_obj = self._add_resources_dict(
+            font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+        )
+        struct_tree_root_obj = self._add_structure_tree()
+        outline_dict_obj, outline_items = self._add_document_outline()
+        xmp_metadata_obj = self._add_xmp_metadata()
+        info_obj = self._add_info()
+        encryption_obj = self._add_encryption()
+        xref = PDFXrefAndTrailer(self)
+        self.pdf_objs.append(xref)
+
+        # 2. Plumbing - Inject all PDF object references required:
+        pages_root_obj.kids = PDFArray(page_objs)
+        self._finalize_catalog(
+            catalog_obj,
+            pages_root_obj=pages_root_obj,
+            first_page_obj=page_objs[0],
+            sig_annotation_obj=sig_annotation_obj,
+            xmp_metadata_obj=xmp_metadata_obj,
+            struct_tree_root_obj=struct_tree_root_obj,
+            outline_dict_obj=outline_dict_obj,
+        )
+        dests = []
+        for page_obj in page_objs:
+            page_obj.parent = pages_root_obj
+            page_obj.resources = resources_dict_obj
+            for annot in page_obj.annots:
+                page_dests = []
+                if annot.dest:
+                    page_dests.append(annot.dest)
+                if annot.a and hasattr(annot.a, &#34;dest&#34;):
+                    page_dests.append(annot.a.dest)
+                for dest in page_dests:
+                    if dest.page_number &gt; len(page_objs):
+                        raise ValueError(
+                            f&#34;Invalid reference to non-existing page {dest.page_number} present on page {page_obj.index()}: &#34;
+                        )
+                dests.extend(page_dests)
+            if not page_obj.annots:
+                # Avoid serializing an empty PDFArray:
+                page_obj.annots = None
+        for outline_item in outline_items:
+            dests.append(outline_item.dest)
+        # Assigning the .page_ref property of all Destination objects:
+        for dest in dests:
+            dest.page_ref = pdf_ref(page_objs[dest.page_number - 1].id)
+        for struct_elem in fpdf.struct_builder.doc_struct_elem.k:
+            struct_elem.pg = page_objs[struct_elem.page_number() - 1]
+        xref.catalog_obj = catalog_obj
+        xref.info_obj = info_obj
+        xref.encryption_obj = encryption_obj
+
+        # 3. Serializing - Append all PDF objects to the buffer:
+        assert (
+            not self.buffer
+        ), f&#34;Nothing should have been appended to the .buffer at this stage: {self.buffer}&#34;
+        assert (
+            not self.offsets
+        ), f&#34;No offset should have been set at this stage: {len(self.offsets)}&#34;
+
+        for pdf_obj in self.pdf_objs:
+            if isinstance(pdf_obj, ContentWithoutID):
+                # top header, xref table &amp; trailer:
+                trace_label = None
+            else:
+                self.offsets[pdf_obj.id] = len(self.buffer)
+                trace_label = self.trace_labels_per_obj_id.get(pdf_obj.id)
+            if trace_label:
+                with self._trace_size(trace_label):
+                    self._out(
+                        pdf_obj.serialize(_security_handler=fpdf._security_handler)
+                    )
+            else:
+                self._out(pdf_obj.serialize(_security_handler=fpdf._security_handler))
+        self._log_final_sections_sizes()
+
+        if fpdf._sign_key:
+            self.buffer = sign_content(
+                signer,
+                self.buffer,
+                fpdf._sign_key,
+                fpdf._sign_cert,
+                fpdf._sign_extra_certs,
+                fpdf._sign_hashalgo,
+                fpdf._sign_time,
+            )
+        return self.buffer
+
+    def _out(self, data):
+        &#34;Append data to the buffer&#34;
+        if not isinstance(data, bytes):
+            if not isinstance(data, str):
+                data = str(data)
+            data = data.encode(&#34;latin1&#34;)
+        self.buffer += data + b&#34;\n&#34;
+
+    def _add_pdf_obj(self, pdf_obj, trace_label=None):
+        self.obj_id += 1
+        pdf_obj.id = self.obj_id
+        self.pdf_objs.append(pdf_obj)
+        if trace_label:
+            self.trace_labels_per_obj_id[self.obj_id] = trace_label
+        if isinstance(pdf_obj, PDFContentStream) and self.fpdf._security_handler:
+            if not isinstance(pdf_obj.content_stream(), (bytearray, bytes)):
+                pdf_obj._contents = pdf_obj.content_stream().encode(&#34;latin-1&#34;)
+            pdf_obj.encrypt(self.fpdf._security_handler)
+        return self.obj_id
+
+    def _add_pages_root(self):
+        fpdf = self.fpdf
+        pages_root_obj = PDFPagesRoot(
+            count=fpdf.pages_count,
+            media_box=_dimensions_to_mediabox(fpdf.default_page_dimensions),
+        )
+        self._add_pdf_obj(pages_root_obj)
+        return pages_root_obj
+
+    def _add_pages(self, _slice=slice(0, None)):
+        fpdf = self.fpdf
+        page_objs = []
+        for page_obj in list(fpdf.pages.values())[_slice]:
+            if fpdf.pdf_version &gt; &#34;1.3&#34;:
+                page_obj.group = pdf_dict(
+                    {&#34;/Type&#34;: &#34;/Group&#34;, &#34;/S&#34;: &#34;/Transparency&#34;, &#34;/CS&#34;: &#34;/DeviceRGB&#34;},
+                    field_join=&#34; &#34;,
+                )
+            if page_obj.dimensions() != fpdf.default_page_dimensions:
+                page_obj.media_box = _dimensions_to_mediabox(page_obj.dimensions())
+            self._add_pdf_obj(page_obj, &#34;pages&#34;)
+            page_objs.append(page_obj)
+
+            # Extracting the page contents to insert it as a content stream:
+            cs_obj = PDFContentStream(
+                contents=page_obj.contents, compress=fpdf.compress
+            )
+            self._add_pdf_obj(cs_obj, &#34;pages&#34;)
+            page_obj.contents = cs_obj
+        return page_objs
+
+    def _add_annotations_as_objects(self):
+        sig_annotation_obj = None
+        for page_obj in self.fpdf.pages.values():
+            for annot_obj in page_obj.annots:
+                if isinstance(annot_obj, PDFAnnotation):  # distinct from AnnotationDict
+                    self._add_pdf_obj(annot_obj)
+                    if isinstance(annot_obj.v, Signature):
+                        assert (
+                            sig_annotation_obj is None
+                        ), &#34;A /Sig annotation is present on more than 1 page&#34;
+                        sig_annotation_obj = annot_obj
+        return sig_annotation_obj
+
+    def _add_fonts(self):
+        font_objs_per_index = {}
+        for font in sorted(self.fpdf.fonts.values(), key=lambda font: font[&#34;i&#34;]):
+            # Standard font
+            if font[&#34;type&#34;] == &#34;core&#34;:
+                encoding = (
+                    &#34;WinAnsiEncoding&#34;
+                    if font[&#34;name&#34;] not in (&#34;Symbol&#34;, &#34;ZapfDingbats&#34;)
+                    else None
+                )
+                core_font_obj = PDFFont(
+                    subtype=&#34;Type1&#34;, base_font=font[&#34;name&#34;], encoding=encoding
+                )
+                self._add_pdf_obj(core_font_obj, &#34;fonts&#34;)
+                font_objs_per_index[font[&#34;i&#34;]] = core_font_obj
+            elif font[&#34;type&#34;] == &#34;TTF&#34;:
+                fontname = f&#34;MPDFAA+{font[&#39;name&#39;]}&#34;
+
+                # unicode_char -&gt; new_code_char map for chars embedded in the PDF
+                uni_to_new_code_char = font[&#34;subset&#34;].dict()
+
+                # why we delete 0-element?
+                del uni_to_new_code_char[0]
+
+                # ---- FONTTOOLS SUBSETTER ----
+                # recalcTimestamp=False means that it doesn&#39;t modify the &#34;modified&#34; timestamp in head table
+                # if we leave recalcTimestamp=True the tests will break every time
+                fonttools_font = ttLib.TTFont(
+                    file=font[&#34;ttffile&#34;], recalcTimestamp=False, fontNumber=0, lazy=True
+                )
+
+                # 1. get all glyphs in PDF
+                cmap = fonttools_font[&#34;cmap&#34;].getBestCmap()
+                glyph_names = [
+                    cmap[unicode] for unicode in uni_to_new_code_char if unicode in cmap
+                ]
+
+                missing_glyphs = [
+                    chr(unicode)
+                    for unicode in uni_to_new_code_char
+                    if unicode not in cmap
+                ]
+                if len(missing_glyphs) &gt; 0:
+                    LOGGER.warning(
+                        &#34;Font %s is missing the following glyphs: %s&#34;,
+                        fontname,
+                        &#34;, &#34;.join(missing_glyphs),
+                    )
+
+                # 2. make a subset
+                # notdef_outline=True means that keeps the white box for the .notdef glyph
+                # recommended_glyphs=True means that adds the .notdef, .null, CR, and space glyphs
+                options = ftsubset.Options(notdef_outline=True, recommended_glyphs=True)
+                # dropping the tables previous dropped in the old ttfonts.py file #issue 418
+                options.drop_tables += [
+                    &#34;FFTM&#34;,  # FontForge Timestamp table - cf. https://github.com/PyFPDF/fpdf2/issues/600
+                    &#34;GDEF&#34;,  # Glyph Definition table = various glyph properties used in OpenType layout processing
+                    &#34;GPOS&#34;,  # Glyph Positioning table = precise control over glyph placement
+                    #          for sophisticated text layout and rendering in each script and language system
+                    &#34;GSUB&#34;,  # Glyph Substitution table = data for substition of glyphs for appropriate rendering of scripts
+                    &#34;MATH&#34;,  # Mathematical typesetting table = specific information necessary for math formula layout
+                    &#34;hdmx&#34;,  # Horizontal Device Metrics table, stores integer advance widths scaled to particular pixel sizes
+                    #          for OpenType™ fonts with TrueType outlines
+                ]
+                subsetter = ftsubset.Subsetter(options)
+                subsetter.populate(glyphs=glyph_names)
+                subsetter.subset(fonttools_font)
+
+                # 3. make codeToGlyph
+                # is a map Character_ID -&gt; Glyph_ID
+                # it&#39;s used for associating glyphs to new codes
+                # this basically takes the old code of the character
+                # take the glyph associated with it
+                # and then associate to the new code the glyph associated with the old code
+                code_to_glyph = {}
+                for code, new_code_mapped in uni_to_new_code_char.items():
+                    # notdef is associated if no glyph was associated to the old code
+                    # it&#39;s not necessary to do this, it seems to be done by default
+                    glyph_name = cmap.get(code, &#34;.notdef&#34;)
+                    code_to_glyph[new_code_mapped] = fonttools_font.getGlyphID(
+                        glyph_name
+                    )
+
+                # 4. return the ttfile
+                output = BytesIO()
+                fonttools_font.save(output)
+
+                output.seek(0)
+                ttfontstream = output.read()
+
+                # A composite font - a font composed of other fonts,
+                # organized hierarchically
+                composite_font_obj = PDFFont(
+                    subtype=&#34;Type0&#34;, base_font=fontname, encoding=&#34;Identity-H&#34;
+                )
+                self._add_pdf_obj(composite_font_obj, &#34;fonts&#34;)
+                font_objs_per_index[font[&#34;i&#34;]] = composite_font_obj
+
+                # A CIDFont whose glyph descriptions are based on
+                # TrueType font technology
+                cid_font_obj = PDFFont(
+                    subtype=&#34;CIDFontType2&#34;,
+                    base_font=fontname,
+                    d_w=font[&#34;desc&#34;].missing_width,
+                    w=_tt_font_widths(font, max(uni_to_new_code_char)),
+                )
+                self._add_pdf_obj(cid_font_obj, &#34;fonts&#34;)
+                composite_font_obj.descendant_fonts = PDFArray([cid_font_obj])
+
+                # bfChar
+                # This table informs the PDF reader about the unicode
+                # character that each used 16-bit code belongs to. It
+                # allows searching the file and copying text from it.
+                bfChar = []
+                uni_to_new_code_char = font[&#34;subset&#34;].dict()
+                for code, code_mapped in uni_to_new_code_char.items():
+                    if code &gt; 0xFFFF:
+                        # Calculate surrogate pair
+                        code_high = 0xD800 | (code - 0x10000) &gt;&gt; 10
+                        code_low = 0xDC00 | (code &amp; 0x3FF)
+                        bfChar.append(
+                            f&#34;&lt;{code_mapped:04X}&gt; &lt;{code_high:04X}{code_low:04X}&gt;\n&#34;
+                        )
+                    else:
+                        bfChar.append(f&#34;&lt;{code_mapped:04X}&gt; &lt;{code:04X}&gt;\n&#34;)
+
+                to_unicode_obj = PDFContentStream(
+                    &#34;/CIDInit /ProcSet findresource begin\n&#34;
+                    &#34;12 dict begin\n&#34;
+                    &#34;begincmap\n&#34;
+                    &#34;/CIDSystemInfo\n&#34;
+                    &#34;&lt;&lt;/Registry (Adobe)\n&#34;
+                    &#34;/Ordering (UCS)\n&#34;
+                    &#34;/Supplement 0\n&#34;
+                    &#34;&gt;&gt; def\n&#34;
+                    &#34;/CMapName /Adobe-Identity-UCS def\n&#34;
+                    &#34;/CMapType 2 def\n&#34;
+                    &#34;1 begincodespacerange\n&#34;
+                    &#34;&lt;0000&gt; &lt;FFFF&gt;\n&#34;
+                    &#34;endcodespacerange\n&#34;
+                    f&#34;{len(bfChar)} beginbfchar\n&#34;
+                    f&#34;{&#39;&#39;.join(bfChar)}&#34;
+                    &#34;endbfchar\n&#34;
+                    &#34;endcmap\n&#34;
+                    &#34;CMapName currentdict /CMap defineresource pop\n&#34;
+                    &#34;end\n&#34;
+                    &#34;end&#34;
+                )
+                self._add_pdf_obj(to_unicode_obj, &#34;fonts&#34;)
+                composite_font_obj.to_unicode = to_unicode_obj
+
+                cid_system_info_obj = CIDSystemInfo(
+                    registry=&#34;Adobe&#34;, ordering=&#34;UCS&#34;, supplement=0
+                )
+                self._add_pdf_obj(cid_system_info_obj, &#34;fonts&#34;)
+                cid_font_obj.c_i_d_system_info = cid_system_info_obj
+
+                font_descriptor_obj = font[&#34;desc&#34;]
+                font_descriptor_obj.font_name = Name(fontname)
+                self._add_pdf_obj(font_descriptor_obj, &#34;fonts&#34;)
+                cid_font_obj.font_descriptor = font_descriptor_obj
+
+                # Embed CIDToGIDMap
+                # A specification of the mapping from CIDs to glyph indices
+                cid_to_gid_map = [&#34;\x00&#34;] * 256 * 256 * 2
+                for cc, glyph in code_to_glyph.items():
+                    cid_to_gid_map[cc * 2] = chr(glyph &gt;&gt; 8)
+                    cid_to_gid_map[cc * 2 + 1] = chr(glyph &amp; 0xFF)
+                cid_to_gid_map = &#34;&#34;.join(cid_to_gid_map)
+
+                # manage binary data as latin1 until PEP461-like function is implemented
+                cid_to_gid_map_obj = PDFContentStream(
+                    contents=cid_to_gid_map.encode(&#34;latin1&#34;), compress=True
+                )
+                self._add_pdf_obj(cid_to_gid_map_obj, &#34;fonts&#34;)
+                cid_font_obj.c_i_d_to_g_i_d_map = cid_to_gid_map_obj
+
+                font_file_cs_obj = PDFFontStream(contents=ttfontstream)
+                self._add_pdf_obj(font_file_cs_obj, &#34;fonts&#34;)
+                font_descriptor_obj.font_file2 = font_file_cs_obj
+
+        return font_objs_per_index
+
+    def _add_images(self):
+        img_objs_per_index = {}
+        for img in sorted(self.fpdf.images.values(), key=lambda img: img[&#34;i&#34;]):
+            if img[&#34;usages&#34;] &gt; 0:
+                img_objs_per_index[img[&#34;i&#34;]] = self._add_image(img)
+        return img_objs_per_index
+
+    def _ensure_iccp(self, img_info):
+        &#34;&#34;&#34;
+        Returns the PDF object of the ICC profile indexed iccp_i in the FPDF object.
+        Adds it if not present.
+        &#34;&#34;&#34;
+        iccp_i = img_info[&#34;iccp_i&#34;]
+        if iccp_i in self.iccp_i_to_pdf_i:
+            return self.iccp_i_to_pdf_i[iccp_i]
+        iccp_content = None
+        for iccp_c, i in self.fpdf.icc_profiles.items():
+            if iccp_i == i:
+                iccp_content = iccp_c
+                break
+        assert iccp_content is not None
+        # Note: n should be 4 if the profile ColorSpace is CMYK
+        iccp_obj = PDFICCPObject(
+            contents=iccp_content, n=img_info[&#34;dpn&#34;], alternate=img_info[&#34;cs&#34;]
+        )
+        iccp_pdf_i = self._add_pdf_obj(iccp_obj, &#34;iccp&#34;)
+        self.iccp_i_to_pdf_i[iccp_i] = iccp_pdf_i
+        return iccp_pdf_i
+
+    def _add_image(self, info):
+        color_space = Name(info[&#34;cs&#34;])
+        decode = None
+        iccp_i = info.get(&#34;iccp_i&#34;)
+        if color_space == &#34;Indexed&#34;:
+            color_space = PDFArray(
+                [&#34;/Indexed&#34;, &#34;/DeviceRGB&#34;, f&#34;{len(info[&#39;pal&#39;]) // 3 - 1}&#34;]
+            )
+        elif iccp_i is not None:
+            iccp_pdf_i = self._ensure_iccp(info)
+            color_space = PDFArray([&#34;/ICCBased&#34;, str(iccp_pdf_i), str(&#34;0&#34;), &#34;R&#34;])
+        elif color_space == &#34;DeviceCMYK&#34;:
+            decode = &#34;[1 0 1 0 1 0 1 0]&#34;
+            raise NotImplementedError(
+                &#34;fpdf2 does not support DeviceCMYK ColorSpace yet - cf. issue #711&#34;
+            )
+
+        decode_parms = f&#34;&lt;&lt;{info[&#39;dp&#39;]} /BitsPerComponent {info[&#39;bpc&#39;]}&gt;&gt;&#34;
+        img_obj = PDFXObject(
+            subtype=&#34;Image&#34;,
+            contents=info[&#34;data&#34;],
+            width=info[&#34;w&#34;],
+            height=info[&#34;h&#34;],
+            color_space=color_space,
+            bits_per_component=info[&#34;bpc&#34;],
+            img_filter=info[&#34;f&#34;],
+            decode=decode,
+            decode_parms=decode_parms,
+        )
+        self._add_pdf_obj(img_obj, &#34;images&#34;)
+
+        # Soft mask
+        if self.fpdf.allow_images_transparency and &#34;smask&#34; in info:
+            dp = f&#34;/Predictor 15 /Colors 1 /Columns {info[&#39;w&#39;]}&#34;
+            img_obj.s_mask = self._add_image(
+                {
+                    &#34;w&#34;: info[&#34;w&#34;],
+                    &#34;h&#34;: info[&#34;h&#34;],
+                    &#34;cs&#34;: &#34;DeviceGray&#34;,
+                    &#34;bpc&#34;: 8,
+                    &#34;f&#34;: info[&#34;f&#34;],
+                    &#34;dp&#34;: dp,
+                    &#34;data&#34;: info[&#34;smask&#34;],
+                }
+            )
+
+        # Palette
+        if &#34;/Indexed&#34; in color_space:
+            pal_cs_obj = PDFContentStream(
+                contents=info[&#34;pal&#34;], compress=self.fpdf.compress
+            )
+            self._add_pdf_obj(pal_cs_obj, &#34;images&#34;)
+            img_obj.color_space.append(pdf_ref(pal_cs_obj.id))
+
+        return img_obj
+
+    def _add_gfxstates(self):
+        gfxstate_objs_per_name = OrderedDict()
+        for state_dict, name in self.fpdf._drawing_graphics_state_registry.items():
+            gfxstate_obj = PDFExtGState(state_dict)
+            self._add_pdf_obj(gfxstate_obj, &#34;gfxstate&#34;)
+            gfxstate_objs_per_name[name] = gfxstate_obj
+        return gfxstate_objs_per_name
+
+    def _add_resources_dict(
+        self, font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+    ):
+        # From section 10.1, &#34;Procedure Sets&#34;, of PDF 1.7 spec:
+        # &gt; Beginning with PDF 1.4, this feature is considered obsolete.
+        # &gt; For compatibility with existing consumer applications,
+        # &gt; PDF producer applications should continue to specify procedure sets
+        # &gt; (preferably, all of those listed in Table 10.1).
+        proc_set = &#34;[/PDF /Text /ImageB /ImageC /ImageI]&#34;
+        font, x_object, ext_g_state = None, None, None
+
+        if font_objs_per_index:
+            font = pdf_dict(
+                {
+                    f&#34;/F{index}&#34;: pdf_ref(font_obj.id)
+                    for index, font_obj in sorted(font_objs_per_index.items())
+                }
+            )
+
+        if img_objs_per_index:
+            x_object = pdf_dict(
+                {
+                    f&#34;/I{index}&#34;: pdf_ref(img_obj.id)
+                    for index, img_obj in sorted(img_objs_per_index.items())
+                }
+            )
+
+        if gfxstate_objs_per_name:
+            ext_g_state = pdf_dict(
+                {
+                    f&#34;/{name}&#34;: pdf_ref(gfxstate_obj.id)
+                    for name, gfxstate_obj in gfxstate_objs_per_name.items()
+                }
+            )
+
+        resources_obj = PDFResources(
+            proc_set=proc_set, font=font, x_object=x_object, ext_g_state=ext_g_state
+        )
+        self._add_pdf_obj(resources_obj)
+        return resources_obj
+
+    def _add_structure_tree(self):
+        &#34;Builds a Structure Hierarchy, including image alternate descriptions&#34;
+        if self.fpdf.struct_builder.empty():
+            return None
+        struct_tree_root_obj = None
+        for pdf_obj in self.fpdf.struct_builder:
+            if struct_tree_root_obj is None:
+                struct_tree_root_obj = pdf_obj
+            self._add_pdf_obj(pdf_obj, &#34;structure_tree&#34;)
+        return struct_tree_root_obj
+
+    def _add_document_outline(self):
+        if not self.fpdf._outline:
+            return None, ()
+        outline_dict_obj, outline_items = None, []
+        for pdf_obj in build_outline_objs(self.fpdf._outline):
+            if outline_dict_obj is None:
+                outline_dict_obj = pdf_obj
+            else:
+                outline_items.append(pdf_obj)
+            self._add_pdf_obj(pdf_obj, &#34;document_outline&#34;)
+        return outline_dict_obj, outline_items
+
+    def _add_xmp_metadata(self):
+        if not self.fpdf.xmp_metadata:
+            return None
+        xpacket = f&#39;&lt;?xpacket begin=&#34;ï»¿&#34; id=&#34;W5M0MpCehiHzreSzNTczkc9d&#34;?&gt;\n{self.fpdf.xmp_metadata}\n&lt;?xpacket end=&#34;w&#34;?&gt;\n&#39;
+        pdf_obj = PDFXmpMetadata(xpacket)
+        self._add_pdf_obj(pdf_obj)
+        return pdf_obj
+
+    def _add_info(self):
+        fpdf = self.fpdf
+        creation_date = None
+        if fpdf.creation_date:
+            try:
+                creation_date = format_date(fpdf.creation_date, with_tz=True)
+            except Exception as error:
+                raise FPDFException(
+                    f&#34;Could not format date: {fpdf.creation_date}&#34;
+                ) from error
+        info_obj = PDFInfo(
+            title=getattr(fpdf, &#34;title&#34;, None),
+            subject=getattr(fpdf, &#34;subject&#34;, None),
+            author=getattr(fpdf, &#34;author&#34;, None),
+            keywords=getattr(fpdf, &#34;keywords&#34;, None),
+            creator=getattr(fpdf, &#34;creator&#34;, None),
+            producer=getattr(fpdf, &#34;producer&#34;, None),
+            creation_date=creation_date,
+        )
+        self._add_pdf_obj(info_obj)
+        return info_obj
+
+    def _add_encryption(self):
+        if self.fpdf._security_handler:
+            encryption_handler = self.fpdf._security_handler
+            pdf_obj = encryption_handler.get_encryption_obj()
+            self._add_pdf_obj(pdf_obj)
+            return pdf_obj
+        return None
+
+    def _add_catalog(self):
+        fpdf = self.fpdf
+        catalog_obj = PDFCatalog(
+            lang=getattr(fpdf, &#34;lang&#34;, None),
+            page_layout=fpdf.page_layout,
+            page_mode=fpdf.page_mode,
+            viewer_preferences=fpdf.viewer_preferences,
+        )
+        self._add_pdf_obj(catalog_obj)
+        return catalog_obj
+
+    def _finalize_catalog(
+        self,
+        catalog_obj,
+        pages_root_obj,
+        first_page_obj,
+        sig_annotation_obj,
+        xmp_metadata_obj,
+        struct_tree_root_obj,
+        outline_dict_obj,
+    ):
+        fpdf = self.fpdf
+        catalog_obj.pages = pages_root_obj
+        catalog_obj.struct_tree_root = struct_tree_root_obj
+        catalog_obj.outlines = outline_dict_obj
+        catalog_obj.metadata = xmp_metadata_obj
+        if sig_annotation_obj:
+            flags = SignatureFlag.SIGNATURES_EXIST + SignatureFlag.APPEND_ONLY
+            catalog_obj.acro_form = AcroForm(
+                fields=PDFArray([sig_annotation_obj]), sig_flags=flags
+            )
+        if fpdf.zoom_mode in ZOOM_CONFIGS:
+            zoom_config = [
+                pdf_ref(first_page_obj.id),
+                *ZOOM_CONFIGS[fpdf.zoom_mode],
+            ]
+        else:  # zoom_mode is a number, not one of the allowed strings:
+            zoom_config = [&#34;/XYZ&#34;, &#34;null&#34;, &#34;null&#34;, str(fpdf.zoom_mode / 100)]
+        catalog_obj.open_action = pdf_list(zoom_config)
+        if struct_tree_root_obj:
+            catalog_obj.mark_info = pdf_dict({&#34;/Marked&#34;: &#34;true&#34;})
+        if fpdf.embedded_files:
+            file_spec_names = [
+                f&#34;{enclose_in_parens(embedded_file.basename())} {embedded_file.file_spec().serialize()}&#34;
+                for embedded_file in fpdf.embedded_files
+                if embedded_file.globally_enclosed
+            ]
+            catalog_obj.names = pdf_dict(
+                {&#34;/EmbeddedFiles&#34;: pdf_dict({&#34;/Names&#34;: pdf_list(file_spec_names)})}
+            )
+
+    @contextmanager
+    def _trace_size(self, label):
+        prev_size = len(self.buffer)
+        yield
+        self.sections_size_per_trace_label[label] += len(self.buffer) - prev_size
+
+    def _log_final_sections_sizes(self):
+        LOGGER.debug(&#34;Final size summary of the biggest document sections:&#34;)
+        for label, section_size in self.sections_size_per_trace_label.items():
+            LOGGER.debug(&#34;- %s: %s&#34;, label, _sizeof_fmt(section_size))</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fpdf.linearization.LinearizedOutputProducer" href="linearization.html#fpdf.linearization.LinearizedOutputProducer">LinearizedOutputProducer</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.output.OutputProducer.bufferize"><code class="name flex">
+<span>def <span class="ident">bufferize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method alters the target FPDF instance
+by assigning IDs to all PDF objects,
+plus a few other properties on PDFPage instances</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bufferize(self):
+    &#34;&#34;&#34;
+    This method alters the target FPDF instance
+    by assigning IDs to all PDF objects,
+    plus a few other properties on PDFPage instances
+    &#34;&#34;&#34;
+    fpdf = self.fpdf
+
+    # 1. Setup - Insert all PDF objects
+    #    and assign unique consecutive numeric IDs to all of them
+
+    if fpdf._security_handler:
+        # get the file_id and generate passwords needed to encrypt streams and strings
+        file_id = fpdf.file_id()
+        if file_id == -1:
+            # no custom file id - use default file id so enryption passwords can be generated
+            file_id = fpdf._default_file_id(bytearray(0x00))
+        fpdf._security_handler.generate_passwords(file_id)
+
+    self.pdf_objs.append(PDFHeader(fpdf.pdf_version))
+    pages_root_obj = self._add_pages_root()
+    catalog_obj = self._add_catalog()
+    page_objs = self._add_pages()
+    sig_annotation_obj = self._add_annotations_as_objects()
+    for embedded_file in fpdf.embedded_files:
+        self._add_pdf_obj(embedded_file, &#34;embedded_files&#34;)
+    font_objs_per_index = self._add_fonts()
+    img_objs_per_index = self._add_images()
+    gfxstate_objs_per_name = self._add_gfxstates()
+    resources_dict_obj = self._add_resources_dict(
+        font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+    )
+    struct_tree_root_obj = self._add_structure_tree()
+    outline_dict_obj, outline_items = self._add_document_outline()
+    xmp_metadata_obj = self._add_xmp_metadata()
+    info_obj = self._add_info()
+    encryption_obj = self._add_encryption()
+    xref = PDFXrefAndTrailer(self)
+    self.pdf_objs.append(xref)
+
+    # 2. Plumbing - Inject all PDF object references required:
+    pages_root_obj.kids = PDFArray(page_objs)
+    self._finalize_catalog(
+        catalog_obj,
+        pages_root_obj=pages_root_obj,
+        first_page_obj=page_objs[0],
+        sig_annotation_obj=sig_annotation_obj,
+        xmp_metadata_obj=xmp_metadata_obj,
+        struct_tree_root_obj=struct_tree_root_obj,
+        outline_dict_obj=outline_dict_obj,
+    )
+    dests = []
+    for page_obj in page_objs:
+        page_obj.parent = pages_root_obj
+        page_obj.resources = resources_dict_obj
+        for annot in page_obj.annots:
+            page_dests = []
+            if annot.dest:
+                page_dests.append(annot.dest)
+            if annot.a and hasattr(annot.a, &#34;dest&#34;):
+                page_dests.append(annot.a.dest)
+            for dest in page_dests:
+                if dest.page_number &gt; len(page_objs):
+                    raise ValueError(
+                        f&#34;Invalid reference to non-existing page {dest.page_number} present on page {page_obj.index()}: &#34;
+                    )
+            dests.extend(page_dests)
+        if not page_obj.annots:
+            # Avoid serializing an empty PDFArray:
+            page_obj.annots = None
+    for outline_item in outline_items:
+        dests.append(outline_item.dest)
+    # Assigning the .page_ref property of all Destination objects:
+    for dest in dests:
+        dest.page_ref = pdf_ref(page_objs[dest.page_number - 1].id)
+    for struct_elem in fpdf.struct_builder.doc_struct_elem.k:
+        struct_elem.pg = page_objs[struct_elem.page_number() - 1]
+    xref.catalog_obj = catalog_obj
+    xref.info_obj = info_obj
+    xref.encryption_obj = encryption_obj
+
+    # 3. Serializing - Append all PDF objects to the buffer:
+    assert (
+        not self.buffer
+    ), f&#34;Nothing should have been appended to the .buffer at this stage: {self.buffer}&#34;
+    assert (
+        not self.offsets
+    ), f&#34;No offset should have been set at this stage: {len(self.offsets)}&#34;
+
+    for pdf_obj in self.pdf_objs:
+        if isinstance(pdf_obj, ContentWithoutID):
+            # top header, xref table &amp; trailer:
+            trace_label = None
+        else:
+            self.offsets[pdf_obj.id] = len(self.buffer)
+            trace_label = self.trace_labels_per_obj_id.get(pdf_obj.id)
+        if trace_label:
+            with self._trace_size(trace_label):
+                self._out(
+                    pdf_obj.serialize(_security_handler=fpdf._security_handler)
+                )
+        else:
+            self._out(pdf_obj.serialize(_security_handler=fpdf._security_handler))
+    self._log_final_sections_sizes()
+
+    if fpdf._sign_key:
+        self.buffer = sign_content(
+            signer,
+            self.buffer,
+            fpdf._sign_key,
+            fpdf._sign_cert,
+            fpdf._sign_extra_certs,
+            fpdf._sign_hashalgo,
+            fpdf._sign_time,
+        )
+    return self.buffer</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.output.PDFCatalog"><code class="flex name class">
+<span>class <span class="ident">PDFCatalog</span></span>
+<span>(</span><span>lang=None, page_layout=None, page_mode=None, viewer_preferences=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFCatalog(PDFObject):
+    def __init__(
+        self, lang=None, page_layout=None, page_mode=None, viewer_preferences=None
+    ):
+        super().__init__()
+        self.type = Name(&#34;Catalog&#34;)
+        self.lang = enclose_in_parens(lang) if lang else None
+        self.page_layout = page_layout
+        self.page_mode = page_mode
+        self.viewer_preferences = viewer_preferences
+        self.pages = None  # Required; shall be an indirect reference
+        self.acro_form = None
+        self.open_action = None
+        self.mark_info = None
+        self.metadata = None
+        self.names = None
+        self.outlines = None
+        self.struct_tree_root = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFExtGState"><code class="flex name class">
+<span>class <span class="ident">PDFExtGState</span></span>
+<span>(</span><span>dict_as_str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFExtGState(PDFObject):
+    def __init__(self, dict_as_str):
+        super().__init__()
+        self._dict_as_str = dict_as_str
+
+    # method override
+    def serialize(self, obj_dict=None, _security_handler=None):
+        return f&#34;{self.id} 0 obj\n{self._dict_as_str}\nendobj&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFFont"><code class="flex name class">
+<span>class <span class="ident">PDFFont</span></span>
+<span>(</span><span>subtype, base_font, encoding=None, d_w=None, w=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFFont(PDFObject):
+    def __init__(self, subtype, base_font, encoding=None, d_w=None, w=None):
+        super().__init__()
+        self.type = Name(&#34;Font&#34;)
+        self.subtype = Name(subtype)
+        self.base_font = Name(base_font)
+        self.encoding = Name(encoding) if encoding else None
+        self.d_w = d_w
+        self.w = w
+        self.descendant_fonts = None
+        self.to_unicode = None
+        self.c_i_d_system_info = None
+        self.font_descriptor = None
+        self.c_i_d_to_g_i_d_map = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFFontDescriptor"><code class="flex name class">
+<span>class <span class="ident">PDFFontDescriptor</span></span>
+<span>(</span><span>ascent, descent, cap_height, flags, font_b_box, italic_angle, stem_v, missing_width)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFFontDescriptor(PDFObject):
+    def __init__(
+        self,
+        ascent,
+        descent,
+        cap_height,
+        flags,
+        font_b_box,
+        italic_angle,
+        stem_v,
+        missing_width,
+    ):
+        super().__init__()
+        self.type = Name(&#34;FontDescriptor&#34;)
+        self.ascent = ascent
+        self.descent = descent
+        self.cap_height = cap_height
+        self.flags = flags
+        self.font_b_box = font_b_box
+        self.italic_angle = italic_angle
+        self.stem_v = stem_v
+        self.missing_width = missing_width
+        self.font_name = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFFontStream"><code class="flex name class">
+<span>class <span class="ident">PDFFontStream</span></span>
+<span>(</span><span>contents)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFFontStream(PDFContentStream):
+    def __init__(self, contents):
+        super().__init__(contents=contents, compress=True)
+        self.length1 = len(contents)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></li>
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFContentStream.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFContentStream.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFHeader"><code class="flex name class">
+<span>class <span class="ident">PDFHeader</span></span>
+<span>(</span><span>pdf_version)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFHeader(ContentWithoutID):
+    def __init__(self, pdf_version):
+        self.pdf_version = pdf_version
+
+    def serialize(self, _security_handler=None):
+        return f&#34;%PDF-{self.pdf_version}&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.output.ContentWithoutID" href="#fpdf.output.ContentWithoutID">ContentWithoutID</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.output.PDFHeader.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self, _security_handler=None):
+    return f&#34;%PDF-{self.pdf_version}&#34;</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.output.PDFICCPObject"><code class="flex name class">
+<span>class <span class="ident">PDFICCPObject</span></span>
+<span>(</span><span>contents, n, alternate)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFICCPObject(PDFContentStream):
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;_contents&#34;,
+        &#34;filter&#34;,
+        &#34;length&#34;,
+        &#34;n&#34;,
+        &#34;alternate&#34;,
+    )
+
+    def __init__(
+        self,
+        contents,
+        n,
+        alternate,
+    ):
+        super().__init__(contents=contents, compress=True)
+        self.n = n
+        self.alternate = Name(alternate)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></li>
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.output.PDFICCPObject.alternate"><code class="name">var <span class="ident">alternate</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFICCPObject.filter"><code class="name">var <span class="ident">filter</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFICCPObject.length"><code class="name">var <span class="ident">length</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFICCPObject.n"><code class="name">var <span class="ident">n</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFContentStream.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFContentStream.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFInfo"><code class="flex name class">
+<span>class <span class="ident">PDFInfo</span></span>
+<span>(</span><span>title, subject, author, keywords, creator, producer, creation_date)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFInfo(PDFObject):
+    def __init__(
+        self,
+        title,
+        subject,
+        author,
+        keywords,
+        creator,
+        producer,
+        creation_date,
+    ):
+        super().__init__()
+        self.title = PDFString(title) if title else None
+        self.subject = PDFString(subject) if subject else None
+        self.author = PDFString(author) if author else None
+        self.keywords = PDFString(keywords) if keywords else None
+        self.creator = PDFString(creator) if creator else None
+        self.producer = PDFString(producer) if producer else None
+        self.creation_date = creation_date</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFPage"><code class="flex name class">
+<span>class <span class="ident">PDFPage</span></span>
+<span>(</span><span>duration, transition, contents, index)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFPage(PDFObject):
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;type&#34;,
+        &#34;contents&#34;,
+        &#34;dur&#34;,
+        &#34;trans&#34;,
+        &#34;annots&#34;,
+        &#34;group&#34;,
+        &#34;media_box&#34;,
+        &#34;struct_parents&#34;,
+        &#34;resources&#34;,
+        &#34;parent&#34;,
+        &#34;_index&#34;,
+        &#34;_width_pt&#34;,
+        &#34;_height_pt&#34;,
+    )
+
+    def __init__(
+        self,
+        duration,
+        transition,
+        contents,
+        index,
+    ):
+        super().__init__()
+        self.type = Name(&#34;Page&#34;)
+        self.contents = contents
+        self.dur = duration if duration else None
+        self.trans = transition
+        self.annots = PDFArray()  # list of PDFAnnotation
+        self.group = None
+        self.media_box = None
+        self.struct_parents = None
+        self.resources = None  # must always be set before calling .serialize()
+        self.parent = None  # must always be set before calling .serialize()
+        self._index = index
+        self._width_pt, self._height_pt = None, None
+
+    def index(self):
+        return self._index
+
+    def dimensions(self):
+        &#34;Return a pair (width, height) in the unit specified to FPDF constructor&#34;
+        return self._width_pt, self._height_pt
+
+    def set_dimensions(self, width_pt, height_pt):
+        &#34;Accepts a pair (width, height) in the unit specified to FPDF constructor&#34;
+        self._width_pt, self._height_pt = width_pt, height_pt</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.output.PDFPage.annots"><code class="name">var <span class="ident">annots</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.contents"><code class="name">var <span class="ident">contents</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.dur"><code class="name">var <span class="ident">dur</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.group"><code class="name">var <span class="ident">group</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.media_box"><code class="name">var <span class="ident">media_box</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.struct_parents"><code class="name">var <span class="ident">struct_parents</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.trans"><code class="name">var <span class="ident">trans</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFPage.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.output.PDFPage.dimensions"><code class="name flex">
+<span>def <span class="ident">dimensions</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a pair (width, height) in the unit specified to FPDF constructor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dimensions(self):
+    &#34;Return a pair (width, height) in the unit specified to FPDF constructor&#34;
+    return self._width_pt, self._height_pt</code></pre>
+</details>
+</dd>
+<dt id="fpdf.output.PDFPage.index"><code class="name flex">
+<span>def <span class="ident">index</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def index(self):
+    return self._index</code></pre>
+</details>
+</dd>
+<dt id="fpdf.output.PDFPage.set_dimensions"><code class="name flex">
+<span>def <span class="ident">set_dimensions</span></span>(<span>self, width_pt, height_pt)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Accepts a pair (width, height) in the unit specified to FPDF constructor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_dimensions(self, width_pt, height_pt):
+    &#34;Accepts a pair (width, height) in the unit specified to FPDF constructor&#34;
+    self._width_pt, self._height_pt = width_pt, height_pt</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFPagesRoot"><code class="flex name class">
+<span>class <span class="ident">PDFPagesRoot</span></span>
+<span>(</span><span>count, media_box)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFPagesRoot(PDFObject):
+    def __init__(self, count, media_box):
+        super().__init__()
+        self.type = Name(&#34;Pages&#34;)
+        self.count = count
+        self.media_box = media_box
+        self.kids = None  # must always be set before calling .serialize()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFResources"><code class="flex name class">
+<span>class <span class="ident">PDFResources</span></span>
+<span>(</span><span>proc_set, font, x_object, ext_g_state)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFResources(PDFObject):
+    def __init__(self, proc_set, font, x_object, ext_g_state):
+        super().__init__()
+        self.proc_set = proc_set
+        self.font = font
+        self.x_object = x_object
+        self.ext_g_state = ext_g_state</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFXObject"><code class="flex name class">
+<span>class <span class="ident">PDFXObject</span></span>
+<span>(</span><span>contents, subtype, width, height, color_space, bits_per_component, img_filter=None, decode=None, decode_parms=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFXObject(PDFContentStream):
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;_contents&#34;,
+        &#34;filter&#34;,
+        &#34;length&#34;,
+        &#34;type&#34;,
+        &#34;subtype&#34;,
+        &#34;width&#34;,
+        &#34;height&#34;,
+        &#34;color_space&#34;,
+        &#34;bits_per_component&#34;,
+        &#34;decode&#34;,
+        &#34;decode_parms&#34;,
+        &#34;s_mask&#34;,
+    )
+
+    def __init__(
+        self,
+        contents,
+        subtype,
+        width,
+        height,
+        color_space,
+        bits_per_component,
+        img_filter=None,
+        decode=None,
+        decode_parms=None,
+    ):
+        super().__init__(contents=contents)
+        self.type = Name(&#34;XObject&#34;)
+        self.subtype = Name(subtype)
+        self.width = width
+        self.height = height
+        self.color_space = color_space
+        self.bits_per_component = bits_per_component
+        self.filter = Name(img_filter)
+        self.decode = decode
+        self.decode_parms = decode_parms
+        self.s_mask = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></li>
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.output.PDFXObject.bits_per_component"><code class="name">var <span class="ident">bits_per_component</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.color_space"><code class="name">var <span class="ident">color_space</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.decode"><code class="name">var <span class="ident">decode</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.decode_parms"><code class="name">var <span class="ident">decode_parms</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.filter"><code class="name">var <span class="ident">filter</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.height"><code class="name">var <span class="ident">height</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.length"><code class="name">var <span class="ident">length</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.s_mask"><code class="name">var <span class="ident">s_mask</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.subtype"><code class="name">var <span class="ident">subtype</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.output.PDFXObject.width"><code class="name">var <span class="ident">width</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFContentStream.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFContentStream.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFXmpMetadata"><code class="flex name class">
+<span>class <span class="ident">PDFXmpMetadata</span></span>
+<span>(</span><span>contents)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFXmpMetadata(PDFContentStream):
+    def __init__(self, contents):
+        super().__init__(contents=contents.encode(&#34;utf-8&#34;))
+        self.type = Name(&#34;Metadata&#34;)
+        self.subtype = Name(&#34;XML&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></li>
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFContentStream.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFContentStream.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.output.PDFXrefAndTrailer"><code class="flex name class">
+<span>class <span class="ident">PDFXrefAndTrailer</span></span>
+<span>(</span><span>output_builder)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFXrefAndTrailer(ContentWithoutID):
+    def __init__(self, output_builder):
+        self.output_builder = output_builder
+        self.count = output_builder.obj_id + 1
+        # Must be set before the call to serialize():
+        self.catalog_obj = None
+        self.info_obj = None
+        self.encryption_obj = None
+
+    def serialize(self, _security_handler=None):
+        builder = self.output_builder
+        startxref = str(len(builder.buffer))
+        out = []
+        out.append(&#34;xref&#34;)
+        out.append(f&#34;0 {self.count}&#34;)
+        out.append(&#34;0000000000 65535 f &#34;)
+        for obj_id in range(1, self.count):
+            out.append(f&#34;{builder.offsets[obj_id]:010} 00000 n &#34;)
+        out.append(&#34;trailer&#34;)
+        out.append(&#34;&lt;&lt;&#34;)
+        out.append(f&#34;/Size {self.count}&#34;)
+        out.append(f&#34;/Root {pdf_ref(self.catalog_obj.id)}&#34;)
+        out.append(f&#34;/Info {pdf_ref(self.info_obj.id)}&#34;)
+        fpdf = builder.fpdf
+        if self.encryption_obj:
+            out.append(f&#34;/Encrypt {pdf_ref(self.encryption_obj.id)}&#34;)
+            file_id = fpdf._security_handler.file_id
+        else:
+            file_id = fpdf.file_id()
+            if file_id == -1:
+                file_id = fpdf._default_file_id(builder.buffer)
+        if file_id:
+            out.append(f&#34;/ID [{file_id}]&#34;)
+        out.append(&#34;&gt;&gt;&#34;)
+        out.append(&#34;startxref&#34;)
+        out.append(startxref)
+        out.append(&#34;%%EOF&#34;)
+        return &#34;\n&#34;.join(out)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.output.ContentWithoutID" href="#fpdf.output.ContentWithoutID">ContentWithoutID</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.output.PDFXrefAndTrailer.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self, _security_handler=None):
+    builder = self.output_builder
+    startxref = str(len(builder.buffer))
+    out = []
+    out.append(&#34;xref&#34;)
+    out.append(f&#34;0 {self.count}&#34;)
+    out.append(&#34;0000000000 65535 f &#34;)
+    for obj_id in range(1, self.count):
+        out.append(f&#34;{builder.offsets[obj_id]:010} 00000 n &#34;)
+    out.append(&#34;trailer&#34;)
+    out.append(&#34;&lt;&lt;&#34;)
+    out.append(f&#34;/Size {self.count}&#34;)
+    out.append(f&#34;/Root {pdf_ref(self.catalog_obj.id)}&#34;)
+    out.append(f&#34;/Info {pdf_ref(self.info_obj.id)}&#34;)
+    fpdf = builder.fpdf
+    if self.encryption_obj:
+        out.append(f&#34;/Encrypt {pdf_ref(self.encryption_obj.id)}&#34;)
+        file_id = fpdf._security_handler.file_id
+    else:
+        file_id = fpdf.file_id()
+        if file_id == -1:
+            file_id = fpdf._default_file_id(builder.buffer)
+    if file_id:
+        out.append(f&#34;/ID [{file_id}]&#34;)
+    out.append(&#34;&gt;&gt;&#34;)
+    out.append(&#34;startxref&#34;)
+    out.append(startxref)
+    out.append(&#34;%%EOF&#34;)
+    return &#34;\n&#34;.join(out)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.output.AcroForm" href="#fpdf.output.AcroForm">AcroForm</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.output.AcroForm.serialize" href="#fpdf.output.AcroForm.serialize">serialize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.CIDSystemInfo" href="#fpdf.output.CIDSystemInfo">CIDSystemInfo</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.ContentWithoutID" href="#fpdf.output.ContentWithoutID">ContentWithoutID</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.output.ContentWithoutID.serialize" href="#fpdf.output.ContentWithoutID.serialize">serialize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.OutputProducer" href="#fpdf.output.OutputProducer">OutputProducer</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.output.OutputProducer.bufferize" href="#fpdf.output.OutputProducer.bufferize">bufferize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFCatalog" href="#fpdf.output.PDFCatalog">PDFCatalog</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFExtGState" href="#fpdf.output.PDFExtGState">PDFExtGState</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFFont" href="#fpdf.output.PDFFont">PDFFont</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFFontDescriptor" href="#fpdf.output.PDFFontDescriptor">PDFFontDescriptor</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFFontStream" href="#fpdf.output.PDFFontStream">PDFFontStream</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFHeader" href="#fpdf.output.PDFHeader">PDFHeader</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.output.PDFHeader.serialize" href="#fpdf.output.PDFHeader.serialize">serialize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFICCPObject" href="#fpdf.output.PDFICCPObject">PDFICCPObject</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.output.PDFICCPObject.alternate" href="#fpdf.output.PDFICCPObject.alternate">alternate</a></code></li>
+<li><code><a title="fpdf.output.PDFICCPObject.filter" href="#fpdf.output.PDFICCPObject.filter">filter</a></code></li>
+<li><code><a title="fpdf.output.PDFICCPObject.length" href="#fpdf.output.PDFICCPObject.length">length</a></code></li>
+<li><code><a title="fpdf.output.PDFICCPObject.n" href="#fpdf.output.PDFICCPObject.n">n</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFInfo" href="#fpdf.output.PDFInfo">PDFInfo</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFPage" href="#fpdf.output.PDFPage">PDFPage</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.output.PDFPage.annots" href="#fpdf.output.PDFPage.annots">annots</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.contents" href="#fpdf.output.PDFPage.contents">contents</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.dimensions" href="#fpdf.output.PDFPage.dimensions">dimensions</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.dur" href="#fpdf.output.PDFPage.dur">dur</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.group" href="#fpdf.output.PDFPage.group">group</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.index" href="#fpdf.output.PDFPage.index">index</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.media_box" href="#fpdf.output.PDFPage.media_box">media_box</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.parent" href="#fpdf.output.PDFPage.parent">parent</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.resources" href="#fpdf.output.PDFPage.resources">resources</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.set_dimensions" href="#fpdf.output.PDFPage.set_dimensions">set_dimensions</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.struct_parents" href="#fpdf.output.PDFPage.struct_parents">struct_parents</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.trans" href="#fpdf.output.PDFPage.trans">trans</a></code></li>
+<li><code><a title="fpdf.output.PDFPage.type" href="#fpdf.output.PDFPage.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFPagesRoot" href="#fpdf.output.PDFPagesRoot">PDFPagesRoot</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFResources" href="#fpdf.output.PDFResources">PDFResources</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFXObject" href="#fpdf.output.PDFXObject">PDFXObject</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.output.PDFXObject.bits_per_component" href="#fpdf.output.PDFXObject.bits_per_component">bits_per_component</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.color_space" href="#fpdf.output.PDFXObject.color_space">color_space</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.decode" href="#fpdf.output.PDFXObject.decode">decode</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.decode_parms" href="#fpdf.output.PDFXObject.decode_parms">decode_parms</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.filter" href="#fpdf.output.PDFXObject.filter">filter</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.height" href="#fpdf.output.PDFXObject.height">height</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.length" href="#fpdf.output.PDFXObject.length">length</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.s_mask" href="#fpdf.output.PDFXObject.s_mask">s_mask</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.subtype" href="#fpdf.output.PDFXObject.subtype">subtype</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.type" href="#fpdf.output.PDFXObject.type">type</a></code></li>
+<li><code><a title="fpdf.output.PDFXObject.width" href="#fpdf.output.PDFXObject.width">width</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFXmpMetadata" href="#fpdf.output.PDFXmpMetadata">PDFXmpMetadata</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.output.PDFXrefAndTrailer" href="#fpdf.output.PDFXrefAndTrailer">PDFXrefAndTrailer</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.output.PDFXrefAndTrailer.serialize" href="#fpdf.output.PDFXrefAndTrailer.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

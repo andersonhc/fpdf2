@@ -1,0 +1,1684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>fpdf.svg API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fpdf.svg</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import math, re, warnings
+
+from fontTools.svgLib.path import parse_path
+from fontTools.pens.basePen import BasePen
+
+try:
+    from defusedxml.ElementTree import fromstring as parse_xml_str
+except ImportError:
+    warnings.warn(
+        &#34;defusedxml could not be imported - fpdf2 will not be able to sanitize SVG images provided&#34;
+    )
+    # nosemgrep: python.lang.security.use-defused-xml.use-defused-xml
+    from xml.etree.ElementTree import fromstring as parse_xml_str  # nosec
+
+from . import html
+from .drawing import (
+    color_from_hex_string,
+    color_from_rgb_string,
+    GraphicsContext,
+    GraphicsStyle,
+    PaintedPath,
+    Transform,
+)
+
+__pdoc__ = {&#34;force_nodocument&#34;: False}
+
+
+def force_nodocument(item):
+    &#34;&#34;&#34;A decorator that forces pdoc not to document the decorated item (class or method)&#34;&#34;&#34;
+    __pdoc__[item.__qualname__] = False
+    return item
+
+
+# https://www.w3.org/TR/SVG/Overview.html
+
+_HANDY_NAMESPACES = {
+    &#34;svg&#34;: &#34;http://www.w3.org/2000/svg&#34;,
+    &#34;xlink&#34;: &#34;http://www.w3.org/1999/xlink&#34;,
+}
+
+NUMBER_SPLIT = re.compile(r&#34;(?:\s+,\s+|\s+,|,\s+|\s+|,)&#34;)
+TRANSFORM_GETTER = re.compile(
+    r&#34;(matrix|rotate|scale|scaleX|scaleY|skew|skewX|skewY|translate|translateX|translateY)&#34;
+    r&#34;\(((?:\s*(?:[-+]?[\d\.]+,?)+\s*)+)\)&#34;
+)
+
+
+@force_nodocument
+class Percent(float):
+    &#34;&#34;&#34;class to represent percentage values&#34;&#34;&#34;
+
+
+unit_splitter = re.compile(r&#34;\s*(?P&lt;value&gt;[-+]?[\d\.]+)\s*(?P&lt;unit&gt;%|[a-zA-Z]*)&#34;)
+
+# none of these are supported right now
+# https://www.w3.org/TR/css-values-4/#lengths
+relative_length_units = {
+    &#34;%&#34;,  # (context sensitive, depends on which attribute it is applied to)
+    &#34;em&#34;,  # (current font size)
+    &#34;ex&#34;,  # (current font x-height)
+    # CSS 3
+    &#34;ch&#34;,  # (advance measure of 0, U+0030 glyph)
+    &#34;rem&#34;,  # (font-size of the root element)
+    &#34;vw&#34;,  # (1% of viewport width)
+    &#34;vh&#34;,  # (1% of viewport height)
+    &#34;vmin&#34;,  # (smaller of vw or vh)
+    &#34;vmax&#34;,  # (larger of vw or vh)
+    # CSS 4
+    &#34;cap&#34;,  # (font cap height)
+    &#34;ic&#34;,  # (advance measure of fullwidth U+6C34 glyph)
+    &#34;lh&#34;,  # (line height)
+    &#34;rlh&#34;,  # (root element line height)
+    &#34;vi&#34;,  # (1% of viewport size in root element&#39;s inline axis)
+    &#34;vb&#34;,  # (1% of viewport size in root element&#39;s block axis)
+}
+
+absolute_length_units = {
+    &#34;in&#34;: 72,  # (inches, 72 pt)
+    &#34;cm&#34;: 72 / 2.54,  # (centimeters, 72 / 2.54 pt)
+    &#34;mm&#34;: 72 / 25.4,  # (millimeters 72 / 25.4 pt)
+    &#34;pt&#34;: 1,  # (pdf canonical unit)
+    &#34;pc&#34;: 12,  # (pica, 12 pt)
+    &#34;px&#34;: 0.75,  # (reference pixel unit, 0.75 pt)
+    # CSS 3
+    &#34;Q&#34;: 72 / 101.6,  # (quarter-millimeter, 72 / 101.6 pt)
+}
+
+angle_units = {
+    &#34;deg&#34;: math.tau / 360,
+    &#34;grad&#34;: math.tau / 400,
+    &#34;rad&#34;: 1,  # pdf canonical unit
+    &#34;turn&#34;: math.tau,
+}
+
+
+# in CSS the default length unit is px, but as far as I can tell, for SVG interpreting
+# unitless numbers as being expressed in pt is more appropriate. Particularly, the
+# scaling we do using viewBox attempts to scale so that 1 svg user unit = 1 pdf pt
+# because this results in the output PDF having the correct physical dimensions (i.e. a
+# feature with a 1cm size in SVG will actually end up being 1cm in size in the PDF).
+@force_nodocument
+def resolve_length(length_str, default_unit=&#34;pt&#34;):
+    &#34;&#34;&#34;Convert a length unit to our canonical length unit, pt.&#34;&#34;&#34;
+    match = unit_splitter.match(length_str)
+    if match is None:
+        raise ValueError(f&#34;Unable to parse &#39;{length_str}&#39; as a length&#34;) from None
+    value, unit = match.groups()
+    if not unit:
+        unit = default_unit
+
+    try:
+        return float(value) * absolute_length_units[unit]
+    except KeyError:
+        if unit in relative_length_units:
+            raise ValueError(
+                f&#34;{length_str} uses unsupported relative length {unit}&#34;
+            ) from None
+
+        raise ValueError(f&#34;{length_str} contains unrecognized unit {unit}&#34;) from None
+
+
+@force_nodocument
+def resolve_angle(angle_str, default_unit=&#34;deg&#34;):
+    &#34;&#34;&#34;Convert an angle value to our canonical angle unit, radians&#34;&#34;&#34;
+    value, unit = unit_splitter.match(angle_str).groups()
+    if not unit:
+        unit = default_unit
+
+    try:
+        return float(value) * angle_units[unit]
+    except KeyError:
+        raise ValueError(f&#34;angle {angle_str} has unknown unit {unit}&#34;) from None
+
+
+@force_nodocument
+def xmlns(space, name):
+    &#34;&#34;&#34;Create an XML namespace string representation for the given tag name.&#34;&#34;&#34;
+    try:
+        space = f&#34;{{{_HANDY_NAMESPACES[space]}}}&#34;
+    except KeyError:
+        space = &#34;&#34;
+
+    return f&#34;{space}{name}&#34;
+
+
+@force_nodocument
+def xmlns_lookup(space, *names):
+    &#34;&#34;&#34;Create a lookup for the given name in the given XML namespace.&#34;&#34;&#34;
+
+    result = {}
+    for name in names:
+        result[xmlns(space, name)] = name
+        result[name] = name
+
+    return result
+
+
+shape_tags = xmlns_lookup(
+    &#34;svg&#34;, &#34;rect&#34;, &#34;circle&#34;, &#34;ellipse&#34;, &#34;line&#34;, &#34;polyline&#34;, &#34;polygon&#34;
+)
+
+
+@force_nodocument
+def svgcolor(colorstr):
+    try:
+        colorstr = html.COLOR_DICT[colorstr]
+    except KeyError:
+        pass
+
+    if colorstr.startswith(&#34;#&#34;):
+        return color_from_hex_string(colorstr)
+
+    if colorstr.startswith(&#34;rgb&#34;):
+        return color_from_rgb_string(colorstr)
+
+    raise ValueError(f&#34;unsupported color specification {colorstr}&#34;)
+
+
+@force_nodocument
+def convert_stroke_width(incoming):
+    val = resolve_length(incoming)
+    if val &lt; 0:
+        raise ValueError(f&#34;stroke width {incoming} cannot be negative&#34;)
+    if val == 0:
+        return None
+
+    return val
+
+
+@force_nodocument
+def convert_miterlimit(incoming):
+    val = float(incoming)
+    if val &lt; 1.0:
+        raise ValueError(f&#34;miter limit {incoming} cannot be less than 1&#34;)
+
+    return val
+
+
+@force_nodocument
+def clamp_float(min_val, max_val):
+    def converter(value):
+        val = float(value)
+        if val &lt; min_val:
+            return min_val
+        if val &gt; max_val:
+            return max_val
+        return val
+
+    return converter
+
+
+@force_nodocument
+def inheritable(value, converter=lambda value: value):
+    if value == &#34;inherit&#34;:
+        return GraphicsStyle.INHERIT
+
+    return converter(value)
+
+
+@force_nodocument
+def optional(value, converter=lambda noop: noop):
+    if value == &#34;none&#34;:
+        return None
+
+    return inheritable(value, converter)
+
+
+# this is mostly SVG 1.1 stuff. SVG 2 changed some of this and the documentation is much
+# harder to assemble into something coherently understandable
+svg_attr_map = {
+    # https://www.w3.org/TR/SVG11/painting.html#FillProperty
+    &#34;fill&#34;: lambda colorstr: (&#34;fill_color&#34;, optional(colorstr, svgcolor)),
+    # https://www.w3.org/TR/SVG11/painting.html#FillRuleProperty
+    &#34;fill-rule&#34;: lambda fillrulestr: (&#34;intersection_rule&#34;, inheritable(fillrulestr)),
+    # https://www.w3.org/TR/SVG11/painting.html#FillOpacityProperty
+    &#34;fill-opacity&#34;: lambda filopstr: (
+        &#34;fill_opacity&#34;,
+        inheritable(filopstr, clamp_float(0.0, 1.0)),
+    ),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeProperty
+    &#34;stroke&#34;: lambda colorstr: (&#34;stroke_color&#34;, optional(colorstr, svgcolor)),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeWidthProperty
+    &#34;stroke-width&#34;: lambda valuestr: (
+        &#34;stroke_width&#34;,
+        inheritable(valuestr, convert_stroke_width),
+    ),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeDasharrayProperty
+    &#34;stroke-dasharray&#34;: lambda dasharray: (
+        &#34;stroke_dash_pattern&#34;,
+        optional(
+            dasharray, lambda da: [float(item) for item in NUMBER_SPLIT.split(da)]
+        ),
+    ),
+    # stroke-dashoffset may be a percentage, which we don&#39;t support currently
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeDashoffsetProperty
+    &#34;stroke-dashoffset&#34;: lambda dashoff: (
+        &#34;stroke_dash_phase&#34;,
+        inheritable(dashoff, float),
+    ),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeLinecapProperty
+    &#34;stroke-linecap&#34;: lambda capstr: (&#34;stroke_cap_style&#34;, inheritable(capstr)),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeLinejoinProperty
+    &#34;stroke-linejoin&#34;: lambda joinstr: (&#34;stroke_join_style&#34;, inheritable(joinstr)),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeMiterlimitProperty
+    &#34;stroke-miterlimit&#34;: lambda limstr: (
+        &#34;stroke_miter_limit&#34;,
+        inheritable(limstr, convert_miterlimit),
+    ),
+    # https://www.w3.org/TR/SVG11/painting.html#StrokeOpacityProperty
+    &#34;stroke-opacity&#34;: lambda stropstr: (
+        &#34;stroke_opacity&#34;,
+        inheritable(stropstr, clamp_float(0.0, 1.0)),
+    ),
+}
+
+
+@force_nodocument
+def parse_style(svg_element):
+    &#34;&#34;&#34;Parse `style=&#34;...&#34;` making it&#39;s key-value pairs element&#39;s attributes&#34;&#34;&#34;
+    try:
+        style = svg_element.attrib[&#34;style&#34;]
+    except KeyError:
+        pass
+    else:
+        for element in style.split(&#34;;&#34;):
+            if not element:
+                continue
+
+            pair = element.split(&#34;:&#34;)
+            if len(pair) == 2 and pair[0] and pair[1]:
+                attr, value = pair
+
+                svg_element.attrib[attr.strip()] = value.strip()
+
+
+@force_nodocument
+def apply_styles(stylable, svg_element):
+    &#34;&#34;&#34;Apply the known styles from `svg_element` to the pdf path/group `stylable`.&#34;&#34;&#34;
+    parse_style(svg_element)
+
+    stylable.style.auto_close = False
+
+    for attr_name, converter in svg_attr_map.items():
+        value = svg_element.attrib.get(attr_name)
+        if value:
+            attr_name, value = converter(value)
+            setattr(stylable.style, attr_name, value)
+
+    # handle this separately for now
+    opacity = svg_element.attrib.get(&#34;opacity&#34;)
+    if opacity:
+        opacity = float(opacity)
+        stylable.style.fill_opacity = opacity
+        stylable.style.stroke_opacity = opacity
+
+    tfstr = svg_element.attrib.get(&#34;transform&#34;)
+    if tfstr:
+        stylable.transform = convert_transforms(tfstr)
+
+
+@force_nodocument
+class ShapeBuilder:
+    &#34;&#34;&#34;A namespace within which methods for converting basic shapes can be looked up.&#34;&#34;&#34;
+
+    @staticmethod
+    def new_path(tag):
+        &#34;&#34;&#34;Create a new path with the appropriate styles.&#34;&#34;&#34;
+        path = PaintedPath()
+        apply_styles(path, tag)
+
+        return path
+
+    @classmethod
+    def rect(cls, tag):
+        &#34;&#34;&#34;Convert an SVG &lt;rect&gt; into a PDF path.&#34;&#34;&#34;
+        # svg rect is wound clockwise
+        x = float(tag.attrib.get(&#34;x&#34;, 0))
+        y = float(tag.attrib.get(&#34;y&#34;, 0))
+        width = resolve_length(tag.attrib.get(&#34;width&#34;, 0))
+        height = resolve_length(tag.attrib.get(&#34;height&#34;, 0))
+        rx = tag.attrib.get(&#34;rx&#34;, &#34;auto&#34;)
+        ry = tag.attrib.get(&#34;ry&#34;, &#34;auto&#34;)
+
+        if rx == &#34;none&#34;:
+            rx = 0
+        if ry == &#34;none&#34;:
+            ry = 0
+
+        if rx == ry == &#34;auto&#34;:
+            rx = ry = 0
+        elif rx == &#34;auto&#34;:
+            rx = ry = float(ry)
+        elif ry == &#34;auto&#34;:
+            ry = rx = float(rx)
+        else:
+            rx = float(rx)
+            ry = float(ry)
+
+        if (width &lt; 0) or (height &lt; 0) or (rx &lt; 0) or (ry &lt; 0):
+            raise ValueError(f&#34;bad rect {tag}&#34;)
+
+        if (width == 0) or (height == 0):
+            return PaintedPath()
+
+        if rx &gt; (width / 2):
+            rx = width / 2
+        if ry &gt; (height / 2):
+            ry = height / 2
+
+        path = cls.new_path(tag)
+
+        path.rectangle(x, y, width, height, rx, ry)
+        return path
+
+    @classmethod
+    def circle(cls, tag):
+        &#34;&#34;&#34;Convert an SVG &lt;circle&gt; into a PDF path.&#34;&#34;&#34;
+        cx = float(tag.attrib.get(&#34;cx&#34;, 0))
+        cy = float(tag.attrib.get(&#34;cy&#34;, 0))
+        r = float(tag.attrib[&#34;r&#34;])
+
+        path = cls.new_path(tag)
+
+        path.circle(cx, cy, r)
+        return path
+
+    @classmethod
+    def ellipse(cls, tag):
+        &#34;&#34;&#34;Convert an SVG &lt;ellipse&gt; into a PDF path.&#34;&#34;&#34;
+        cx = float(tag.attrib.get(&#34;cx&#34;, 0))
+        cy = float(tag.attrib.get(&#34;cy&#34;, 0))
+
+        rx = tag.attrib.get(&#34;rx&#34;, &#34;auto&#34;)
+        ry = tag.attrib.get(&#34;ry&#34;, &#34;auto&#34;)
+
+        path = cls.new_path(tag)
+
+        if (rx == ry == &#34;auto&#34;) or (rx == 0) or (ry == 0):
+            return path
+
+        if rx == &#34;auto&#34;:
+            rx = ry = float(ry)
+        elif ry == &#34;auto&#34;:
+            rx = ry = float(rx)
+        else:
+            rx = float(rx)
+            ry = float(ry)
+
+        path.ellipse(cx, cy, rx, ry)
+        return path
+
+    @classmethod
+    def line(cls, tag):
+        &#34;&#34;&#34;Convert an SVG &lt;line&gt; into a PDF path.&#34;&#34;&#34;
+        x1 = float(tag.attrib[&#34;x1&#34;])
+        y1 = float(tag.attrib[&#34;y1&#34;])
+        x2 = float(tag.attrib[&#34;x2&#34;])
+        y2 = float(tag.attrib[&#34;y2&#34;])
+
+        path = cls.new_path(tag)
+
+        path.move_to(x1, y1)
+        path.line_to(x2, y2)
+
+        return path
+
+    @classmethod
+    def polyline(cls, tag):
+        &#34;&#34;&#34;Convert an SVG &lt;polyline&gt; into a PDF path.&#34;&#34;&#34;
+        points = tag.attrib[&#34;points&#34;]
+
+        path = cls.new_path(tag)
+
+        points = &#34;M&#34; + points
+        svg_path_converter(path, points)
+
+        return path
+
+    @classmethod
+    def polygon(cls, tag):
+        &#34;&#34;&#34;Convert an SVG &lt;polygon&gt; into a PDF path.&#34;&#34;&#34;
+        points = tag.attrib[&#34;points&#34;]
+
+        path = cls.new_path(tag)
+
+        points = &#34;M&#34; + points + &#34;Z&#34;
+        svg_path_converter(path, points)
+
+        return path
+
+
+@force_nodocument
+def convert_transforms(tfstr):
+    &#34;&#34;&#34;Convert SVG/CSS transform functions into PDF transforms.&#34;&#34;&#34;
+
+    # SVG 2 uses CSS transforms. SVG 1.1 transforms are slightly different. I&#39;m really
+    # not sure if it is worth it to try to support SVG 2 because it is significantly
+    # more entangled with The HTML Disaster than SVG 1.1, which makes it astronomically
+    # harder to support.
+    # https://drafts.csswg.org/css-transforms/#two-d-transform-functions
+    parsed = TRANSFORM_GETTER.findall(tfstr)
+
+    transform = Transform.identity()
+    for tf_type, args in parsed:
+        if tf_type == &#34;matrix&#34;:
+            a, b, c, d, e, f = tuple(float(n) for n in NUMBER_SPLIT.split(args))
+            transform = Transform(a, b, c, d, e, f) @ transform
+
+        elif tf_type == &#34;rotate&#34;:
+            theta, *about = NUMBER_SPLIT.split(args)
+            theta = resolve_angle(theta)
+            rotation = Transform.rotation(theta=theta)
+            if about:
+                # this is an SVG 1.1 feature. SVG 2 uses the transform-origin property.
+                # see: https://www.w3.org/TR/SVG11/coords.html#TransformAttribute
+                if len(about) == 2:
+                    rotation = rotation.about(float(about[0]), float(about[1]))
+                else:
+                    raise ValueError(
+                        f&#34;rotation transform {tf_type}({args}) is malformed&#34;
+                    )
+
+            transform = rotation @ transform
+
+        elif tf_type == &#34;scale&#34;:
+            # if sy is not provided, it takes a value equal to sx
+            args = NUMBER_SPLIT.split(args)
+            if len(args) == 2:
+                sx = float(args[0])
+                sy = float(args[1])
+            elif len(args) == 1:
+                sx = sy = float(args[0])
+            else:
+                raise ValueError(f&#34;bad scale transform {tfstr}&#34;)
+
+            transform = Transform.scaling(x=sx, y=sy) @ transform
+
+        elif tf_type == &#34;scaleX&#34;:  # SVG 2
+            transform = Transform.scaling(x=float(args), y=1) @ transform
+
+        elif tf_type == &#34;scaleY&#34;:  # SVG 2
+            transform = Transform.scaling(x=1, y=float(args)) @ transform
+
+        elif tf_type == &#34;skew&#34;:  # SVG 2, not the same as skewX@skewY
+            # if sy is not provided, it takes a value equal to 0
+            args = NUMBER_SPLIT.split(args)
+            if len(args) == 2:
+                sx = resolve_angle(args[0])
+                sy = resolve_angle(args[1])
+            elif len(args) == 1:
+                sx = resolve_angle(args[0])
+                sy = 0
+            else:
+                raise ValueError(f&#34;bad skew transform {tfstr}&#34;)
+
+            transform = Transform.shearing(x=math.tan(sx), y=math.tan(sy)) @ transform
+
+        elif tf_type == &#34;skewX&#34;:
+            transform = (
+                Transform.shearing(x=math.tan(resolve_angle(args)), y=0) @ transform
+            )
+
+        elif tf_type == &#34;skewY&#34;:
+            transform = (
+                Transform.shearing(x=0, y=math.tan(resolve_angle(args))) @ transform
+            )
+
+        elif tf_type == &#34;translate&#34;:
+            # if y is not provided, it takes a value equal to 0
+            args = NUMBER_SPLIT.split(args)
+            if len(args) == 2:
+                x = resolve_length(args[0])
+                y = resolve_length(args[1])
+            elif len(args) == 1:
+                x = resolve_length(args[0])
+                y = 0
+            else:
+                raise ValueError(f&#34;bad translation transform {tfstr}&#34;)
+
+            transform = Transform.translation(x=x, y=y) @ transform
+
+        elif tf_type == &#34;translateX&#34;:  # SVG 2
+            transform = Transform.translation(x=resolve_length(args), y=0) @ transform
+
+        elif tf_type == &#34;translateY&#34;:  # SVG 2
+            transform = Transform.translation(x=0, y=resolve_length(args)) @ transform
+
+    return transform
+
+
+class PathPen(BasePen):
+    def __init__(self, pdf_path, *args, **kwargs):
+        self.pdf_path = pdf_path
+        self.last_was_line_to = False
+        self.first_is_move = None
+        super().__init__(*args, **kwargs)
+
+    def _moveTo(self, pt):
+        self.pdf_path.move_to(*pt)
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = True
+
+    def _lineTo(self, pt):
+        self.pdf_path.line_to(*pt)
+        self.last_was_line_to = True
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def _curveToOne(self, pt1, pt2, pt3):
+        self.pdf_path.curve_to(
+            x1=pt1[0], y1=pt1[1], x2=pt2[0], y2=pt2[1], x3=pt3[0], y3=pt3[1]
+        )
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def _qCurveToOne(self, pt1, pt2):
+        self.pdf_path.quadratic_curve_to(x1=pt1[0], y1=pt1[1], x2=pt2[0], y2=pt2[1])
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def arcTo(self, rx, ry, rotation, arc, sweep, end):
+        self.pdf_path.arc_to(
+            rx=rx,
+            ry=ry,
+            rotation=rotation,
+            large_arc=arc,
+            positive_sweep=sweep,
+            x=end[0],
+            y=end[1],
+        )
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def _closePath(self):
+        # The fonttools parser inserts an unnecessary explicit line back to the start
+        # point of the path before actually closing it. Let&#39;s get rid of that again.
+        if self.last_was_line_to:
+            self.pdf_path.remove_last_path_element()
+        self.pdf_path.close()
+
+
+@force_nodocument
+def svg_path_converter(pdf_path, svg_path):
+    pen = PathPen(pdf_path)
+    parse_path(svg_path, pen)
+    if not pen.first_is_move:
+        raise ValueError(&#34;Path does not start with move item&#34;)
+
+
+class SVGObject:
+    &#34;&#34;&#34;
+    A representation of an SVG that has been converted to a PDF representation.
+    &#34;&#34;&#34;
+
+    @classmethod
+    def from_file(cls, filename, *args, encoding=&#34;utf-8&#34;, **kwargs):
+        &#34;&#34;&#34;
+        Create an `SVGObject` from the contents of the file at `filename`.
+
+        Args:
+            filename (path-like): the path to a file containing SVG data.
+            *args: forwarded directly to the SVGObject initializer. For subclass use.
+            encoding (str): optional charset encoding to use when reading the file.
+            **kwargs: forwarded directly to the SVGObject initializer. For subclass use.
+
+        Returns:
+            A converted `SVGObject`.
+        &#34;&#34;&#34;
+        with open(filename, &#34;r&#34;, encoding=encoding) as svgfile:
+            return cls(svgfile.read(), *args, **kwargs)
+
+    def __init__(self, svg_text):
+        self.cross_references = {}
+
+        # disabling bandit rule as we use defusedxml:
+        svg_tree = parse_xml_str(svg_text)  # nosec B314
+
+        if svg_tree.tag not in xmlns_lookup(&#34;svg&#34;, &#34;svg&#34;):
+            raise ValueError(f&#34;root tag must be svg, not {svg_tree.tag}&#34;)
+
+        self.extract_shape_info(svg_tree)
+        self.convert_graphics(svg_tree)
+
+    @force_nodocument
+    def extract_shape_info(self, root_tag):
+        &#34;&#34;&#34;Collect shape info from the given SVG.&#34;&#34;&#34;
+
+        width = root_tag.get(&#34;width&#34;)
+        height = root_tag.get(&#34;height&#34;)
+        viewbox = root_tag.get(&#34;viewBox&#34;)
+        # we don&#39;t fully support this, just check for its existence
+        preserve_ar = root_tag.get(&#34;preserveAspectRatio&#34;, True)
+        if preserve_ar == &#34;none&#34;:
+            self.preserve_ar = None
+        else:
+            self.preserve_ar = True
+
+        self.width = None
+        if width is not None:
+            width.strip()
+            if width.endswith(&#34;%&#34;):
+                self.width = Percent(width[:-1])
+            else:
+                self.width = resolve_length(width)
+
+        self.height = None
+        if height is not None:
+            height.strip()
+            if height.endswith(&#34;%&#34;):
+                self.height = Percent(height[:-1])
+            else:
+                self.height = resolve_length(height)
+
+        if viewbox is None:
+            self.viewbox = None
+        else:
+            viewbox.strip()
+            vx, vy, vw, vh = [float(num) for num in NUMBER_SPLIT.split(viewbox)]
+            if (vw &lt; 0) or (vh &lt; 0):
+                raise ValueError(f&#34;invalid negative width/height in viewbox {viewbox}&#34;)
+
+            self.viewbox = [vx, vy, vw, vh]
+
+    @force_nodocument
+    def convert_graphics(self, root_tag):
+        &#34;&#34;&#34;Convert the graphics contained in the SVG into the PDF representation.&#34;&#34;&#34;
+        base_group = GraphicsContext()
+        base_group.style.stroke_width = None
+        base_group.style.auto_close = False
+        base_group.style.stroke_cap_style = &#34;butt&#34;
+
+        self.build_group(root_tag, base_group)
+
+        self.base_group = base_group
+
+    def transform_to_page_viewport(self, pdf, align_viewbox=True):
+        &#34;&#34;&#34;
+        Size the converted SVG paths to the page viewport.
+
+        The SVG document size can be specified relative to the rendering viewport
+        (e.g. width=50%). If the converted SVG sizes are relative units, then this
+        computes the appropriate scale transform to size the SVG to the correct
+        dimensions for a page in the current PDF document.
+
+        If the SVG document size is specified in absolute units, then it is not scaled.
+
+        Args:
+            pdf (fpdf.FPDF): the pdf to use the page size of.
+            align_viewbox (bool): if True, mimic some of the SVG alignment rules if the
+                viewbox aspect ratio does not match that of the viewport.
+
+        Returns:
+            The same thing as `SVGObject.transform_to_rect_viewport`.
+        &#34;&#34;&#34;
+
+        return self.transform_to_rect_viewport(pdf.k, pdf.epw, pdf.eph, align_viewbox)
+
+    def transform_to_rect_viewport(
+        self, scale, width, height, align_viewbox=True, ignore_svg_top_attrs=False
+    ):
+        &#34;&#34;&#34;
+        Size the converted SVG paths to an arbitrarily sized viewport.
+
+        The SVG document size can be specified relative to the rendering viewport
+        (e.g. width=50%). If the converted SVG sizes are relative units, then this
+        computes the appropriate scale transform to size the SVG to the correct
+        dimensions for a page in the current PDF document.
+
+        Args:
+            scale (Number): the scale factor from document units to PDF points.
+            width (Number): the width of the viewport to scale to in document units.
+            height (Number): the height of the viewport to scale to in document units.
+            align_viewbox (bool): if True, mimic some of the SVG alignment rules if the
+                viewbox aspect ratio does not match that of the viewport.
+            ignore_svg_top_attrs (bool): ignore &lt;svg&gt; top attributes like &#34;width&#34;, &#34;height&#34;
+                or &#34;preserveAspectRatio&#34; when figuring the image dimensions.
+                Require width &amp; height to be provided as parameters.
+
+        Returns:
+            A tuple of (width, height, `fpdf.drawing.GraphicsContext`), where width and
+            height are the resolved width and height (they may be 0. If 0, the returned
+            `fpdf.drawing.GraphicsContext` will be empty). The
+            `fpdf.drawing.GraphicsContext` contains all of the paths that were
+            converted from the SVG, scaled to the given viewport size.
+        &#34;&#34;&#34;
+
+        if ignore_svg_top_attrs:
+            vp_width = width
+        elif isinstance(self.width, Percent):
+            if not width:
+                raise ValueError(
+                    &#39;SVG &#34;width&#34; is a percentage, hence a viewport width is required&#39;
+                )
+            vp_width = self.width * width / 100
+        else:
+            vp_width = self.width or width
+
+        if ignore_svg_top_attrs:
+            vp_height = height
+        elif isinstance(self.height, Percent):
+            if not height:
+                raise ValueError(
+                    &#39;SVG &#34;height&#34; is a percentage, hence a viewport height is required&#39;
+                )
+            vp_height = self.height * height / 100
+        else:
+            vp_height = self.height or height
+
+        if scale == 1:
+            transform = Transform.identity()
+        else:
+            transform = Transform.scaling(1 / scale)
+
+        if self.viewbox:
+            vx, vy, vw, vh = self.viewbox
+
+            if (vw == 0) or (vh == 0):
+                return 0, 0, GraphicsContext()
+
+            w_ratio = vp_width / vw
+            h_ratio = vp_height / vh
+
+            if not ignore_svg_top_attrs and self.preserve_ar and (w_ratio != h_ratio):
+                w_ratio = h_ratio = min(w_ratio, h_ratio)
+
+            transform = (
+                transform
+                @ Transform.translation(x=-vx, y=-vy)
+                @ Transform.scaling(x=w_ratio, y=h_ratio)
+            )
+
+            if align_viewbox:
+                transform = transform @ Transform.translation(
+                    x=vp_width / 2 - (vw / 2) * w_ratio,
+                    y=vp_height / 2 - (vh / 2) * h_ratio,
+                )
+
+        self.base_group.transform = transform
+
+        return vp_width / scale, vp_height / scale, self.base_group
+
+    def draw_to_page(self, pdf, x=None, y=None, debug_stream=None):
+        &#34;&#34;&#34;
+        Directly draw the converted SVG to the given PDF&#39;s current page.
+
+        The page viewport is used for sizing the SVG.
+
+        Args:
+            pdf (fpdf.FPDF): the document to which the converted SVG is rendered.
+            x (Number): abscissa of the converted SVG&#39;s top-left corner.
+            y (Number): ordinate of the converted SVG&#39;s top-left corner.
+            debug_stream (io.TextIO): the stream to which rendering debug info will be
+                written.
+        &#34;&#34;&#34;
+        _, _, path = self.transform_to_page_viewport(pdf)
+
+        old_x, old_y = pdf.x, pdf.y
+        try:
+            if x is not None and y is not None:
+                pdf.set_xy(0, 0)
+                path.transform = path.transform @ Transform.translation(x, y)
+
+            pdf.draw_path(path, debug_stream)
+
+        finally:
+            pdf.set_xy(old_x, old_y)
+
+    # defs paths are not drawn immediately but are added to xrefs and can be referenced
+    # later to be drawn.
+    @force_nodocument
+    def handle_defs(self, defs):
+        &#34;&#34;&#34;Produce lookups for groups and paths inside the &lt;defs&gt; tag&#34;&#34;&#34;
+        for child in defs:
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;g&#34;):
+                self.build_group(child)
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;path&#34;):
+                self.build_path(child)
+            # We could/should also support &lt;defs&gt; that are rect, circle, ellipse, line, polyline, polygon...
+
+    # this assumes xrefs only reference already-defined ids.
+    # I don&#39;t know if this is required by the SVG spec.
+    @force_nodocument
+    def build_xref(self, xref):
+        &#34;&#34;&#34;Resolve a cross-reference to an already-seen SVG element by ID.&#34;&#34;&#34;
+        pdf_group = GraphicsContext()
+        apply_styles(pdf_group, xref)
+
+        for candidate in xmlns_lookup(&#34;xlink&#34;, &#34;href&#34;):
+            try:
+                ref = xref.attrib[candidate]
+                break
+            except KeyError:
+                pass
+        else:
+            raise ValueError(f&#34;use {xref} doesn&#39;t contain known xref attribute&#34;)
+
+        try:
+            pdf_group.add_item(self.cross_references[ref])
+        except KeyError:
+            raise ValueError(
+                f&#34;use {xref} references nonexistent ref id {ref}&#34;
+            ) from None
+
+        if &#34;x&#34; in xref.attrib or &#34;y&#34; in xref.attrib:
+            # Quoting the SVG spec - 5.6.2. Layout of re-used graphics:
+            # &gt; The x and y properties define an additional transformation translate(x,y)
+            x, y = float(xref.attrib.get(&#34;x&#34;, 0)), float(xref.attrib.get(&#34;y&#34;, 0))
+            pdf_group.transform = Transform.translation(x=x, y=y)
+        # Note that we currently do not support &#34;width&#34; &amp; &#34;height&#34; in &lt;use&gt;
+
+        return pdf_group
+
+    @force_nodocument
+    def build_group(self, group, pdf_group=None):
+        &#34;&#34;&#34;Handle nested items within a group &lt;g&gt; tag.&#34;&#34;&#34;
+        if pdf_group is None:
+            pdf_group = GraphicsContext()
+            apply_styles(pdf_group, group)
+
+        for child in group:
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;defs&#34;):
+                self.handle_defs(child)
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;g&#34;):
+                pdf_group.add_item(self.build_group(child))
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;path&#34;):
+                pdf_group.add_item(self.build_path(child))
+            elif child.tag in shape_tags:
+                pdf_group.add_item(getattr(ShapeBuilder, shape_tags[child.tag])(child))
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;use&#34;):
+                pdf_group.add_item(self.build_xref(child))
+
+        try:
+            self.cross_references[&#34;#&#34; + group.attrib[&#34;id&#34;]] = pdf_group
+        except KeyError:
+            pass
+
+        return pdf_group
+
+    @force_nodocument
+    def build_path(self, path):
+        &#34;&#34;&#34;Convert an SVG &lt;path&gt; tag into a PDF path object.&#34;&#34;&#34;
+        pdf_path = PaintedPath()
+        apply_styles(pdf_path, path)
+
+        svg_path = path.attrib.get(&#34;d&#34;, None)
+
+        if svg_path is not None:
+            svg_path_converter(pdf_path, svg_path)
+
+        try:
+            self.cross_references[&#34;#&#34; + path.attrib[&#34;id&#34;]] = pdf_path
+        except KeyError:
+            pass
+
+        return pdf_path</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.svg.PathPen"><code class="flex name class">
+<span>class <span class="ident">PathPen</span></span>
+<span>(</span><span>pdf_path, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for drawing pens. You must override _moveTo, _lineTo and
+_curveToOne. You may additionally override _closePath, _endPath,
+addComponent, addVarComponent, and/or _qCurveToOne. You should not
+override any other methods.</p>
+<p>Takes a single 'glyphSet' argument (dict), in which the glyphs
+that are referenced as components are looked up by their name.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PathPen(BasePen):
+    def __init__(self, pdf_path, *args, **kwargs):
+        self.pdf_path = pdf_path
+        self.last_was_line_to = False
+        self.first_is_move = None
+        super().__init__(*args, **kwargs)
+
+    def _moveTo(self, pt):
+        self.pdf_path.move_to(*pt)
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = True
+
+    def _lineTo(self, pt):
+        self.pdf_path.line_to(*pt)
+        self.last_was_line_to = True
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def _curveToOne(self, pt1, pt2, pt3):
+        self.pdf_path.curve_to(
+            x1=pt1[0], y1=pt1[1], x2=pt2[0], y2=pt2[1], x3=pt3[0], y3=pt3[1]
+        )
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def _qCurveToOne(self, pt1, pt2):
+        self.pdf_path.quadratic_curve_to(x1=pt1[0], y1=pt1[1], x2=pt2[0], y2=pt2[1])
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def arcTo(self, rx, ry, rotation, arc, sweep, end):
+        self.pdf_path.arc_to(
+            rx=rx,
+            ry=ry,
+            rotation=rotation,
+            large_arc=arc,
+            positive_sweep=sweep,
+            x=end[0],
+            y=end[1],
+        )
+        self.last_was_line_to = False
+        if self.first_is_move is None:
+            self.first_is_move = False
+
+    def _closePath(self):
+        # The fonttools parser inserts an unnecessary explicit line back to the start
+        # point of the path before actually closing it. Let&#39;s get rid of that again.
+        if self.last_was_line_to:
+            self.pdf_path.remove_last_path_element()
+        self.pdf_path.close()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>fontTools.pens.basePen.BasePen</li>
+<li>fontTools.pens.basePen.DecomposingPen</li>
+<li>fontTools.pens.basePen.LoggingPen</li>
+<li>fontTools.misc.loggingTools.LogMixin</li>
+<li>fontTools.pens.basePen.AbstractPen</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.svg.PathPen.arcTo"><code class="name flex">
+<span>def <span class="ident">arcTo</span></span>(<span>self, rx, ry, rotation, arc, sweep, end)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def arcTo(self, rx, ry, rotation, arc, sweep, end):
+    self.pdf_path.arc_to(
+        rx=rx,
+        ry=ry,
+        rotation=rotation,
+        large_arc=arc,
+        positive_sweep=sweep,
+        x=end[0],
+        y=end[1],
+    )
+    self.last_was_line_to = False
+    if self.first_is_move is None:
+        self.first_is_move = False</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.svg.SVGObject"><code class="flex name class">
+<span>class <span class="ident">SVGObject</span></span>
+<span>(</span><span>svg_text)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A representation of an SVG that has been converted to a PDF representation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SVGObject:
+    &#34;&#34;&#34;
+    A representation of an SVG that has been converted to a PDF representation.
+    &#34;&#34;&#34;
+
+    @classmethod
+    def from_file(cls, filename, *args, encoding=&#34;utf-8&#34;, **kwargs):
+        &#34;&#34;&#34;
+        Create an `SVGObject` from the contents of the file at `filename`.
+
+        Args:
+            filename (path-like): the path to a file containing SVG data.
+            *args: forwarded directly to the SVGObject initializer. For subclass use.
+            encoding (str): optional charset encoding to use when reading the file.
+            **kwargs: forwarded directly to the SVGObject initializer. For subclass use.
+
+        Returns:
+            A converted `SVGObject`.
+        &#34;&#34;&#34;
+        with open(filename, &#34;r&#34;, encoding=encoding) as svgfile:
+            return cls(svgfile.read(), *args, **kwargs)
+
+    def __init__(self, svg_text):
+        self.cross_references = {}
+
+        # disabling bandit rule as we use defusedxml:
+        svg_tree = parse_xml_str(svg_text)  # nosec B314
+
+        if svg_tree.tag not in xmlns_lookup(&#34;svg&#34;, &#34;svg&#34;):
+            raise ValueError(f&#34;root tag must be svg, not {svg_tree.tag}&#34;)
+
+        self.extract_shape_info(svg_tree)
+        self.convert_graphics(svg_tree)
+
+    @force_nodocument
+    def extract_shape_info(self, root_tag):
+        &#34;&#34;&#34;Collect shape info from the given SVG.&#34;&#34;&#34;
+
+        width = root_tag.get(&#34;width&#34;)
+        height = root_tag.get(&#34;height&#34;)
+        viewbox = root_tag.get(&#34;viewBox&#34;)
+        # we don&#39;t fully support this, just check for its existence
+        preserve_ar = root_tag.get(&#34;preserveAspectRatio&#34;, True)
+        if preserve_ar == &#34;none&#34;:
+            self.preserve_ar = None
+        else:
+            self.preserve_ar = True
+
+        self.width = None
+        if width is not None:
+            width.strip()
+            if width.endswith(&#34;%&#34;):
+                self.width = Percent(width[:-1])
+            else:
+                self.width = resolve_length(width)
+
+        self.height = None
+        if height is not None:
+            height.strip()
+            if height.endswith(&#34;%&#34;):
+                self.height = Percent(height[:-1])
+            else:
+                self.height = resolve_length(height)
+
+        if viewbox is None:
+            self.viewbox = None
+        else:
+            viewbox.strip()
+            vx, vy, vw, vh = [float(num) for num in NUMBER_SPLIT.split(viewbox)]
+            if (vw &lt; 0) or (vh &lt; 0):
+                raise ValueError(f&#34;invalid negative width/height in viewbox {viewbox}&#34;)
+
+            self.viewbox = [vx, vy, vw, vh]
+
+    @force_nodocument
+    def convert_graphics(self, root_tag):
+        &#34;&#34;&#34;Convert the graphics contained in the SVG into the PDF representation.&#34;&#34;&#34;
+        base_group = GraphicsContext()
+        base_group.style.stroke_width = None
+        base_group.style.auto_close = False
+        base_group.style.stroke_cap_style = &#34;butt&#34;
+
+        self.build_group(root_tag, base_group)
+
+        self.base_group = base_group
+
+    def transform_to_page_viewport(self, pdf, align_viewbox=True):
+        &#34;&#34;&#34;
+        Size the converted SVG paths to the page viewport.
+
+        The SVG document size can be specified relative to the rendering viewport
+        (e.g. width=50%). If the converted SVG sizes are relative units, then this
+        computes the appropriate scale transform to size the SVG to the correct
+        dimensions for a page in the current PDF document.
+
+        If the SVG document size is specified in absolute units, then it is not scaled.
+
+        Args:
+            pdf (fpdf.FPDF): the pdf to use the page size of.
+            align_viewbox (bool): if True, mimic some of the SVG alignment rules if the
+                viewbox aspect ratio does not match that of the viewport.
+
+        Returns:
+            The same thing as `SVGObject.transform_to_rect_viewport`.
+        &#34;&#34;&#34;
+
+        return self.transform_to_rect_viewport(pdf.k, pdf.epw, pdf.eph, align_viewbox)
+
+    def transform_to_rect_viewport(
+        self, scale, width, height, align_viewbox=True, ignore_svg_top_attrs=False
+    ):
+        &#34;&#34;&#34;
+        Size the converted SVG paths to an arbitrarily sized viewport.
+
+        The SVG document size can be specified relative to the rendering viewport
+        (e.g. width=50%). If the converted SVG sizes are relative units, then this
+        computes the appropriate scale transform to size the SVG to the correct
+        dimensions for a page in the current PDF document.
+
+        Args:
+            scale (Number): the scale factor from document units to PDF points.
+            width (Number): the width of the viewport to scale to in document units.
+            height (Number): the height of the viewport to scale to in document units.
+            align_viewbox (bool): if True, mimic some of the SVG alignment rules if the
+                viewbox aspect ratio does not match that of the viewport.
+            ignore_svg_top_attrs (bool): ignore &lt;svg&gt; top attributes like &#34;width&#34;, &#34;height&#34;
+                or &#34;preserveAspectRatio&#34; when figuring the image dimensions.
+                Require width &amp; height to be provided as parameters.
+
+        Returns:
+            A tuple of (width, height, `fpdf.drawing.GraphicsContext`), where width and
+            height are the resolved width and height (they may be 0. If 0, the returned
+            `fpdf.drawing.GraphicsContext` will be empty). The
+            `fpdf.drawing.GraphicsContext` contains all of the paths that were
+            converted from the SVG, scaled to the given viewport size.
+        &#34;&#34;&#34;
+
+        if ignore_svg_top_attrs:
+            vp_width = width
+        elif isinstance(self.width, Percent):
+            if not width:
+                raise ValueError(
+                    &#39;SVG &#34;width&#34; is a percentage, hence a viewport width is required&#39;
+                )
+            vp_width = self.width * width / 100
+        else:
+            vp_width = self.width or width
+
+        if ignore_svg_top_attrs:
+            vp_height = height
+        elif isinstance(self.height, Percent):
+            if not height:
+                raise ValueError(
+                    &#39;SVG &#34;height&#34; is a percentage, hence a viewport height is required&#39;
+                )
+            vp_height = self.height * height / 100
+        else:
+            vp_height = self.height or height
+
+        if scale == 1:
+            transform = Transform.identity()
+        else:
+            transform = Transform.scaling(1 / scale)
+
+        if self.viewbox:
+            vx, vy, vw, vh = self.viewbox
+
+            if (vw == 0) or (vh == 0):
+                return 0, 0, GraphicsContext()
+
+            w_ratio = vp_width / vw
+            h_ratio = vp_height / vh
+
+            if not ignore_svg_top_attrs and self.preserve_ar and (w_ratio != h_ratio):
+                w_ratio = h_ratio = min(w_ratio, h_ratio)
+
+            transform = (
+                transform
+                @ Transform.translation(x=-vx, y=-vy)
+                @ Transform.scaling(x=w_ratio, y=h_ratio)
+            )
+
+            if align_viewbox:
+                transform = transform @ Transform.translation(
+                    x=vp_width / 2 - (vw / 2) * w_ratio,
+                    y=vp_height / 2 - (vh / 2) * h_ratio,
+                )
+
+        self.base_group.transform = transform
+
+        return vp_width / scale, vp_height / scale, self.base_group
+
+    def draw_to_page(self, pdf, x=None, y=None, debug_stream=None):
+        &#34;&#34;&#34;
+        Directly draw the converted SVG to the given PDF&#39;s current page.
+
+        The page viewport is used for sizing the SVG.
+
+        Args:
+            pdf (fpdf.FPDF): the document to which the converted SVG is rendered.
+            x (Number): abscissa of the converted SVG&#39;s top-left corner.
+            y (Number): ordinate of the converted SVG&#39;s top-left corner.
+            debug_stream (io.TextIO): the stream to which rendering debug info will be
+                written.
+        &#34;&#34;&#34;
+        _, _, path = self.transform_to_page_viewport(pdf)
+
+        old_x, old_y = pdf.x, pdf.y
+        try:
+            if x is not None and y is not None:
+                pdf.set_xy(0, 0)
+                path.transform = path.transform @ Transform.translation(x, y)
+
+            pdf.draw_path(path, debug_stream)
+
+        finally:
+            pdf.set_xy(old_x, old_y)
+
+    # defs paths are not drawn immediately but are added to xrefs and can be referenced
+    # later to be drawn.
+    @force_nodocument
+    def handle_defs(self, defs):
+        &#34;&#34;&#34;Produce lookups for groups and paths inside the &lt;defs&gt; tag&#34;&#34;&#34;
+        for child in defs:
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;g&#34;):
+                self.build_group(child)
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;path&#34;):
+                self.build_path(child)
+            # We could/should also support &lt;defs&gt; that are rect, circle, ellipse, line, polyline, polygon...
+
+    # this assumes xrefs only reference already-defined ids.
+    # I don&#39;t know if this is required by the SVG spec.
+    @force_nodocument
+    def build_xref(self, xref):
+        &#34;&#34;&#34;Resolve a cross-reference to an already-seen SVG element by ID.&#34;&#34;&#34;
+        pdf_group = GraphicsContext()
+        apply_styles(pdf_group, xref)
+
+        for candidate in xmlns_lookup(&#34;xlink&#34;, &#34;href&#34;):
+            try:
+                ref = xref.attrib[candidate]
+                break
+            except KeyError:
+                pass
+        else:
+            raise ValueError(f&#34;use {xref} doesn&#39;t contain known xref attribute&#34;)
+
+        try:
+            pdf_group.add_item(self.cross_references[ref])
+        except KeyError:
+            raise ValueError(
+                f&#34;use {xref} references nonexistent ref id {ref}&#34;
+            ) from None
+
+        if &#34;x&#34; in xref.attrib or &#34;y&#34; in xref.attrib:
+            # Quoting the SVG spec - 5.6.2. Layout of re-used graphics:
+            # &gt; The x and y properties define an additional transformation translate(x,y)
+            x, y = float(xref.attrib.get(&#34;x&#34;, 0)), float(xref.attrib.get(&#34;y&#34;, 0))
+            pdf_group.transform = Transform.translation(x=x, y=y)
+        # Note that we currently do not support &#34;width&#34; &amp; &#34;height&#34; in &lt;use&gt;
+
+        return pdf_group
+
+    @force_nodocument
+    def build_group(self, group, pdf_group=None):
+        &#34;&#34;&#34;Handle nested items within a group &lt;g&gt; tag.&#34;&#34;&#34;
+        if pdf_group is None:
+            pdf_group = GraphicsContext()
+            apply_styles(pdf_group, group)
+
+        for child in group:
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;defs&#34;):
+                self.handle_defs(child)
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;g&#34;):
+                pdf_group.add_item(self.build_group(child))
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;path&#34;):
+                pdf_group.add_item(self.build_path(child))
+            elif child.tag in shape_tags:
+                pdf_group.add_item(getattr(ShapeBuilder, shape_tags[child.tag])(child))
+            if child.tag in xmlns_lookup(&#34;svg&#34;, &#34;use&#34;):
+                pdf_group.add_item(self.build_xref(child))
+
+        try:
+            self.cross_references[&#34;#&#34; + group.attrib[&#34;id&#34;]] = pdf_group
+        except KeyError:
+            pass
+
+        return pdf_group
+
+    @force_nodocument
+    def build_path(self, path):
+        &#34;&#34;&#34;Convert an SVG &lt;path&gt; tag into a PDF path object.&#34;&#34;&#34;
+        pdf_path = PaintedPath()
+        apply_styles(pdf_path, path)
+
+        svg_path = path.attrib.get(&#34;d&#34;, None)
+
+        if svg_path is not None:
+            svg_path_converter(pdf_path, svg_path)
+
+        try:
+            self.cross_references[&#34;#&#34; + path.attrib[&#34;id&#34;]] = pdf_path
+        except KeyError:
+            pass
+
+        return pdf_path</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.svg.SVGObject.from_file"><code class="name flex">
+<span>def <span class="ident">from_file</span></span>(<span>filename, *args, encoding='utf-8', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create an <code><a title="fpdf.svg.SVGObject" href="#fpdf.svg.SVGObject">SVGObject</a></code> from the contents of the file at <code>filename</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>path-like</code></dt>
+<dd>the path to a file containing SVG data.</dd>
+<dt><strong><code>*args</code></strong></dt>
+<dd>forwarded directly to the SVGObject initializer. For subclass use.</dd>
+<dt><strong><code>encoding</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional charset encoding to use when reading the file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>forwarded directly to the SVGObject initializer. For subclass use.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A converted <code><a title="fpdf.svg.SVGObject" href="#fpdf.svg.SVGObject">SVGObject</a></code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_file(cls, filename, *args, encoding=&#34;utf-8&#34;, **kwargs):
+    &#34;&#34;&#34;
+    Create an `SVGObject` from the contents of the file at `filename`.
+
+    Args:
+        filename (path-like): the path to a file containing SVG data.
+        *args: forwarded directly to the SVGObject initializer. For subclass use.
+        encoding (str): optional charset encoding to use when reading the file.
+        **kwargs: forwarded directly to the SVGObject initializer. For subclass use.
+
+    Returns:
+        A converted `SVGObject`.
+    &#34;&#34;&#34;
+    with open(filename, &#34;r&#34;, encoding=encoding) as svgfile:
+        return cls(svgfile.read(), *args, **kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.svg.SVGObject.draw_to_page"><code class="name flex">
+<span>def <span class="ident">draw_to_page</span></span>(<span>self, pdf, x=None, y=None, debug_stream=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Directly draw the converted SVG to the given PDF's current page.</p>
+<p>The page viewport is used for sizing the SVG.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pdf</code></strong> :&ensp;<code><a title="fpdf.FPDF" href="index.html#fpdf.FPDF">FPDF</a></code></dt>
+<dd>the document to which the converted SVG is rendered.</dd>
+<dt><strong><code>x</code></strong> :&ensp;<code>Number</code></dt>
+<dd>abscissa of the converted SVG's top-left corner.</dd>
+<dt><strong><code>y</code></strong> :&ensp;<code>Number</code></dt>
+<dd>ordinate of the converted SVG's top-left corner.</dd>
+<dt><strong><code>debug_stream</code></strong> :&ensp;<code>io.TextIO</code></dt>
+<dd>the stream to which rendering debug info will be
+written.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_to_page(self, pdf, x=None, y=None, debug_stream=None):
+    &#34;&#34;&#34;
+    Directly draw the converted SVG to the given PDF&#39;s current page.
+
+    The page viewport is used for sizing the SVG.
+
+    Args:
+        pdf (fpdf.FPDF): the document to which the converted SVG is rendered.
+        x (Number): abscissa of the converted SVG&#39;s top-left corner.
+        y (Number): ordinate of the converted SVG&#39;s top-left corner.
+        debug_stream (io.TextIO): the stream to which rendering debug info will be
+            written.
+    &#34;&#34;&#34;
+    _, _, path = self.transform_to_page_viewport(pdf)
+
+    old_x, old_y = pdf.x, pdf.y
+    try:
+        if x is not None and y is not None:
+            pdf.set_xy(0, 0)
+            path.transform = path.transform @ Transform.translation(x, y)
+
+        pdf.draw_path(path, debug_stream)
+
+    finally:
+        pdf.set_xy(old_x, old_y)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.svg.SVGObject.transform_to_page_viewport"><code class="name flex">
+<span>def <span class="ident">transform_to_page_viewport</span></span>(<span>self, pdf, align_viewbox=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Size the converted SVG paths to the page viewport.</p>
+<p>The SVG document size can be specified relative to the rendering viewport
+(e.g. width=50%). If the converted SVG sizes are relative units, then this
+computes the appropriate scale transform to size the SVG to the correct
+dimensions for a page in the current PDF document.</p>
+<p>If the SVG document size is specified in absolute units, then it is not scaled.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pdf</code></strong> :&ensp;<code><a title="fpdf.FPDF" href="index.html#fpdf.FPDF">FPDF</a></code></dt>
+<dd>the pdf to use the page size of.</dd>
+<dt><strong><code>align_viewbox</code></strong> :&ensp;<code>bool</code></dt>
+<dd>if True, mimic some of the SVG alignment rules if the
+viewbox aspect ratio does not match that of the viewport.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The same thing as <code><a title="fpdf.svg.SVGObject.transform_to_rect_viewport" href="#fpdf.svg.SVGObject.transform_to_rect_viewport">SVGObject.transform_to_rect_viewport()</a></code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform_to_page_viewport(self, pdf, align_viewbox=True):
+    &#34;&#34;&#34;
+    Size the converted SVG paths to the page viewport.
+
+    The SVG document size can be specified relative to the rendering viewport
+    (e.g. width=50%). If the converted SVG sizes are relative units, then this
+    computes the appropriate scale transform to size the SVG to the correct
+    dimensions for a page in the current PDF document.
+
+    If the SVG document size is specified in absolute units, then it is not scaled.
+
+    Args:
+        pdf (fpdf.FPDF): the pdf to use the page size of.
+        align_viewbox (bool): if True, mimic some of the SVG alignment rules if the
+            viewbox aspect ratio does not match that of the viewport.
+
+    Returns:
+        The same thing as `SVGObject.transform_to_rect_viewport`.
+    &#34;&#34;&#34;
+
+    return self.transform_to_rect_viewport(pdf.k, pdf.epw, pdf.eph, align_viewbox)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.svg.SVGObject.transform_to_rect_viewport"><code class="name flex">
+<span>def <span class="ident">transform_to_rect_viewport</span></span>(<span>self, scale, width, height, align_viewbox=True, ignore_svg_top_attrs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Size the converted SVG paths to an arbitrarily sized viewport.</p>
+<p>The SVG document size can be specified relative to the rendering viewport
+(e.g. width=50%). If the converted SVG sizes are relative units, then this
+computes the appropriate scale transform to size the SVG to the correct
+dimensions for a page in the current PDF document.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>scale</code></strong> :&ensp;<code>Number</code></dt>
+<dd>the scale factor from document units to PDF points.</dd>
+<dt><strong><code>width</code></strong> :&ensp;<code>Number</code></dt>
+<dd>the width of the viewport to scale to in document units.</dd>
+<dt><strong><code>height</code></strong> :&ensp;<code>Number</code></dt>
+<dd>the height of the viewport to scale to in document units.</dd>
+<dt><strong><code>align_viewbox</code></strong> :&ensp;<code>bool</code></dt>
+<dd>if True, mimic some of the SVG alignment rules if the
+viewbox aspect ratio does not match that of the viewport.</dd>
+<dt><strong><code>ignore_svg_top_attrs</code></strong> :&ensp;<code>bool</code></dt>
+<dd>ignore <svg> top attributes like "width", "height"
+or "preserveAspectRatio" when figuring the image dimensions.
+Require width &amp; height to be provided as parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple of (width, height, <code><a title="fpdf.drawing.GraphicsContext" href="drawing.html#fpdf.drawing.GraphicsContext">GraphicsContext</a></code>), where width and
+height are the resolved width and height (they may be 0. If 0, the returned
+<code><a title="fpdf.drawing.GraphicsContext" href="drawing.html#fpdf.drawing.GraphicsContext">GraphicsContext</a></code> will be empty). The
+<code><a title="fpdf.drawing.GraphicsContext" href="drawing.html#fpdf.drawing.GraphicsContext">GraphicsContext</a></code> contains all of the paths that were
+converted from the SVG, scaled to the given viewport size.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform_to_rect_viewport(
+    self, scale, width, height, align_viewbox=True, ignore_svg_top_attrs=False
+):
+    &#34;&#34;&#34;
+    Size the converted SVG paths to an arbitrarily sized viewport.
+
+    The SVG document size can be specified relative to the rendering viewport
+    (e.g. width=50%). If the converted SVG sizes are relative units, then this
+    computes the appropriate scale transform to size the SVG to the correct
+    dimensions for a page in the current PDF document.
+
+    Args:
+        scale (Number): the scale factor from document units to PDF points.
+        width (Number): the width of the viewport to scale to in document units.
+        height (Number): the height of the viewport to scale to in document units.
+        align_viewbox (bool): if True, mimic some of the SVG alignment rules if the
+            viewbox aspect ratio does not match that of the viewport.
+        ignore_svg_top_attrs (bool): ignore &lt;svg&gt; top attributes like &#34;width&#34;, &#34;height&#34;
+            or &#34;preserveAspectRatio&#34; when figuring the image dimensions.
+            Require width &amp; height to be provided as parameters.
+
+    Returns:
+        A tuple of (width, height, `fpdf.drawing.GraphicsContext`), where width and
+        height are the resolved width and height (they may be 0. If 0, the returned
+        `fpdf.drawing.GraphicsContext` will be empty). The
+        `fpdf.drawing.GraphicsContext` contains all of the paths that were
+        converted from the SVG, scaled to the given viewport size.
+    &#34;&#34;&#34;
+
+    if ignore_svg_top_attrs:
+        vp_width = width
+    elif isinstance(self.width, Percent):
+        if not width:
+            raise ValueError(
+                &#39;SVG &#34;width&#34; is a percentage, hence a viewport width is required&#39;
+            )
+        vp_width = self.width * width / 100
+    else:
+        vp_width = self.width or width
+
+    if ignore_svg_top_attrs:
+        vp_height = height
+    elif isinstance(self.height, Percent):
+        if not height:
+            raise ValueError(
+                &#39;SVG &#34;height&#34; is a percentage, hence a viewport height is required&#39;
+            )
+        vp_height = self.height * height / 100
+    else:
+        vp_height = self.height or height
+
+    if scale == 1:
+        transform = Transform.identity()
+    else:
+        transform = Transform.scaling(1 / scale)
+
+    if self.viewbox:
+        vx, vy, vw, vh = self.viewbox
+
+        if (vw == 0) or (vh == 0):
+            return 0, 0, GraphicsContext()
+
+        w_ratio = vp_width / vw
+        h_ratio = vp_height / vh
+
+        if not ignore_svg_top_attrs and self.preserve_ar and (w_ratio != h_ratio):
+            w_ratio = h_ratio = min(w_ratio, h_ratio)
+
+        transform = (
+            transform
+            @ Transform.translation(x=-vx, y=-vy)
+            @ Transform.scaling(x=w_ratio, y=h_ratio)
+        )
+
+        if align_viewbox:
+            transform = transform @ Transform.translation(
+                x=vp_width / 2 - (vw / 2) * w_ratio,
+                y=vp_height / 2 - (vh / 2) * h_ratio,
+            )
+
+    self.base_group.transform = transform
+
+    return vp_width / scale, vp_height / scale, self.base_group</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.svg.PathPen" href="#fpdf.svg.PathPen">PathPen</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.svg.PathPen.arcTo" href="#fpdf.svg.PathPen.arcTo">arcTo</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.svg.SVGObject" href="#fpdf.svg.SVGObject">SVGObject</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.svg.SVGObject.draw_to_page" href="#fpdf.svg.SVGObject.draw_to_page">draw_to_page</a></code></li>
+<li><code><a title="fpdf.svg.SVGObject.from_file" href="#fpdf.svg.SVGObject.from_file">from_file</a></code></li>
+<li><code><a title="fpdf.svg.SVGObject.transform_to_page_viewport" href="#fpdf.svg.SVGObject.transform_to_page_viewport">transform_to_page_viewport</a></code></li>
+<li><code><a title="fpdf.svg.SVGObject.transform_to_rect_viewport" href="#fpdf.svg.SVGObject.transform_to_rect_viewport">transform_to_rect_viewport</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

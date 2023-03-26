@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>fpdf.linearization API documentation</title>
+<meta name="description" content="This module is in work-in-progress state.
+Hint tables / hint streams have not been implemented yet,
+and there are a few &#34;TODO&#34; comment remaining.
+cf …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fpdf.linearization</code></h1>
+</header>
+<section id="section-intro">
+<p>This module is in work-in-progress state.
+Hint tables / hint streams have not been implemented yet,
+and there are a few "TODO" comment remaining.
+cf. <a href="https://github.com/PyFPDF/fpdf2/issues/62">https://github.com/PyFPDF/fpdf2/issues/62</a></p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># pylint: disable=fixme,protected-access
+&#34;&#34;&#34;
+This module is in work-in-progress state.
+Hint tables / hint streams have not been implemented yet,
+and there are a few &#34;TODO&#34; comment remaining.
+cf. https://github.com/PyFPDF/fpdf2/issues/62
+&#34;&#34;&#34;
+from .output import ContentWithoutID, OutputProducer, PDFHeader
+from .sign import sign_content
+from .syntax import PDFArray, PDFContentStream, PDFObject
+from .syntax import iobj_ref as pdf_ref
+from .util import buffer_subst
+
+try:
+    from endesive import signer
+except ImportError:
+    signer = None
+
+HINT_STREAM_OFFSET_LENGTH_PLACEHOLDER = &#34;0%1%2%3%4%5%6%7%8%9%a%b%c%d&#34;
+FIRST_PAGE_END_OFFSET_PLACEHOLDER = &#34;1%2%3%4%5%6%&#34;
+MAIN_XREF_1ST_ENTRY_OFFSET_PLACEHOLDER = &#34;2%3%4%5%6%7%&#34;
+FILE_LENGTH_PLACEHOLDER = &#34;3%4%5%6%7%8%&#34;
+
+
+class PDFLinearization(PDFObject):
+    def __init__(self, pages_count):
+        super().__init__()
+        self.linearized = &#34;1&#34;  # Version
+        self.n = pages_count
+        # Primary hint stream offset and length (part 5):
+        self.h = HINT_STREAM_OFFSET_LENGTH_PLACEHOLDER
+        self.o = None  # Object number of first page’s page object (part 6)
+        self.e = FIRST_PAGE_END_OFFSET_PLACEHOLDER  # Offset of end of first page
+        # Offset of first entry in main cross-reference table (part 11):
+        self.t = MAIN_XREF_1ST_ENTRY_OFFSET_PLACEHOLDER
+        self.l = FILE_LENGTH_PLACEHOLDER  # The length of the entire file in bytes
+
+
+class PDFXrefAndTrailer(ContentWithoutID):
+    PREV_MAIN_XREF_START_PLACEHOLDER = &#34;0%1*2+3-2/1^&#34;
+
+    def __init__(self, output_builder):
+        self.output_builder = output_builder
+        self.count = output_builder.obj_id + 1
+        self.start_obj_id = 1
+        # Must be set before the call to serialize():
+        self.catalog_obj = None
+        self.info_obj = None
+        self.first_xref = None
+        self.main_xref = None
+        # Computed at serialize() time based on output_builder.buffer size:
+        self.startxref = None
+
+    @property
+    def is_first_xref(self):
+        return bool(self.main_xref)
+
+    @property
+    def is_main_xref(self):
+        return bool(self.first_xref)
+
+    def serialize(self, _security_handler=None):
+        builder = self.output_builder
+        out = []
+        self.startxref = str(len(builder.buffer))
+        if self.is_main_xref:
+            builder.buffer = buffer_subst(
+                builder.buffer,
+                self.PREV_MAIN_XREF_START_PLACEHOLDER,
+                self.startxref.rjust(12, &#34; &#34;),
+            )
+        out.append(&#34;xref&#34;)
+        out.append(f&#34;{0 if self.start_obj_id == 1 else self.start_obj_id} {self.count}&#34;)
+        if not self.is_first_xref:
+            out.append(&#34;0000000000 65535 f &#34;)
+        assert (
+            len(builder.offsets) &gt; 1
+        ), &#34;TODO: how to know the offsets in the 1st xref at this stage?&#34;
+        for obj_id in range(self.start_obj_id, self.start_obj_id + self.count):
+            out.append(f&#34;{builder.offsets[obj_id]:010} 00000 n &#34;)
+        out.append(&#34;trailer&#34;)
+        out.append(&#34;&lt;&lt;&#34;)
+        if self.is_main_xref:
+            out.append(f&#34;/Size {self.count - self.first_xref.count}&#34;)
+        else:
+            if self.is_first_xref:
+                out.append(f&#34;/Size {self.main_xref.count}&#34;)
+                out.append(f&#34;/Prev {self.PREV_MAIN_XREF_START_PLACEHOLDER}&#34;)
+            else:
+                out.append(f&#34;/Size {self.count}&#34;)
+            out.append(f&#34;/Root {pdf_ref(self.catalog_obj.id)}&#34;)
+            out.append(f&#34;/Info {pdf_ref(self.info_obj.id)}&#34;)
+            fpdf = builder.fpdf
+            file_id = fpdf.file_id()
+            if file_id == -1:
+                file_id = fpdf._default_file_id(builder.buffer)
+            if file_id:
+                out.append(f&#34;/ID [{file_id}]&#34;)
+        out.append(&#34;&gt;&gt;&#34;)
+        out.append(&#34;startxref&#34;)
+        startxref = self.startxref
+        if self.is_main_xref:
+            startxref = self.first_xref.startxref
+        if self.is_first_xref:
+            startxref = &#34;0&#34;
+        out.append(startxref)
+        out.append(&#34;%%EOF&#34;)
+        return &#34;\n&#34;.join(out)
+
+
+class PDFHintStream(PDFContentStream):
+    def __init__(self, contents, compress=False):
+        super().__init__(contents=contents, compress=compress)
+        self.s = None  # (Required) Shared object hint table
+        self.t = None  # (Present only if thumbnail images exist) Thumbnail hint table
+        self.o = None  # (Present only if a document outline exists) Outline hint table
+        self.a = None  # (Present only if article threads exist) Thread information hint table
+        self.e = None  # (Present only if named destinations exist) Named destination hint table
+        self.v = None  # (Present only if an interactive form dictionary exists) Interactive form hint table
+        self.i = None  # (Present only if a document information dictionary exists) Information dictionary hint table
+        self.c = None  # (Present only if a logical structure hierarchy exists; PDF 1.3) Logical structure hint table
+        self.l = None  # (PDF 1.3) Page label hint table
+        self.r = None  # (Present only if a renditions name tree exists; PDF 1.5) Renditions name tree hint table
+        self.b = None  # (Present only if embedded file streams exist; PDF 1.5) Embedded file stream hint table
+
+
+class LinearizedOutputProducer(OutputProducer):
+    def bufferize(self):
+        fpdf = self.fpdf
+
+        # 1. Setup - Insert all PDF objects
+        #    (in the order required to build a linearized PDF),
+        #    and assign unique consecutive numeric IDs to all of them
+
+        # Part 1: Header
+        self.pdf_objs.append(PDFHeader(fpdf.pdf_version))
+        # Part 2: Linearization parameter dictionary
+        linearization_obj = PDFLinearization(fpdf.pages_count)
+        self._add_pdf_obj(linearization_obj)
+        # Part 3: First-page cross-reference table and trailer
+        first_xref = PDFXrefAndTrailer(self)
+        self.pdf_objs.append(first_xref)
+        # Part 4: Document catalogue and other required document-level objects
+        catalog_obj = self._add_catalog()
+        # Part 5: Primary hint stream (may precede or follow part 6)
+        hint_stream_obj = PDFHintStream(&#34;&#34;)  # TODO
+        self.pdf_objs.append(hint_stream_obj)
+        # Part 6: First-page section (may precede or follow part 5)
+        page_objs = self._add_pages(slice(0, 1))
+        # The following objects shall be contained in the first-page section:
+        #   + This page object shall explicitly specify all required attributes, e.g. Resources, MediaBox
+        #   + The entire outline hierarchy, if the PageMode entry in the catalogue is UseOutlines
+        #   + All objects that the page object refers to [including] Contents, Resources, Annots
+        # TODO
+
+        first_xref.count = self.obj_id + 1
+        first_xref_pdf_objs = list(self.pdf_objs)
+        self.obj_id = 0
+
+        # Part 7: Remaining pages
+        page_objs.extend(self._add_pages(slice(1, None)))
+        # Part 8: Shared objects for all pages except the first
+        # = resources, that are referenced from more than one page but [not] from the first page
+        pages_root_obj = self._add_pages_root()
+        sig_annotation_obj = self._add_annotations_as_objects()
+        font_objs_per_index = self._add_fonts()
+        img_objs_per_index = self._add_images()
+        gfxstate_objs_per_name = self._add_gfxstates()
+        resources_dict_obj = self._add_resources_dict(
+            font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+        )
+        # Part 9: Objects not associated with pages, if any
+        for embedded_file in fpdf.embedded_files:
+            self._add_pdf_obj(embedded_file, &#34;embedded_files&#34;)
+        struct_tree_root_obj = self._add_structure_tree()
+        outline_dict_obj, outline_items = self._add_document_outline()
+        xmp_metadata_obj = self._add_xmp_metadata()
+        info_obj = self._add_info()
+        # Part 11: Main cross-reference table and trailer
+        main_xref = PDFXrefAndTrailer(self)
+        self.pdf_objs.append(main_xref)
+
+        # Re-assigning IDs of all PDF objects in the 1st xref table:
+        first_xref.start_obj_id = self.obj_id + 1
+        for pdf_obj in first_xref_pdf_objs:
+            if (
+                not isinstance(pdf_obj, ContentWithoutID)
+                and pdf_obj is not hint_stream_obj
+            ):
+                self.obj_id += 1
+                pdf_obj.obj_id = self.obj_id
+        # The hint streams shall be assigned the last object numbers in the file:
+        self.obj_id += 1
+        hint_stream_obj.id = self.obj_id
+
+        # 2. Plumbing - Inject all PDF object references required:
+        linearization_obj.o = page_objs[0].id
+        pages_root_obj.kids = PDFArray(page_objs)
+        self._finalize_catalog(
+            catalog_obj,
+            pages_root_obj=pages_root_obj,
+            first_page_obj=page_objs[0],
+            sig_annotation_obj=sig_annotation_obj,
+            xmp_metadata_obj=xmp_metadata_obj,
+            struct_tree_root_obj=struct_tree_root_obj,
+            outline_dict_obj=outline_dict_obj,
+        )
+        dests = []
+        for page_obj in page_objs:
+            page_obj.parent = pages_root_obj
+            page_obj.resources = resources_dict_obj
+            for annot in page_obj.annots:
+                if annot.dest:
+                    dests.append(annot.dest)
+                if annot.a and hasattr(annot.a, &#34;dest&#34;):
+                    dests.append(annot.a.dest)
+            if not page_obj.annots:
+                # Avoid serializing an empty PDFArray:
+                page_obj.annots = None
+        for outline_item in outline_items:
+            dests.append(outline_item.dest)
+        # Assigning the .page_ref property of all Destination objects:
+        for dest in dests:
+            dest.page_ref = pdf_ref(page_objs[dest.page_number - 1].id)
+        for struct_elem in fpdf.struct_builder.doc_struct_elem.k:
+            struct_elem.pg = page_objs[struct_elem.page_number() - 1]
+        main_xref.first_xref = first_xref
+        first_xref.main_xref = main_xref
+        for xref in [main_xref, first_xref]:
+            xref.catalog_obj = catalog_obj
+            xref.info_obj = info_obj
+
+        # 3. Serializing - Append all PDF objects to the buffer:
+        assert (
+            not self.buffer
+        ), f&#34;Nothing should have been appended to the .buffer at this stage: {self.buffer}&#34;
+        assert (
+            not self.offsets
+        ), f&#34;No offset should have been set at this stage: {len(self.offsets)}&#34;
+        for pdf_obj in self.pdf_objs:
+            if isinstance(pdf_obj, ContentWithoutID):
+                # top header, xref table &amp; trailer:
+                trace_label = None
+            else:
+                self.offsets[pdf_obj.id] = len(self.buffer)
+                trace_label = self.trace_labels_per_obj_id.get(pdf_obj.id)
+            if trace_label:
+                with self._trace_size(trace_label):
+                    self._out(pdf_obj.serialize())
+            else:
+                self._out(pdf_obj.serialize())
+        self._log_final_sections_sizes()
+
+        # Now that the file size &amp; all the offsets are known,
+        # substitute the values of the Linearization properties:
+        hs1_offset = self.offsets[hint_stream_obj.id]
+        hs1_length = len(hint_stream_obj.serialize())
+        self.buffer = buffer_subst(
+            self.buffer,
+            HINT_STREAM_OFFSET_LENGTH_PLACEHOLDER,
+            f&#34;[{hs1_offset: 12d} {hs1_length: 12d}]&#34;,
+        )
+        self.buffer = buffer_subst(
+            self.buffer,
+            FIRST_PAGE_END_OFFSET_PLACEHOLDER,
+            f&#34;{self.offsets[page_objs[0].id + 1]: 12d}&#34;,
+        )
+        self.buffer = buffer_subst(
+            self.buffer,
+            MAIN_XREF_1ST_ENTRY_OFFSET_PLACEHOLDER,
+            f&#34;{self.offsets[main_xref.start_obj_id]: 12d}&#34;,
+        )
+        self.buffer = buffer_subst(
+            self.buffer,
+            FILE_LENGTH_PLACEHOLDER,
+            f&#34;{len(self.buffer): 12d}&#34;,
+        )
+
+        if fpdf._sign_key:
+            self.buffer = sign_content(
+                signer,
+                self.buffer,
+                fpdf._sign_key,
+                fpdf._sign_cert,
+                fpdf._sign_extra_certs,
+                fpdf._sign_hashalgo,
+                fpdf._sign_time,
+            )
+
+        return self.buffer</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.linearization.LinearizedOutputProducer"><code class="flex name class">
+<span>class <span class="ident">LinearizedOutputProducer</span></span>
+<span>(</span><span>fpdf)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates the final bytearray representing the PDF document, based on a FPDF instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LinearizedOutputProducer(OutputProducer):
+    def bufferize(self):
+        fpdf = self.fpdf
+
+        # 1. Setup - Insert all PDF objects
+        #    (in the order required to build a linearized PDF),
+        #    and assign unique consecutive numeric IDs to all of them
+
+        # Part 1: Header
+        self.pdf_objs.append(PDFHeader(fpdf.pdf_version))
+        # Part 2: Linearization parameter dictionary
+        linearization_obj = PDFLinearization(fpdf.pages_count)
+        self._add_pdf_obj(linearization_obj)
+        # Part 3: First-page cross-reference table and trailer
+        first_xref = PDFXrefAndTrailer(self)
+        self.pdf_objs.append(first_xref)
+        # Part 4: Document catalogue and other required document-level objects
+        catalog_obj = self._add_catalog()
+        # Part 5: Primary hint stream (may precede or follow part 6)
+        hint_stream_obj = PDFHintStream(&#34;&#34;)  # TODO
+        self.pdf_objs.append(hint_stream_obj)
+        # Part 6: First-page section (may precede or follow part 5)
+        page_objs = self._add_pages(slice(0, 1))
+        # The following objects shall be contained in the first-page section:
+        #   + This page object shall explicitly specify all required attributes, e.g. Resources, MediaBox
+        #   + The entire outline hierarchy, if the PageMode entry in the catalogue is UseOutlines
+        #   + All objects that the page object refers to [including] Contents, Resources, Annots
+        # TODO
+
+        first_xref.count = self.obj_id + 1
+        first_xref_pdf_objs = list(self.pdf_objs)
+        self.obj_id = 0
+
+        # Part 7: Remaining pages
+        page_objs.extend(self._add_pages(slice(1, None)))
+        # Part 8: Shared objects for all pages except the first
+        # = resources, that are referenced from more than one page but [not] from the first page
+        pages_root_obj = self._add_pages_root()
+        sig_annotation_obj = self._add_annotations_as_objects()
+        font_objs_per_index = self._add_fonts()
+        img_objs_per_index = self._add_images()
+        gfxstate_objs_per_name = self._add_gfxstates()
+        resources_dict_obj = self._add_resources_dict(
+            font_objs_per_index, img_objs_per_index, gfxstate_objs_per_name
+        )
+        # Part 9: Objects not associated with pages, if any
+        for embedded_file in fpdf.embedded_files:
+            self._add_pdf_obj(embedded_file, &#34;embedded_files&#34;)
+        struct_tree_root_obj = self._add_structure_tree()
+        outline_dict_obj, outline_items = self._add_document_outline()
+        xmp_metadata_obj = self._add_xmp_metadata()
+        info_obj = self._add_info()
+        # Part 11: Main cross-reference table and trailer
+        main_xref = PDFXrefAndTrailer(self)
+        self.pdf_objs.append(main_xref)
+
+        # Re-assigning IDs of all PDF objects in the 1st xref table:
+        first_xref.start_obj_id = self.obj_id + 1
+        for pdf_obj in first_xref_pdf_objs:
+            if (
+                not isinstance(pdf_obj, ContentWithoutID)
+                and pdf_obj is not hint_stream_obj
+            ):
+                self.obj_id += 1
+                pdf_obj.obj_id = self.obj_id
+        # The hint streams shall be assigned the last object numbers in the file:
+        self.obj_id += 1
+        hint_stream_obj.id = self.obj_id
+
+        # 2. Plumbing - Inject all PDF object references required:
+        linearization_obj.o = page_objs[0].id
+        pages_root_obj.kids = PDFArray(page_objs)
+        self._finalize_catalog(
+            catalog_obj,
+            pages_root_obj=pages_root_obj,
+            first_page_obj=page_objs[0],
+            sig_annotation_obj=sig_annotation_obj,
+            xmp_metadata_obj=xmp_metadata_obj,
+            struct_tree_root_obj=struct_tree_root_obj,
+            outline_dict_obj=outline_dict_obj,
+        )
+        dests = []
+        for page_obj in page_objs:
+            page_obj.parent = pages_root_obj
+            page_obj.resources = resources_dict_obj
+            for annot in page_obj.annots:
+                if annot.dest:
+                    dests.append(annot.dest)
+                if annot.a and hasattr(annot.a, &#34;dest&#34;):
+                    dests.append(annot.a.dest)
+            if not page_obj.annots:
+                # Avoid serializing an empty PDFArray:
+                page_obj.annots = None
+        for outline_item in outline_items:
+            dests.append(outline_item.dest)
+        # Assigning the .page_ref property of all Destination objects:
+        for dest in dests:
+            dest.page_ref = pdf_ref(page_objs[dest.page_number - 1].id)
+        for struct_elem in fpdf.struct_builder.doc_struct_elem.k:
+            struct_elem.pg = page_objs[struct_elem.page_number() - 1]
+        main_xref.first_xref = first_xref
+        first_xref.main_xref = main_xref
+        for xref in [main_xref, first_xref]:
+            xref.catalog_obj = catalog_obj
+            xref.info_obj = info_obj
+
+        # 3. Serializing - Append all PDF objects to the buffer:
+        assert (
+            not self.buffer
+        ), f&#34;Nothing should have been appended to the .buffer at this stage: {self.buffer}&#34;
+        assert (
+            not self.offsets
+        ), f&#34;No offset should have been set at this stage: {len(self.offsets)}&#34;
+        for pdf_obj in self.pdf_objs:
+            if isinstance(pdf_obj, ContentWithoutID):
+                # top header, xref table &amp; trailer:
+                trace_label = None
+            else:
+                self.offsets[pdf_obj.id] = len(self.buffer)
+                trace_label = self.trace_labels_per_obj_id.get(pdf_obj.id)
+            if trace_label:
+                with self._trace_size(trace_label):
+                    self._out(pdf_obj.serialize())
+            else:
+                self._out(pdf_obj.serialize())
+        self._log_final_sections_sizes()
+
+        # Now that the file size &amp; all the offsets are known,
+        # substitute the values of the Linearization properties:
+        hs1_offset = self.offsets[hint_stream_obj.id]
+        hs1_length = len(hint_stream_obj.serialize())
+        self.buffer = buffer_subst(
+            self.buffer,
+            HINT_STREAM_OFFSET_LENGTH_PLACEHOLDER,
+            f&#34;[{hs1_offset: 12d} {hs1_length: 12d}]&#34;,
+        )
+        self.buffer = buffer_subst(
+            self.buffer,
+            FIRST_PAGE_END_OFFSET_PLACEHOLDER,
+            f&#34;{self.offsets[page_objs[0].id + 1]: 12d}&#34;,
+        )
+        self.buffer = buffer_subst(
+            self.buffer,
+            MAIN_XREF_1ST_ENTRY_OFFSET_PLACEHOLDER,
+            f&#34;{self.offsets[main_xref.start_obj_id]: 12d}&#34;,
+        )
+        self.buffer = buffer_subst(
+            self.buffer,
+            FILE_LENGTH_PLACEHOLDER,
+            f&#34;{len(self.buffer): 12d}&#34;,
+        )
+
+        if fpdf._sign_key:
+            self.buffer = sign_content(
+                signer,
+                self.buffer,
+                fpdf._sign_key,
+                fpdf._sign_cert,
+                fpdf._sign_extra_certs,
+                fpdf._sign_hashalgo,
+                fpdf._sign_time,
+            )
+
+        return self.buffer</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.output.OutputProducer" href="output.html#fpdf.output.OutputProducer">OutputProducer</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.output.OutputProducer" href="output.html#fpdf.output.OutputProducer">OutputProducer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.output.OutputProducer.bufferize" href="output.html#fpdf.output.OutputProducer.bufferize">bufferize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.linearization.PDFHintStream"><code class="flex name class">
+<span>class <span class="ident">PDFHintStream</span></span>
+<span>(</span><span>contents, compress=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFHintStream(PDFContentStream):
+    def __init__(self, contents, compress=False):
+        super().__init__(contents=contents, compress=compress)
+        self.s = None  # (Required) Shared object hint table
+        self.t = None  # (Present only if thumbnail images exist) Thumbnail hint table
+        self.o = None  # (Present only if a document outline exists) Outline hint table
+        self.a = None  # (Present only if article threads exist) Thread information hint table
+        self.e = None  # (Present only if named destinations exist) Named destination hint table
+        self.v = None  # (Present only if an interactive form dictionary exists) Interactive form hint table
+        self.i = None  # (Present only if a document information dictionary exists) Information dictionary hint table
+        self.c = None  # (Present only if a logical structure hierarchy exists; PDF 1.3) Logical structure hint table
+        self.l = None  # (PDF 1.3) Page label hint table
+        self.r = None  # (Present only if a renditions name tree exists; PDF 1.5) Renditions name tree hint table
+        self.b = None  # (Present only if embedded file streams exist; PDF 1.5) Embedded file stream hint table</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></li>
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFContentStream" href="syntax.html#fpdf.syntax.PDFContentStream">PDFContentStream</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFContentStream.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFContentStream.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.linearization.PDFLinearization"><code class="flex name class">
+<span>class <span class="ident">PDFLinearization</span></span>
+<span>(</span><span>pages_count)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFLinearization(PDFObject):
+    def __init__(self, pages_count):
+        super().__init__()
+        self.linearized = &#34;1&#34;  # Version
+        self.n = pages_count
+        # Primary hint stream offset and length (part 5):
+        self.h = HINT_STREAM_OFFSET_LENGTH_PLACEHOLDER
+        self.o = None  # Object number of first page’s page object (part 6)
+        self.e = FIRST_PAGE_END_OFFSET_PLACEHOLDER  # Offset of end of first page
+        # Offset of first entry in main cross-reference table (part 11):
+        self.t = MAIN_XREF_1ST_ENTRY_OFFSET_PLACEHOLDER
+        self.l = FILE_LENGTH_PLACEHOLDER  # The length of the entire file in bytes</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.linearization.PDFXrefAndTrailer"><code class="flex name class">
+<span>class <span class="ident">PDFXrefAndTrailer</span></span>
+<span>(</span><span>output_builder)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFXrefAndTrailer(ContentWithoutID):
+    PREV_MAIN_XREF_START_PLACEHOLDER = &#34;0%1*2+3-2/1^&#34;
+
+    def __init__(self, output_builder):
+        self.output_builder = output_builder
+        self.count = output_builder.obj_id + 1
+        self.start_obj_id = 1
+        # Must be set before the call to serialize():
+        self.catalog_obj = None
+        self.info_obj = None
+        self.first_xref = None
+        self.main_xref = None
+        # Computed at serialize() time based on output_builder.buffer size:
+        self.startxref = None
+
+    @property
+    def is_first_xref(self):
+        return bool(self.main_xref)
+
+    @property
+    def is_main_xref(self):
+        return bool(self.first_xref)
+
+    def serialize(self, _security_handler=None):
+        builder = self.output_builder
+        out = []
+        self.startxref = str(len(builder.buffer))
+        if self.is_main_xref:
+            builder.buffer = buffer_subst(
+                builder.buffer,
+                self.PREV_MAIN_XREF_START_PLACEHOLDER,
+                self.startxref.rjust(12, &#34; &#34;),
+            )
+        out.append(&#34;xref&#34;)
+        out.append(f&#34;{0 if self.start_obj_id == 1 else self.start_obj_id} {self.count}&#34;)
+        if not self.is_first_xref:
+            out.append(&#34;0000000000 65535 f &#34;)
+        assert (
+            len(builder.offsets) &gt; 1
+        ), &#34;TODO: how to know the offsets in the 1st xref at this stage?&#34;
+        for obj_id in range(self.start_obj_id, self.start_obj_id + self.count):
+            out.append(f&#34;{builder.offsets[obj_id]:010} 00000 n &#34;)
+        out.append(&#34;trailer&#34;)
+        out.append(&#34;&lt;&lt;&#34;)
+        if self.is_main_xref:
+            out.append(f&#34;/Size {self.count - self.first_xref.count}&#34;)
+        else:
+            if self.is_first_xref:
+                out.append(f&#34;/Size {self.main_xref.count}&#34;)
+                out.append(f&#34;/Prev {self.PREV_MAIN_XREF_START_PLACEHOLDER}&#34;)
+            else:
+                out.append(f&#34;/Size {self.count}&#34;)
+            out.append(f&#34;/Root {pdf_ref(self.catalog_obj.id)}&#34;)
+            out.append(f&#34;/Info {pdf_ref(self.info_obj.id)}&#34;)
+            fpdf = builder.fpdf
+            file_id = fpdf.file_id()
+            if file_id == -1:
+                file_id = fpdf._default_file_id(builder.buffer)
+            if file_id:
+                out.append(f&#34;/ID [{file_id}]&#34;)
+        out.append(&#34;&gt;&gt;&#34;)
+        out.append(&#34;startxref&#34;)
+        startxref = self.startxref
+        if self.is_main_xref:
+            startxref = self.first_xref.startxref
+        if self.is_first_xref:
+            startxref = &#34;0&#34;
+        out.append(startxref)
+        out.append(&#34;%%EOF&#34;)
+        return &#34;\n&#34;.join(out)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.output.ContentWithoutID" href="output.html#fpdf.output.ContentWithoutID">ContentWithoutID</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.linearization.PDFXrefAndTrailer.PREV_MAIN_XREF_START_PLACEHOLDER"><code class="name">var <span class="ident">PREV_MAIN_XREF_START_PLACEHOLDER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.linearization.PDFXrefAndTrailer.is_first_xref"><code class="name">var <span class="ident">is_first_xref</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def is_first_xref(self):
+    return bool(self.main_xref)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.linearization.PDFXrefAndTrailer.is_main_xref"><code class="name">var <span class="ident">is_main_xref</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def is_main_xref(self):
+    return bool(self.first_xref)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.linearization.PDFXrefAndTrailer.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self, _security_handler=None):
+    builder = self.output_builder
+    out = []
+    self.startxref = str(len(builder.buffer))
+    if self.is_main_xref:
+        builder.buffer = buffer_subst(
+            builder.buffer,
+            self.PREV_MAIN_XREF_START_PLACEHOLDER,
+            self.startxref.rjust(12, &#34; &#34;),
+        )
+    out.append(&#34;xref&#34;)
+    out.append(f&#34;{0 if self.start_obj_id == 1 else self.start_obj_id} {self.count}&#34;)
+    if not self.is_first_xref:
+        out.append(&#34;0000000000 65535 f &#34;)
+    assert (
+        len(builder.offsets) &gt; 1
+    ), &#34;TODO: how to know the offsets in the 1st xref at this stage?&#34;
+    for obj_id in range(self.start_obj_id, self.start_obj_id + self.count):
+        out.append(f&#34;{builder.offsets[obj_id]:010} 00000 n &#34;)
+    out.append(&#34;trailer&#34;)
+    out.append(&#34;&lt;&lt;&#34;)
+    if self.is_main_xref:
+        out.append(f&#34;/Size {self.count - self.first_xref.count}&#34;)
+    else:
+        if self.is_first_xref:
+            out.append(f&#34;/Size {self.main_xref.count}&#34;)
+            out.append(f&#34;/Prev {self.PREV_MAIN_XREF_START_PLACEHOLDER}&#34;)
+        else:
+            out.append(f&#34;/Size {self.count}&#34;)
+        out.append(f&#34;/Root {pdf_ref(self.catalog_obj.id)}&#34;)
+        out.append(f&#34;/Info {pdf_ref(self.info_obj.id)}&#34;)
+        fpdf = builder.fpdf
+        file_id = fpdf.file_id()
+        if file_id == -1:
+            file_id = fpdf._default_file_id(builder.buffer)
+        if file_id:
+            out.append(f&#34;/ID [{file_id}]&#34;)
+    out.append(&#34;&gt;&gt;&#34;)
+    out.append(&#34;startxref&#34;)
+    startxref = self.startxref
+    if self.is_main_xref:
+        startxref = self.first_xref.startxref
+    if self.is_first_xref:
+        startxref = &#34;0&#34;
+    out.append(startxref)
+    out.append(&#34;%%EOF&#34;)
+    return &#34;\n&#34;.join(out)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.linearization.LinearizedOutputProducer" href="#fpdf.linearization.LinearizedOutputProducer">LinearizedOutputProducer</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.linearization.PDFHintStream" href="#fpdf.linearization.PDFHintStream">PDFHintStream</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.linearization.PDFLinearization" href="#fpdf.linearization.PDFLinearization">PDFLinearization</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.linearization.PDFXrefAndTrailer" href="#fpdf.linearization.PDFXrefAndTrailer">PDFXrefAndTrailer</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.linearization.PDFXrefAndTrailer.PREV_MAIN_XREF_START_PLACEHOLDER" href="#fpdf.linearization.PDFXrefAndTrailer.PREV_MAIN_XREF_START_PLACEHOLDER">PREV_MAIN_XREF_START_PLACEHOLDER</a></code></li>
+<li><code><a title="fpdf.linearization.PDFXrefAndTrailer.is_first_xref" href="#fpdf.linearization.PDFXrefAndTrailer.is_first_xref">is_first_xref</a></code></li>
+<li><code><a title="fpdf.linearization.PDFXrefAndTrailer.is_main_xref" href="#fpdf.linearization.PDFXrefAndTrailer.is_main_xref">is_main_xref</a></code></li>
+<li><code><a title="fpdf.linearization.PDFXrefAndTrailer.serialize" href="#fpdf.linearization.PDFXrefAndTrailer.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

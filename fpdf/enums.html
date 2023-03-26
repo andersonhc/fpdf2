@@ -1,0 +1,3544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>fpdf.enums API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fpdf.enums</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from enum import Enum, IntEnum, Flag, IntFlag
+from sys import intern
+
+from .syntax import Name
+
+
+class SignatureFlag(IntEnum):
+    SIGNATURES_EXIST = 1
+    &#34;If set, the document contains at least one signature field.&#34;
+    APPEND_ONLY = 2
+    &#34;&#34;&#34;
+    If set, the document contains signatures that may be invalidated
+    if the file is saved (written) in a way that alters its previous contents,
+    as opposed to an incremental update.
+    &#34;&#34;&#34;
+
+
+class CoerciveEnum(Enum):
+    &#34;An enumeration that provides a helper to coerce strings into enumeration members.&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        &#34;&#34;&#34;
+        Attempt to coerce `value` into a member of this enumeration.
+
+        If value is already a member of this enumeration it is returned unchanged.
+        Otherwise, if it is a string, attempt to convert it as an enumeration value. If
+        that fails, attempt to convert it (case insensitively, by upcasing) as an
+        enumeration name.
+
+        If all different conversion attempts fail, an exception is raised.
+
+        Args:
+            value (Enum, str): the value to be coerced.
+
+        Raises:
+            ValueError: if `value` is a string but neither a member by name nor value.
+            TypeError: if `value`&#39;s type is neither a member of the enumeration nor a
+                string.
+        &#34;&#34;&#34;
+
+        if isinstance(value, cls):
+            return value
+
+        if isinstance(value, str):
+            try:
+                return cls(value)
+            except ValueError:
+                pass
+            try:
+                return cls[value.upper()]
+            except KeyError:
+                pass
+
+            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;)
+
+        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)
+
+
+class CoerciveIntEnum(IntEnum):
+    &#34;&#34;&#34;
+    An enumeration that provides a helper to coerce strings and integers into
+    enumeration members.
+    &#34;&#34;&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        &#34;&#34;&#34;
+        Attempt to coerce `value` into a member of this enumeration.
+
+        If value is already a member of this enumeration it is returned unchanged.
+        Otherwise, if it is a string, attempt to convert it (case insensitively, by
+        upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+        convert it as an enumeration value.
+
+        Otherwise, an exception is raised.
+
+        Args:
+            value (IntEnum, str, int): the value to be coerced.
+
+        Raises:
+            ValueError: if `value` is an int but not a member of this enumeration.
+            ValueError: if `value` is a string but not a member by name.
+            TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
+                int or a string.
+        &#34;&#34;&#34;
+        if isinstance(value, cls):
+            return value
+
+        if isinstance(value, str):
+            try:
+                return cls[value.upper()]
+            except KeyError:
+                raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
+
+        if isinstance(value, int):
+            return cls(value)
+
+        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)
+
+
+class CoerciveIntFlag(IntFlag):
+    &#34;&#34;&#34;
+    Enumerated constants that can be combined using the bitwise operators,
+    with a helper to coerce strings and integers into enumeration members.
+    &#34;&#34;&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        &#34;&#34;&#34;
+        Attempt to coerce `value` into a member of this enumeration.
+        If value is already a member of this enumeration it is returned unchanged.
+        Otherwise, if it is a string, attempt to convert it (case insensitively, by
+        upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+        convert it as an enumeration value.
+        Otherwise, an exception is raised.
+        Args:
+            value (IntEnum, str, int): the value to be coerced.
+        Raises:
+            ValueError: if `value` is an int but not a member of this enumeration.
+            ValueError: if `value` is a string but not a member by name.
+            TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
+                int or a string.
+        &#34;&#34;&#34;
+        if isinstance(value, cls):
+            return value
+
+        if isinstance(value, str):
+            try:
+                flags = cls[value[0].upper()]
+                for char in value[1:]:
+                    flags = flags | cls[char.upper()]
+                return flags
+            except KeyError:
+                raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
+
+        if isinstance(value, int):
+            return cls(value)
+
+        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)
+
+
+class WrapMode(CoerciveEnum):
+    &#34;Defines how to break and wrap lines in multi-line text.&#34;
+    WORD = intern(&#34;WORD&#34;)
+    &#34;Wrap by word&#34;
+
+    CHAR = intern(&#34;CHAR&#34;)
+    &#34;Wrap by character&#34;
+
+
+class CharVPos(CoerciveEnum):
+    &#34;Defines the vertical position of text relative to the line.&#34;
+    SUP = intern(&#34;SUP&#34;)
+    &#34;Superscript&#34;
+
+    SUB = intern(&#34;SUB&#34;)
+    &#34;Subscript&#34;
+
+    NOM = intern(&#34;NOM&#34;)
+    &#34;Nominator of a fraction&#34;
+
+    DENOM = intern(&#34;DENOM&#34;)
+    &#34;Denominator of a fraction&#34;
+
+    LINE = intern(&#34;LINE&#34;)
+    &#34;Default line position&#34;
+
+
+class Align(CoerciveEnum):
+    &#34;Defines how to render text in a cell&#34;
+
+    C = intern(&#34;CENTER&#34;)
+    &#34;Center text horizontally&#34;
+
+    X = intern(&#34;X_CENTER&#34;)
+    &#34;Center text horizontally around current x position&#34;
+
+    L = intern(&#34;LEFT&#34;)
+    &#34;Left-align text&#34;
+
+    R = intern(&#34;RIGHT&#34;)
+    &#34;Right-align text&#34;
+
+    J = intern(&#34;JUSTIFY&#34;)
+    &#34;Justify text&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        if value == &#34;&#34;:
+            return cls.L
+        return super(cls, cls).coerce(value)
+
+
+class TextEmphasis(CoerciveIntFlag):
+    &#34;&#34;&#34;
+    Indicates use of bold / italics / underline.
+    This enum values can be combined with &amp; and | operators:
+        style = B | I
+    &#34;&#34;&#34;
+
+    B = 1
+    &#34;Bold&#34;
+
+    I = 2
+    &#34;Italics&#34;
+
+    U = 4
+    &#34;Underline&#34;
+
+    @property
+    def style(self):
+        return &#34;&#34;.join(
+            name for name, value in self.__class__.__members__.items() if value &amp; self
+        )
+
+    @classmethod
+    def coerce(cls, value):
+        if isinstance(value, str):
+            if value == &#34;&#34;:
+                return 0
+            if value.upper() == &#34;BOLD&#34;:
+                return cls.B
+            if value.upper() == &#34;ITALICS&#34;:
+                return cls.I
+            if value.upper() == &#34;UNDERLINE&#34;:
+                return cls.U
+        return super(cls, cls).coerce(value)
+
+
+class RenderStyle(CoerciveEnum):
+    &#34;Defines how to render shapes&#34;
+
+    D = intern(&#34;DRAW&#34;)
+    &#34;&#34;&#34;
+    Draw lines.
+    Line color can be controlled with `fpdf.fpdf.FPDF.set_draw_color()`.
+    Line thickness can be controlled with `fpdf.fpdf.FPDF.set_line_width()`.
+    &#34;&#34;&#34;
+
+    F = intern(&#34;FILL&#34;)
+    &#34;&#34;&#34;
+    Fill areas.
+    Filling color can be controlled with `fpdf.fpdf.FPDF.set_fill_color()`.
+    &#34;&#34;&#34;
+
+    DF = intern(&#34;DRAW_FILL&#34;)
+    &#34;Draw lines and fill areas&#34;
+
+    @property
+    def operator(self):
+        return {self.D: &#34;S&#34;, self.F: &#34;f&#34;, self.DF: &#34;B&#34;}[self]
+
+    @property
+    def is_draw(self):
+        return self in (self.D, self.DF)
+
+    @property
+    def is_fill(self):
+        return self in (self.F, self.DF)
+
+    @classmethod
+    def coerce(cls, value):
+        if not value:
+            return cls.D
+        if value == &#34;FD&#34;:
+            value = &#34;DF&#34;
+        return super(cls, cls).coerce(value)
+
+
+class TextMode(CoerciveIntEnum):
+    &#34;Values described in PDF spec section &#39;Text Rendering Mode&#39;&#34;
+    FILL = 0
+    STROKE = 1
+    FILL_STROKE = 2
+    INVISIBLE = 3
+    FILL_CLIP = 4
+    STROKE_CLIP = 5
+    FILL_STROKE_CLIP = 6
+    CLIP = 7
+
+
+class XPos(CoerciveEnum):
+    &#34;Positional values in horizontal direction for use after printing text.&#34;
+
+    LEFT = intern(&#34;LEFT&#34;)  # self.x
+    &#34;left end of the cell&#34;
+
+    RIGHT = intern(&#34;RIGHT&#34;)  # self.x + w
+    &#34;right end of the cell (default)&#34;
+
+    START = intern(&#34;START&#34;)
+    &#34;left start of actual text&#34;
+
+    END = intern(&#34;END&#34;)
+    &#34;right end of actual text&#34;
+
+    WCONT = intern(&#34;WCONT&#34;)
+    &#34;for write() to continue next (slightly left of END)&#34;
+
+    CENTER = intern(&#34;CENTER&#34;)
+    &#34;center of actual text&#34;
+
+    LMARGIN = intern(&#34;LMARGIN&#34;)  # self.l_margin
+    &#34;left page margin (start of printable area)&#34;
+
+    RMARGIN = intern(&#34;RMARGIN&#34;)  # self.w - self.r_margin
+    &#34;right page margin (end of printable area)&#34;
+
+
+class YPos(CoerciveEnum):
+    &#34;Positional values in vertical direction for use after printing text&#34;
+
+    TOP = intern(&#34;TOP&#34;)  # self.y
+    &#34;top of the first line (default)&#34;
+
+    LAST = intern(&#34;LAST&#34;)
+    &#34;top of the last line (same as TOP for single-line text)&#34;
+
+    NEXT = intern(&#34;NEXT&#34;)  # LAST + h
+    &#34;top of next line (bottom of current text)&#34;
+
+    TMARGIN = intern(&#34;TMARGIN&#34;)  # self.t_margin
+    &#34;top page margin (start of printable area)&#34;
+
+    BMARGIN = intern(&#34;BMARGIN&#34;)  # self.h - self.b_margin
+    &#34;bottom page margin (end of printable area)&#34;
+
+
+class PageLayout(CoerciveEnum):
+    &#34;Specify the page layout shall be used when the document is opened&#34;
+
+    SINGLE_PAGE = Name(&#34;SinglePage&#34;)
+    &#34;Display one page at a time&#34;
+
+    ONE_COLUMN = Name(&#34;OneColumn&#34;)
+    &#34;Display the pages in one column&#34;
+
+    TWO_COLUMN_LEFT = Name(&#34;TwoColumnLeft&#34;)
+    &#34;Display the pages in two columns, with odd-numbered pages on the left&#34;
+
+    TWO_COLUMN_RIGHT = Name(&#34;TwoColumnRight&#34;)
+    &#34;Display the pages in two columns, with odd-numbered pages on the right&#34;
+
+    TWO_PAGE_LEFT = Name(&#34;TwoPageLeft&#34;)
+    &#34;Display the pages two at a time, with odd-numbered pages on the left&#34;
+
+    TWO_PAGE_RIGHT = Name(&#34;TwoPageRight&#34;)
+    &#34;Display the pages two at a time, with odd-numbered pages on the right&#34;
+
+
+class PageMode(CoerciveEnum):
+    &#34;Specifying how to display the document on exiting full-screen mode&#34;
+
+    USE_NONE = Name(&#34;UseNone&#34;)
+    &#34;Neither document outline nor thumbnail images visible&#34;
+
+    USE_OUTLINES = Name(&#34;UseOutlines&#34;)
+    &#34;Document outline visible&#34;
+
+    USE_THUMBS = Name(&#34;UseThumbs&#34;)
+    &#34;Thumbnail images visible&#34;
+
+    FULL_SCREEN = Name(&#34;FullScreen&#34;)
+    &#34;Full-screen mode, with no menu bar, window controls, or any other window visible&#34;
+
+    USE_OC = Name(&#34;UseOC&#34;)
+    &#34;Optional content group panel visible&#34;
+
+    USE_ATTACHMENTS = Name(&#34;UseAttachments&#34;)
+    &#34;Attachments panel visible&#34;
+
+
+class TextMarkupType(CoerciveEnum):
+    &#34;Subtype of a text markup annotation&#34;
+
+    HIGHLIGHT = Name(&#34;Highlight&#34;)
+
+    UNDERLINE = Name(&#34;Underline&#34;)
+
+    SQUIGGLY = Name(&#34;Squiggly&#34;)
+
+    STRIKE_OUT = Name(&#34;StrikeOut&#34;)
+
+
+class BlendMode(CoerciveEnum):
+    &#34;An enumeration of the named standard named blend functions supported by PDF.&#34;
+
+    NORMAL = Name(&#34;Normal&#34;)
+    &#39;&#39;&#39;&#34;Selects the source color, ignoring the backdrop.&#34;&#39;&#39;&#39;
+    MULTIPLY = Name(&#34;Multiply&#34;)
+    &#39;&#39;&#39;&#34;Multiplies the backdrop and source color values.&#34;&#39;&#39;&#39;
+    SCREEN = Name(&#34;Screen&#34;)
+    &#34;&#34;&#34;
+    &#34;Multiplies the complements of the backdrop and source color values, then
+    complements the result.&#34;
+    &#34;&#34;&#34;
+    OVERLAY = Name(&#34;Overlay&#34;)
+    &#34;&#34;&#34;
+    &#34;Multiplies or screens the colors, depending on the backdrop color value. Source
+    colors overlay the backdrop while preserving its highlights and shadows. The
+    backdrop color is not replaced but is mixed with the source color to reflect the
+    lightness or darkness of the backdrop.&#34;
+    &#34;&#34;&#34;
+    DARKEN = Name(&#34;Darken&#34;)
+    &#39;&#39;&#39;&#34;Selects the darker of the backdrop and source colors.&#34;&#39;&#39;&#39;
+    LIGHTEN = Name(&#34;Lighten&#34;)
+    &#39;&#39;&#39;&#34;Selects the lighter of the backdrop and source colors.&#34;&#39;&#39;&#39;
+    COLOR_DODGE = Name(&#34;ColorDodge&#34;)
+    &#34;&#34;&#34;
+    &#34;Brightens the backdrop color to reflect the source color. Painting with black
+     produces no changes.&#34;
+    &#34;&#34;&#34;
+    COLOR_BURN = Name(&#34;ColorBurn&#34;)
+    &#34;&#34;&#34;
+    &#34;Darkens the backdrop color to reflect the source color. Painting with white
+     produces no change.&#34;
+    &#34;&#34;&#34;
+    HARD_LIGHT = Name(&#34;HardLight&#34;)
+    &#34;&#34;&#34;
+    &#34;Multiplies or screens the colors, depending on the source color value. The effect
+    is similar to shining a harsh spotlight on the backdrop.&#34;
+    &#34;&#34;&#34;
+    SOFT_LIGHT = Name(&#34;SoftLight&#34;)
+    &#34;&#34;&#34;
+    &#34;Darkens or lightens the colors, depending on the source color value. The effect is
+    similar to shining a diffused spotlight on the backdrop.&#34;
+    &#34;&#34;&#34;
+    DIFFERENCE = Name(&#34;Difference&#34;)
+    &#39;&#39;&#39;&#34;Subtracts the darker of the two constituent colors from the lighter color.&#34;&#39;&#39;&#39;
+    EXCLUSION = Name(&#34;Exclusion&#34;)
+    &#34;&#34;&#34;
+    &#34;Produces an effect similar to that of the Difference mode but lower in contrast.
+    Painting with white inverts the backdrop color; painting with black produces no
+    change.&#34;
+    &#34;&#34;&#34;
+    HUE = Name(&#34;Hue&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the hue of the source color and the saturation and luminosity
+    of the backdrop color.&#34;
+    &#34;&#34;&#34;
+    SATURATION = Name(&#34;Saturation&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the saturation of the source color and the hue and luminosity
+    of the backdrop color. Painting with this mode in an area of the backdrop that is
+    a pure gray (no saturation) produces no change.&#34;
+    &#34;&#34;&#34;
+    COLOR = Name(&#34;Color&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the hue and saturation of the source color and the luminosity
+    of the backdrop color. This preserves the gray levels of the backdrop and is
+    useful for coloring monochrome images or tinting color images.&#34;
+    &#34;&#34;&#34;
+    LUMINOSITY = Name(&#34;Luminosity&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the luminosity of the source color and the hue and saturation
+    of the backdrop color. This produces an inverse effect to that of the Color mode.&#34;
+    &#34;&#34;&#34;
+
+
+class AnnotationFlag(CoerciveIntEnum):
+    INVISIBLE = 1
+    &#34;&#34;&#34;
+    If set, do not display the annotation if it does not belong to one of the
+    standard annotation types and no annotation handler is available.
+    &#34;&#34;&#34;
+    HIDDEN = 2
+    &#34;If set, do not display or print the annotation or allow it to interact with the user&#34;
+    PRINT = 4
+    &#34;If set, print the annotation when the page is printed.&#34;
+    NO_ZOOM = 8
+    &#34;If set, do not scale the annotation’s appearance to match the magnification of the page.&#34;
+    NO_ROTATE = 16
+    &#34;If set, do not rotate the annotation’s appearance to match the rotation of the page.&#34;
+    NO_VIEW = 32
+    &#34;If set, do not display the annotation on the screen or allow it to interact with the user&#34;
+    READ_ONLY = 64
+    &#34;&#34;&#34;
+    If set, do not allow the annotation to interact with the user.
+    The annotation may be displayed or printed but should not respond to mouse clicks.
+    &#34;&#34;&#34;
+    LOCKED = 128
+    &#34;&#34;&#34;
+    If set, do not allow the annotation to be deleted or its properties
+    (including position and size) to be modified by the user.
+    &#34;&#34;&#34;
+    TOGGLE_NO_VIEW = 256
+    &#34;If set, invert the interpretation of the NoView flag for certain events.&#34;
+    LOCKED_CONTENTS = 512
+    &#34;If set, do not allow the contents of the annotation to be modified by the user.&#34;
+
+
+class AnnotationName(CoerciveEnum):
+    &#34;The name of an icon that shall be used in displaying the annotation&#34;
+
+    NOTE = Name(&#34;Note&#34;)
+    COMMENT = Name(&#34;Comment&#34;)
+    HELP = Name(&#34;Help&#34;)
+    PARAGRAPH = Name(&#34;Paragraph&#34;)
+    NEW_PARAGRAPH = Name(&#34;NewParagraph&#34;)
+    INSERT = Name(&#34;Insert&#34;)
+
+
+class FileAttachmentAnnotationName(CoerciveEnum):
+    &#34;The name of an icon that shall be used in displaying the annotation&#34;
+
+    PUSH_PIN = Name(&#34;PushPin&#34;)
+    GRAPH_PUSH_PIN = Name(&#34;GraphPushPin&#34;)
+    PAPERCLIP_TAG = Name(&#34;PaperclipTag&#34;)
+
+
+class IntersectionRule(CoerciveEnum):
+    &#34;&#34;&#34;
+    An enumeration representing the two possible PDF intersection rules.
+
+    The intersection rule is used by the renderer to determine which points are
+    considered to be inside the path and which points are outside the path. This
+    primarily affects fill rendering and clipping paths.
+    &#34;&#34;&#34;
+
+    NONZERO = &#34;nonzero&#34;
+    &#34;&#34;&#34;
+    &#34;The nonzero winding number rule determines whether a given point is inside a path
+    by conceptually drawing a ray from that point to infinity in any direction and
+    then examining the places where a segment of the path crosses the ray. Starting
+    with a count of 0, the rule adds 1 each time a path segment crosses the ray from
+    left to right and subtracts 1 each time a segment crosses from right to left.
+    After counting all the crossings, if the result is 0, the point is outside the
+    path; otherwise, it is inside.&#34;
+    &#34;&#34;&#34;
+    EVENODD = &#34;evenodd&#34;
+    &#34;&#34;&#34;
+    &#34;An alternative to the nonzero winding number rule is the even-odd rule. This rule
+    determines whether a point is inside a path by drawing a ray from that point in
+    any direction and simply counting the number of path segments that cross the ray,
+    regardless of direction. If this number is odd, the point is inside; if even, the
+    point is outside. This yields the same results as the nonzero winding number rule
+    for paths with simple shapes, but produces different results for more complex
+    shapes.&#34;
+    &#34;&#34;&#34;
+
+
+class PathPaintRule(CoerciveEnum):
+    &#34;&#34;&#34;
+    An enumeration of the PDF drawing directives that determine how the renderer should
+    paint a given path.
+    &#34;&#34;&#34;
+
+    # the auto-close paint rules are omitted here because it&#39;s easier to just emit
+    # close operators when appropriate, programmatically
+    STROKE = &#34;S&#34;
+    &#39;&#39;&#39;&#34;Stroke the path.&#34;&#39;&#39;&#39;
+
+    FILL_NONZERO = &#34;f&#34;
+    &#34;&#34;&#34;
+    &#34;Fill the path, using the nonzero winding number rule to determine the region to
+    fill. Any subpaths that are open are implicitly closed before being filled.&#34;
+    &#34;&#34;&#34;
+
+    FILL_EVENODD = &#34;f*&#34;
+    &#34;&#34;&#34;
+    &#34;Fill the path, using the even-odd rule to determine the region to fill. Any
+    subpaths that are open are implicitly closed before being filled.&#34;
+    &#34;&#34;&#34;
+
+    STROKE_FILL_NONZERO = &#34;B&#34;
+    &#34;&#34;&#34;
+    &#34;Fill and then stroke the path, using the nonzero winding number rule to determine
+    the region to fill. This operator produces the same result as constructing two
+    identical path objects, painting the first with `FILL_NONZERO` and the second with
+    `STROKE`.&#34;
+    &#34;&#34;&#34;
+
+    STROKE_FILL_EVENODD = &#34;B*&#34;
+    &#34;&#34;&#34;
+    &#34;Fill and then stroke the path, using the even-odd rule to determine the region to
+    fill. This operator produces the same result as `STROKE_FILL_NONZERO`, except that
+    the path is filled as if with `FILL_EVENODD` instead of `FILL_NONZERO`.&#34;
+    &#34;&#34;&#34;
+
+    DONT_PAINT = &#34;n&#34;
+    &#34;&#34;&#34;
+    &#34;End the path object without filling or stroking it. This operator is a
+    path-painting no-op, used primarily for the side effect of changing the current
+    clipping path.&#34;
+    &#34;&#34;&#34;
+
+    AUTO = &#34;auto&#34;
+    &#34;&#34;&#34;
+    Automatically determine which `PathPaintRule` should be used.
+
+    PaintedPath will select one of the above `PathPaintRule`s based on the resolved
+    set/inherited values of its style property.
+    &#34;&#34;&#34;
+
+
+class ClippingPathIntersectionRule(CoerciveEnum):
+    &#34;An enumeration of the PDF drawing directives that define a path as a clipping path.&#34;
+
+    NONZERO = &#34;W&#34;
+    &#34;&#34;&#34;
+    &#34;The nonzero winding number rule determines whether a given point is inside a path
+    by conceptually drawing a ray from that point to infinity in any direction and
+    then examining the places where a segment of the path crosses the ray. Starting
+    with a count of 0, the rule adds 1 each time a path segment crosses the ray from
+    left to right and subtracts 1 each time a segment crosses from right to left.
+    After counting all the crossings, if the result is 0, the point is outside the
+    path; otherwise, it is inside.&#34;
+    &#34;&#34;&#34;
+    EVENODD = &#34;W*&#34;
+    &#34;&#34;&#34;
+    &#34;An alternative to the nonzero winding number rule is the even-odd rule. This rule
+    determines whether a point is inside a path by drawing a ray from that point in
+    any direction and simply counting the number of path segments that cross the ray,
+    regardless of direction. If this number is odd, the point is inside; if even, the
+    point is outside. This yields the same results as the nonzero winding number rule
+    for paths with simple shapes, but produces different results for more complex
+    shapes.&#34;&#34;&#34;
+
+
+class StrokeCapStyle(CoerciveIntEnum):
+    &#34;&#34;&#34;
+    An enumeration of values defining how the end of a stroke should be rendered.
+
+    This affects the ends of the segments of dashed strokes, as well.
+    &#34;&#34;&#34;
+
+    BUTT = 0
+    &#34;&#34;&#34;
+    &#34;The stroke is squared off at the endpoint of the path. There is no projection
+    beyond the end of the path.&#34;
+    &#34;&#34;&#34;
+    ROUND = 1
+    &#34;&#34;&#34;
+    &#34;A semicircular arc with a diameter equal to the line width is drawn around the
+    endpoint and filled in.&#34;
+    &#34;&#34;&#34;
+    SQUARE = 2
+    &#34;&#34;&#34;
+    &#34;The stroke continues beyond the endpoint of the path for a distance equal to half
+    the line width and is squared off.&#34;
+    &#34;&#34;&#34;
+
+
+class StrokeJoinStyle(CoerciveIntEnum):
+    &#34;&#34;&#34;
+    An enumeration of values defining how the corner joining two path components should
+    be rendered.
+    &#34;&#34;&#34;
+
+    MITER = 0
+    &#34;&#34;&#34;
+    &#34;The outer edges of the strokes for the two segments are extended until they meet at
+    an angle, as in a picture frame. If the segments meet at too sharp an angle
+    (as defined by the miter limit parameter), a bevel join is used instead.&#34;
+    &#34;&#34;&#34;
+    ROUND = 1
+    &#34;&#34;&#34;
+    &#34;An arc of a circle with a diameter equal to the line width is drawn around the
+    point where the two segments meet, connecting the outer edges of the strokes for
+    the two segments. This pieslice-shaped figure is filled in, pro- ducing a rounded
+    corner.&#34;
+    &#34;&#34;&#34;
+    BEVEL = 2
+    &#34;&#34;&#34;
+    &#34;The two segments are finished with butt caps and the resulting notch beyond the
+    ends of the segments is filled with a triangle.&#34;
+    &#34;&#34;&#34;
+
+
+class PDFStyleKeys(Enum):
+    &#34;An enumeration of the graphics state parameter dictionary keys.&#34;
+
+    FILL_ALPHA = Name(&#34;ca&#34;)
+    BLEND_MODE = Name(&#34;BM&#34;)  # shared between stroke and fill
+    STROKE_ALPHA = Name(&#34;CA&#34;)
+    STROKE_ADJUSTMENT = Name(&#34;SA&#34;)
+    STROKE_WIDTH = Name(&#34;LW&#34;)
+    STROKE_CAP_STYLE = Name(&#34;LC&#34;)
+    STROKE_JOIN_STYLE = Name(&#34;LJ&#34;)
+    STROKE_MITER_LIMIT = Name(&#34;ML&#34;)
+    STROKE_DASH_PATTERN = Name(&#34;D&#34;)  # array of array, number, e.g. [[1 1] 0]
+
+
+class Corner(CoerciveEnum):
+    TOP_RIGHT = &#34;TOP_RIGHT&#34;
+    TOP_LEFT = &#34;TOP_LEFT&#34;
+    BOTTOM_RIGHT = &#34;BOTTOM_RIGHT&#34;
+    BOTTOM_LEFT = &#34;BOTTOM_LEFT&#34;
+
+
+class FontDescriptorFlags(Flag):
+    &#34;&#34;&#34;An enumeration of the flags for the unsigned 32-bit integer entry in the font descriptor specifying various
+    characteristics of the font. Bit positions are numbered from 1 (low-order) to 32 (high-order).
+    &#34;&#34;&#34;
+
+    FIXED_PITCH = 0x0000001
+    &#34;&#34;&#34;
+    &#34;All glyphs have the same width (as opposed to proportional or
+    variable-pitch fonts, which have different widths.&#34;
+    &#34;&#34;&#34;
+
+    SYMBOLIC = 0x0000004
+    &#34;&#34;&#34;
+    &#34;Font contains glyphs outside the Adobe standard Latin character set.
+    This flag and the Nonsymbolic flag shall not both be set or both be clear.&#34;
+    &#34;&#34;&#34;
+
+    ITALIC = 0x0000040
+    &#34;&#34;&#34;
+    &#34;Glyphs have dominant vertical strokes that are slanted.&#34;
+    &#34;&#34;&#34;
+
+    FORCE_BOLD = 0x0040000
+    &#34;&#34;&#34;
+    &#34;The flag shall determine whether bold glyphs shall be painted with extra pixels even at very
+    small text sizes by a conforming reader. If set, features of bold glyphs may be thickened at
+    small text sizes.&#34;
+    &#34;&#34;&#34;
+
+
+class AccessPermission(IntFlag):
+    &#34;Permission flags will translate as an integer on the encryption dictionary&#34;
+
+    PRINT_LOW_RES = 0b000000000100
+    &#34;Print the document&#34;
+
+    MODIFY = 0b000000001000
+    &#34;Modify the contents of the document&#34;
+
+    COPY = 0b000000010000
+    &#34;Copy or extract text and graphics from the document&#34;
+
+    ANNOTATION = 0b000000100000
+    &#34;Add or modify text annotations&#34;
+
+    FILL_FORMS = 0b000100000000
+    &#34;Fill in existing interactive form fields&#34;
+
+    COPY_FOR_ACCESSIBILITY = 0b001000000000
+    &#34;Extract text and graphics in support of accessibility to users with disabilities&#34;
+
+    ASSEMBLE = 0b010000000000
+    &#34;Insert, rotate or delete pages and create bookmarks or thumbnail images&#34;
+
+    PRINT_HIGH_RES = 0b100000000000
+    &#34;Print document at the highest resolution&#34;
+
+    @classmethod
+    def all(cls):
+        &#34;All flags enabled&#34;
+        result = 0
+        for permission in list(AccessPermission):
+            result = result | permission
+        return result
+
+    @classmethod
+    def none(cls):
+        &#34;All flags disabled&#34;
+        return 0
+
+
+class EncryptionMethod(Enum):
+    &#34;Algorithm to be used to encrypt the document&#34;
+
+    NO_ENCRYPTION = 0
+    RC4 = 1
+    AES_128 = 2
+
+
+# This enum is only used internally:
+__pdoc__ = {&#34;DocumentState&#34;: False}</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.enums.AccessPermission"><code class="flex name class">
+<span>class <span class="ident">AccessPermission</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Permission flags will translate as an integer on the encryption dictionary</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AccessPermission(IntFlag):
+    &#34;Permission flags will translate as an integer on the encryption dictionary&#34;
+
+    PRINT_LOW_RES = 0b000000000100
+    &#34;Print the document&#34;
+
+    MODIFY = 0b000000001000
+    &#34;Modify the contents of the document&#34;
+
+    COPY = 0b000000010000
+    &#34;Copy or extract text and graphics from the document&#34;
+
+    ANNOTATION = 0b000000100000
+    &#34;Add or modify text annotations&#34;
+
+    FILL_FORMS = 0b000100000000
+    &#34;Fill in existing interactive form fields&#34;
+
+    COPY_FOR_ACCESSIBILITY = 0b001000000000
+    &#34;Extract text and graphics in support of accessibility to users with disabilities&#34;
+
+    ASSEMBLE = 0b010000000000
+    &#34;Insert, rotate or delete pages and create bookmarks or thumbnail images&#34;
+
+    PRINT_HIGH_RES = 0b100000000000
+    &#34;Print document at the highest resolution&#34;
+
+    @classmethod
+    def all(cls):
+        &#34;All flags enabled&#34;
+        result = 0
+        for permission in list(AccessPermission):
+            result = result | permission
+        return result
+
+    @classmethod
+    def none(cls):
+        &#34;All flags disabled&#34;
+        return 0</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntFlag</li>
+<li>builtins.int</li>
+<li>enum.Flag</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.AccessPermission.ANNOTATION"><code class="name">var <span class="ident">ANNOTATION</span></code></dt>
+<dd>
+<div class="desc"><p>Add or modify text annotations</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.ASSEMBLE"><code class="name">var <span class="ident">ASSEMBLE</span></code></dt>
+<dd>
+<div class="desc"><p>Insert, rotate or delete pages and create bookmarks or thumbnail images</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.COPY"><code class="name">var <span class="ident">COPY</span></code></dt>
+<dd>
+<div class="desc"><p>Copy or extract text and graphics from the document</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.COPY_FOR_ACCESSIBILITY"><code class="name">var <span class="ident">COPY_FOR_ACCESSIBILITY</span></code></dt>
+<dd>
+<div class="desc"><p>Extract text and graphics in support of accessibility to users with disabilities</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.FILL_FORMS"><code class="name">var <span class="ident">FILL_FORMS</span></code></dt>
+<dd>
+<div class="desc"><p>Fill in existing interactive form fields</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.MODIFY"><code class="name">var <span class="ident">MODIFY</span></code></dt>
+<dd>
+<div class="desc"><p>Modify the contents of the document</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.PRINT_HIGH_RES"><code class="name">var <span class="ident">PRINT_HIGH_RES</span></code></dt>
+<dd>
+<div class="desc"><p>Print document at the highest resolution</p></div>
+</dd>
+<dt id="fpdf.enums.AccessPermission.PRINT_LOW_RES"><code class="name">var <span class="ident">PRINT_LOW_RES</span></code></dt>
+<dd>
+<div class="desc"><p>Print the document</p></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.enums.AccessPermission.all"><code class="name flex">
+<span>def <span class="ident">all</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>All flags enabled</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def all(cls):
+    &#34;All flags enabled&#34;
+    result = 0
+    for permission in list(AccessPermission):
+        result = result | permission
+    return result</code></pre>
+</details>
+</dd>
+<dt id="fpdf.enums.AccessPermission.none"><code class="name flex">
+<span>def <span class="ident">none</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>All flags disabled</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def none(cls):
+    &#34;All flags disabled&#34;
+    return 0</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.Align"><code class="flex name class">
+<span>class <span class="ident">Align</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines how to render text in a cell</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Align(CoerciveEnum):
+    &#34;Defines how to render text in a cell&#34;
+
+    C = intern(&#34;CENTER&#34;)
+    &#34;Center text horizontally&#34;
+
+    X = intern(&#34;X_CENTER&#34;)
+    &#34;Center text horizontally around current x position&#34;
+
+    L = intern(&#34;LEFT&#34;)
+    &#34;Left-align text&#34;
+
+    R = intern(&#34;RIGHT&#34;)
+    &#34;Right-align text&#34;
+
+    J = intern(&#34;JUSTIFY&#34;)
+    &#34;Justify text&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        if value == &#34;&#34;:
+            return cls.L
+        return super(cls, cls).coerce(value)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.Align.C"><code class="name">var <span class="ident">C</span></code></dt>
+<dd>
+<div class="desc"><p>Center text horizontally</p></div>
+</dd>
+<dt id="fpdf.enums.Align.J"><code class="name">var <span class="ident">J</span></code></dt>
+<dd>
+<div class="desc"><p>Justify text</p></div>
+</dd>
+<dt id="fpdf.enums.Align.L"><code class="name">var <span class="ident">L</span></code></dt>
+<dd>
+<div class="desc"><p>Left-align text</p></div>
+</dd>
+<dt id="fpdf.enums.Align.R"><code class="name">var <span class="ident">R</span></code></dt>
+<dd>
+<div class="desc"><p>Right-align text</p></div>
+</dd>
+<dt id="fpdf.enums.Align.X"><code class="name">var <span class="ident">X</span></code></dt>
+<dd>
+<div class="desc"><p>Center text horizontally around current x position</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag"><code class="flex name class">
+<span>class <span class="ident">AnnotationFlag</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AnnotationFlag(CoerciveIntEnum):
+    INVISIBLE = 1
+    &#34;&#34;&#34;
+    If set, do not display the annotation if it does not belong to one of the
+    standard annotation types and no annotation handler is available.
+    &#34;&#34;&#34;
+    HIDDEN = 2
+    &#34;If set, do not display or print the annotation or allow it to interact with the user&#34;
+    PRINT = 4
+    &#34;If set, print the annotation when the page is printed.&#34;
+    NO_ZOOM = 8
+    &#34;If set, do not scale the annotation’s appearance to match the magnification of the page.&#34;
+    NO_ROTATE = 16
+    &#34;If set, do not rotate the annotation’s appearance to match the rotation of the page.&#34;
+    NO_VIEW = 32
+    &#34;If set, do not display the annotation on the screen or allow it to interact with the user&#34;
+    READ_ONLY = 64
+    &#34;&#34;&#34;
+    If set, do not allow the annotation to interact with the user.
+    The annotation may be displayed or printed but should not respond to mouse clicks.
+    &#34;&#34;&#34;
+    LOCKED = 128
+    &#34;&#34;&#34;
+    If set, do not allow the annotation to be deleted or its properties
+    (including position and size) to be modified by the user.
+    &#34;&#34;&#34;
+    TOGGLE_NO_VIEW = 256
+    &#34;If set, invert the interpretation of the NoView flag for certain events.&#34;
+    LOCKED_CONTENTS = 512
+    &#34;If set, do not allow the contents of the annotation to be modified by the user.&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.AnnotationFlag.HIDDEN"><code class="name">var <span class="ident">HIDDEN</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not display or print the annotation or allow it to interact with the user</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.INVISIBLE"><code class="name">var <span class="ident">INVISIBLE</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not display the annotation if it does not belong to one of the
+standard annotation types and no annotation handler is available.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.LOCKED"><code class="name">var <span class="ident">LOCKED</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not allow the annotation to be deleted or its properties
+(including position and size) to be modified by the user.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.LOCKED_CONTENTS"><code class="name">var <span class="ident">LOCKED_CONTENTS</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not allow the contents of the annotation to be modified by the user.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.NO_ROTATE"><code class="name">var <span class="ident">NO_ROTATE</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not rotate the annotation’s appearance to match the rotation of the page.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.NO_VIEW"><code class="name">var <span class="ident">NO_VIEW</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not display the annotation on the screen or allow it to interact with the user</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.NO_ZOOM"><code class="name">var <span class="ident">NO_ZOOM</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not scale the annotation’s appearance to match the magnification of the page.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.PRINT"><code class="name">var <span class="ident">PRINT</span></code></dt>
+<dd>
+<div class="desc"><p>If set, print the annotation when the page is printed.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.READ_ONLY"><code class="name">var <span class="ident">READ_ONLY</span></code></dt>
+<dd>
+<div class="desc"><p>If set, do not allow the annotation to interact with the user.
+The annotation may be displayed or printed but should not respond to mouse clicks.</p></div>
+</dd>
+<dt id="fpdf.enums.AnnotationFlag.TOGGLE_NO_VIEW"><code class="name">var <span class="ident">TOGGLE_NO_VIEW</span></code></dt>
+<dd>
+<div class="desc"><p>If set, invert the interpretation of the NoView flag for certain events.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveIntEnum.coerce" href="#fpdf.enums.CoerciveIntEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.AnnotationName"><code class="flex name class">
+<span>class <span class="ident">AnnotationName</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The name of an icon that shall be used in displaying the annotation</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AnnotationName(CoerciveEnum):
+    &#34;The name of an icon that shall be used in displaying the annotation&#34;
+
+    NOTE = Name(&#34;Note&#34;)
+    COMMENT = Name(&#34;Comment&#34;)
+    HELP = Name(&#34;Help&#34;)
+    PARAGRAPH = Name(&#34;Paragraph&#34;)
+    NEW_PARAGRAPH = Name(&#34;NewParagraph&#34;)
+    INSERT = Name(&#34;Insert&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.AnnotationName.COMMENT"><code class="name">var <span class="ident">COMMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.AnnotationName.HELP"><code class="name">var <span class="ident">HELP</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.AnnotationName.INSERT"><code class="name">var <span class="ident">INSERT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.AnnotationName.NEW_PARAGRAPH"><code class="name">var <span class="ident">NEW_PARAGRAPH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.AnnotationName.NOTE"><code class="name">var <span class="ident">NOTE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.AnnotationName.PARAGRAPH"><code class="name">var <span class="ident">PARAGRAPH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.BlendMode"><code class="flex name class">
+<span>class <span class="ident">BlendMode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of the named standard named blend functions supported by PDF.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BlendMode(CoerciveEnum):
+    &#34;An enumeration of the named standard named blend functions supported by PDF.&#34;
+
+    NORMAL = Name(&#34;Normal&#34;)
+    &#39;&#39;&#39;&#34;Selects the source color, ignoring the backdrop.&#34;&#39;&#39;&#39;
+    MULTIPLY = Name(&#34;Multiply&#34;)
+    &#39;&#39;&#39;&#34;Multiplies the backdrop and source color values.&#34;&#39;&#39;&#39;
+    SCREEN = Name(&#34;Screen&#34;)
+    &#34;&#34;&#34;
+    &#34;Multiplies the complements of the backdrop and source color values, then
+    complements the result.&#34;
+    &#34;&#34;&#34;
+    OVERLAY = Name(&#34;Overlay&#34;)
+    &#34;&#34;&#34;
+    &#34;Multiplies or screens the colors, depending on the backdrop color value. Source
+    colors overlay the backdrop while preserving its highlights and shadows. The
+    backdrop color is not replaced but is mixed with the source color to reflect the
+    lightness or darkness of the backdrop.&#34;
+    &#34;&#34;&#34;
+    DARKEN = Name(&#34;Darken&#34;)
+    &#39;&#39;&#39;&#34;Selects the darker of the backdrop and source colors.&#34;&#39;&#39;&#39;
+    LIGHTEN = Name(&#34;Lighten&#34;)
+    &#39;&#39;&#39;&#34;Selects the lighter of the backdrop and source colors.&#34;&#39;&#39;&#39;
+    COLOR_DODGE = Name(&#34;ColorDodge&#34;)
+    &#34;&#34;&#34;
+    &#34;Brightens the backdrop color to reflect the source color. Painting with black
+     produces no changes.&#34;
+    &#34;&#34;&#34;
+    COLOR_BURN = Name(&#34;ColorBurn&#34;)
+    &#34;&#34;&#34;
+    &#34;Darkens the backdrop color to reflect the source color. Painting with white
+     produces no change.&#34;
+    &#34;&#34;&#34;
+    HARD_LIGHT = Name(&#34;HardLight&#34;)
+    &#34;&#34;&#34;
+    &#34;Multiplies or screens the colors, depending on the source color value. The effect
+    is similar to shining a harsh spotlight on the backdrop.&#34;
+    &#34;&#34;&#34;
+    SOFT_LIGHT = Name(&#34;SoftLight&#34;)
+    &#34;&#34;&#34;
+    &#34;Darkens or lightens the colors, depending on the source color value. The effect is
+    similar to shining a diffused spotlight on the backdrop.&#34;
+    &#34;&#34;&#34;
+    DIFFERENCE = Name(&#34;Difference&#34;)
+    &#39;&#39;&#39;&#34;Subtracts the darker of the two constituent colors from the lighter color.&#34;&#39;&#39;&#39;
+    EXCLUSION = Name(&#34;Exclusion&#34;)
+    &#34;&#34;&#34;
+    &#34;Produces an effect similar to that of the Difference mode but lower in contrast.
+    Painting with white inverts the backdrop color; painting with black produces no
+    change.&#34;
+    &#34;&#34;&#34;
+    HUE = Name(&#34;Hue&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the hue of the source color and the saturation and luminosity
+    of the backdrop color.&#34;
+    &#34;&#34;&#34;
+    SATURATION = Name(&#34;Saturation&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the saturation of the source color and the hue and luminosity
+    of the backdrop color. Painting with this mode in an area of the backdrop that is
+    a pure gray (no saturation) produces no change.&#34;
+    &#34;&#34;&#34;
+    COLOR = Name(&#34;Color&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the hue and saturation of the source color and the luminosity
+    of the backdrop color. This preserves the gray levels of the backdrop and is
+    useful for coloring monochrome images or tinting color images.&#34;
+    &#34;&#34;&#34;
+    LUMINOSITY = Name(&#34;Luminosity&#34;)
+    &#34;&#34;&#34;
+    &#34;Creates a color with the luminosity of the source color and the hue and saturation
+    of the backdrop color. This produces an inverse effect to that of the Color mode.&#34;
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.BlendMode.COLOR"><code class="name">var <span class="ident">COLOR</span></code></dt>
+<dd>
+<div class="desc"><p>"Creates a color with the hue and saturation of the source color and the luminosity
+of the backdrop color. This preserves the gray levels of the backdrop and is
+useful for coloring monochrome images or tinting color images."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.COLOR_BURN"><code class="name">var <span class="ident">COLOR_BURN</span></code></dt>
+<dd>
+<div class="desc"><p>"Darkens the backdrop color to reflect the source color. Painting with white
+produces no change."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.COLOR_DODGE"><code class="name">var <span class="ident">COLOR_DODGE</span></code></dt>
+<dd>
+<div class="desc"><p>"Brightens the backdrop color to reflect the source color. Painting with black
+produces no changes."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.DARKEN"><code class="name">var <span class="ident">DARKEN</span></code></dt>
+<dd>
+<div class="desc"><p>"Selects the darker of the backdrop and source colors."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.DIFFERENCE"><code class="name">var <span class="ident">DIFFERENCE</span></code></dt>
+<dd>
+<div class="desc"><p>"Subtracts the darker of the two constituent colors from the lighter color."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.EXCLUSION"><code class="name">var <span class="ident">EXCLUSION</span></code></dt>
+<dd>
+<div class="desc"><p>"Produces an effect similar to that of the Difference mode but lower in contrast.
+Painting with white inverts the backdrop color; painting with black produces no
+change."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.HARD_LIGHT"><code class="name">var <span class="ident">HARD_LIGHT</span></code></dt>
+<dd>
+<div class="desc"><p>"Multiplies or screens the colors, depending on the source color value. The effect
+is similar to shining a harsh spotlight on the backdrop."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.HUE"><code class="name">var <span class="ident">HUE</span></code></dt>
+<dd>
+<div class="desc"><p>"Creates a color with the hue of the source color and the saturation and luminosity
+of the backdrop color."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.LIGHTEN"><code class="name">var <span class="ident">LIGHTEN</span></code></dt>
+<dd>
+<div class="desc"><p>"Selects the lighter of the backdrop and source colors."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.LUMINOSITY"><code class="name">var <span class="ident">LUMINOSITY</span></code></dt>
+<dd>
+<div class="desc"><p>"Creates a color with the luminosity of the source color and the hue and saturation
+of the backdrop color. This produces an inverse effect to that of the Color mode."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.MULTIPLY"><code class="name">var <span class="ident">MULTIPLY</span></code></dt>
+<dd>
+<div class="desc"><p>"Multiplies the backdrop and source color values."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.NORMAL"><code class="name">var <span class="ident">NORMAL</span></code></dt>
+<dd>
+<div class="desc"><p>"Selects the source color, ignoring the backdrop."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.OVERLAY"><code class="name">var <span class="ident">OVERLAY</span></code></dt>
+<dd>
+<div class="desc"><p>"Multiplies or screens the colors, depending on the backdrop color value. Source
+colors overlay the backdrop while preserving its highlights and shadows. The
+backdrop color is not replaced but is mixed with the source color to reflect the
+lightness or darkness of the backdrop."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.SATURATION"><code class="name">var <span class="ident">SATURATION</span></code></dt>
+<dd>
+<div class="desc"><p>"Creates a color with the saturation of the source color and the hue and luminosity
+of the backdrop color. Painting with this mode in an area of the backdrop that is
+a pure gray (no saturation) produces no change."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.SCREEN"><code class="name">var <span class="ident">SCREEN</span></code></dt>
+<dd>
+<div class="desc"><p>"Multiplies the complements of the backdrop and source color values, then
+complements the result."</p></div>
+</dd>
+<dt id="fpdf.enums.BlendMode.SOFT_LIGHT"><code class="name">var <span class="ident">SOFT_LIGHT</span></code></dt>
+<dd>
+<div class="desc"><p>"Darkens or lightens the colors, depending on the source color value. The effect is
+similar to shining a diffused spotlight on the backdrop."</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.CharVPos"><code class="flex name class">
+<span>class <span class="ident">CharVPos</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines the vertical position of text relative to the line.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CharVPos(CoerciveEnum):
+    &#34;Defines the vertical position of text relative to the line.&#34;
+    SUP = intern(&#34;SUP&#34;)
+    &#34;Superscript&#34;
+
+    SUB = intern(&#34;SUB&#34;)
+    &#34;Subscript&#34;
+
+    NOM = intern(&#34;NOM&#34;)
+    &#34;Nominator of a fraction&#34;
+
+    DENOM = intern(&#34;DENOM&#34;)
+    &#34;Denominator of a fraction&#34;
+
+    LINE = intern(&#34;LINE&#34;)
+    &#34;Default line position&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.CharVPos.DENOM"><code class="name">var <span class="ident">DENOM</span></code></dt>
+<dd>
+<div class="desc"><p>Denominator of a fraction</p></div>
+</dd>
+<dt id="fpdf.enums.CharVPos.LINE"><code class="name">var <span class="ident">LINE</span></code></dt>
+<dd>
+<div class="desc"><p>Default line position</p></div>
+</dd>
+<dt id="fpdf.enums.CharVPos.NOM"><code class="name">var <span class="ident">NOM</span></code></dt>
+<dd>
+<div class="desc"><p>Nominator of a fraction</p></div>
+</dd>
+<dt id="fpdf.enums.CharVPos.SUB"><code class="name">var <span class="ident">SUB</span></code></dt>
+<dd>
+<div class="desc"><p>Subscript</p></div>
+</dd>
+<dt id="fpdf.enums.CharVPos.SUP"><code class="name">var <span class="ident">SUP</span></code></dt>
+<dd>
+<div class="desc"><p>Superscript</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.ClippingPathIntersectionRule"><code class="flex name class">
+<span>class <span class="ident">ClippingPathIntersectionRule</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of the PDF drawing directives that define a path as a clipping path.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ClippingPathIntersectionRule(CoerciveEnum):
+    &#34;An enumeration of the PDF drawing directives that define a path as a clipping path.&#34;
+
+    NONZERO = &#34;W&#34;
+    &#34;&#34;&#34;
+    &#34;The nonzero winding number rule determines whether a given point is inside a path
+    by conceptually drawing a ray from that point to infinity in any direction and
+    then examining the places where a segment of the path crosses the ray. Starting
+    with a count of 0, the rule adds 1 each time a path segment crosses the ray from
+    left to right and subtracts 1 each time a segment crosses from right to left.
+    After counting all the crossings, if the result is 0, the point is outside the
+    path; otherwise, it is inside.&#34;
+    &#34;&#34;&#34;
+    EVENODD = &#34;W*&#34;
+    &#34;&#34;&#34;
+    &#34;An alternative to the nonzero winding number rule is the even-odd rule. This rule
+    determines whether a point is inside a path by drawing a ray from that point in
+    any direction and simply counting the number of path segments that cross the ray,
+    regardless of direction. If this number is odd, the point is inside; if even, the
+    point is outside. This yields the same results as the nonzero winding number rule
+    for paths with simple shapes, but produces different results for more complex
+    shapes.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.ClippingPathIntersectionRule.EVENODD"><code class="name">var <span class="ident">EVENODD</span></code></dt>
+<dd>
+<div class="desc"><p>"An alternative to the nonzero winding number rule is the even-odd rule. This rule
+determines whether a point is inside a path by drawing a ray from that point in
+any direction and simply counting the number of path segments that cross the ray,
+regardless of direction. If this number is odd, the point is inside; if even, the
+point is outside. This yields the same results as the nonzero winding number rule
+for paths with simple shapes, but produces different results for more complex
+shapes.</p></div>
+</dd>
+<dt id="fpdf.enums.ClippingPathIntersectionRule.NONZERO"><code class="name">var <span class="ident">NONZERO</span></code></dt>
+<dd>
+<div class="desc"><p>"The nonzero winding number rule determines whether a given point is inside a path
+by conceptually drawing a ray from that point to infinity in any direction and
+then examining the places where a segment of the path crosses the ray. Starting
+with a count of 0, the rule adds 1 each time a path segment crosses the ray from
+left to right and subtracts 1 each time a segment crosses from right to left.
+After counting all the crossings, if the result is 0, the point is outside the
+path; otherwise, it is inside."</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.CoerciveEnum"><code class="flex name class">
+<span>class <span class="ident">CoerciveEnum</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration that provides a helper to coerce strings into enumeration members.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CoerciveEnum(Enum):
+    &#34;An enumeration that provides a helper to coerce strings into enumeration members.&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        &#34;&#34;&#34;
+        Attempt to coerce `value` into a member of this enumeration.
+
+        If value is already a member of this enumeration it is returned unchanged.
+        Otherwise, if it is a string, attempt to convert it as an enumeration value. If
+        that fails, attempt to convert it (case insensitively, by upcasing) as an
+        enumeration name.
+
+        If all different conversion attempts fail, an exception is raised.
+
+        Args:
+            value (Enum, str): the value to be coerced.
+
+        Raises:
+            ValueError: if `value` is a string but neither a member by name nor value.
+            TypeError: if `value`&#39;s type is neither a member of the enumeration nor a
+                string.
+        &#34;&#34;&#34;
+
+        if isinstance(value, cls):
+            return value
+
+        if isinstance(value, str):
+            try:
+                return cls(value)
+            except ValueError:
+                pass
+            try:
+                return cls[value.upper()]
+            except KeyError:
+                pass
+
+            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;)
+
+        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.Align" href="#fpdf.enums.Align">Align</a></li>
+<li><a title="fpdf.enums.AnnotationName" href="#fpdf.enums.AnnotationName">AnnotationName</a></li>
+<li><a title="fpdf.enums.BlendMode" href="#fpdf.enums.BlendMode">BlendMode</a></li>
+<li><a title="fpdf.enums.CharVPos" href="#fpdf.enums.CharVPos">CharVPos</a></li>
+<li><a title="fpdf.enums.ClippingPathIntersectionRule" href="#fpdf.enums.ClippingPathIntersectionRule">ClippingPathIntersectionRule</a></li>
+<li><a title="fpdf.enums.Corner" href="#fpdf.enums.Corner">Corner</a></li>
+<li><a title="fpdf.enums.FileAttachmentAnnotationName" href="#fpdf.enums.FileAttachmentAnnotationName">FileAttachmentAnnotationName</a></li>
+<li><a title="fpdf.enums.IntersectionRule" href="#fpdf.enums.IntersectionRule">IntersectionRule</a></li>
+<li><a title="fpdf.enums.PageLayout" href="#fpdf.enums.PageLayout">PageLayout</a></li>
+<li><a title="fpdf.enums.PageMode" href="#fpdf.enums.PageMode">PageMode</a></li>
+<li><a title="fpdf.enums.PathPaintRule" href="#fpdf.enums.PathPaintRule">PathPaintRule</a></li>
+<li><a title="fpdf.enums.RenderStyle" href="#fpdf.enums.RenderStyle">RenderStyle</a></li>
+<li><a title="fpdf.enums.TextMarkupType" href="#fpdf.enums.TextMarkupType">TextMarkupType</a></li>
+<li><a title="fpdf.enums.WrapMode" href="#fpdf.enums.WrapMode">WrapMode</a></li>
+<li><a title="fpdf.enums.XPos" href="#fpdf.enums.XPos">XPos</a></li>
+<li><a title="fpdf.enums.YPos" href="#fpdf.enums.YPos">YPos</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.enums.CoerciveEnum.coerce"><code class="name flex">
+<span>def <span class="ident">coerce</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attempt to coerce <code>value</code> into a member of this enumeration.</p>
+<p>If value is already a member of this enumeration it is returned unchanged.
+Otherwise, if it is a string, attempt to convert it as an enumeration value. If
+that fails, attempt to convert it (case insensitively, by upcasing) as an
+enumeration name.</p>
+<p>If all different conversion attempts fail, an exception is raised.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong> :&ensp;<code>Enum, str</code></dt>
+<dd>the value to be coerced.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if <code>value</code> is a string but neither a member by name nor value.</dd>
+<dt><code>TypeError</code></dt>
+<dd>if <code>value</code>'s type is neither a member of the enumeration nor a
+string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def coerce(cls, value):
+    &#34;&#34;&#34;
+    Attempt to coerce `value` into a member of this enumeration.
+
+    If value is already a member of this enumeration it is returned unchanged.
+    Otherwise, if it is a string, attempt to convert it as an enumeration value. If
+    that fails, attempt to convert it (case insensitively, by upcasing) as an
+    enumeration name.
+
+    If all different conversion attempts fail, an exception is raised.
+
+    Args:
+        value (Enum, str): the value to be coerced.
+
+    Raises:
+        ValueError: if `value` is a string but neither a member by name nor value.
+        TypeError: if `value`&#39;s type is neither a member of the enumeration nor a
+            string.
+    &#34;&#34;&#34;
+
+    if isinstance(value, cls):
+        return value
+
+    if isinstance(value, str):
+        try:
+            return cls(value)
+        except ValueError:
+            pass
+        try:
+            return cls[value.upper()]
+        except KeyError:
+            pass
+
+        raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;)
+
+    raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.CoerciveIntEnum"><code class="flex name class">
+<span>class <span class="ident">CoerciveIntEnum</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration that provides a helper to coerce strings and integers into
+enumeration members.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CoerciveIntEnum(IntEnum):
+    &#34;&#34;&#34;
+    An enumeration that provides a helper to coerce strings and integers into
+    enumeration members.
+    &#34;&#34;&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        &#34;&#34;&#34;
+        Attempt to coerce `value` into a member of this enumeration.
+
+        If value is already a member of this enumeration it is returned unchanged.
+        Otherwise, if it is a string, attempt to convert it (case insensitively, by
+        upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+        convert it as an enumeration value.
+
+        Otherwise, an exception is raised.
+
+        Args:
+            value (IntEnum, str, int): the value to be coerced.
+
+        Raises:
+            ValueError: if `value` is an int but not a member of this enumeration.
+            ValueError: if `value` is a string but not a member by name.
+            TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
+                int or a string.
+        &#34;&#34;&#34;
+        if isinstance(value, cls):
+            return value
+
+        if isinstance(value, str):
+            try:
+                return cls[value.upper()]
+            except KeyError:
+                raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
+
+        if isinstance(value, int):
+            return cls(value)
+
+        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.AnnotationFlag" href="#fpdf.enums.AnnotationFlag">AnnotationFlag</a></li>
+<li><a title="fpdf.enums.StrokeCapStyle" href="#fpdf.enums.StrokeCapStyle">StrokeCapStyle</a></li>
+<li><a title="fpdf.enums.StrokeJoinStyle" href="#fpdf.enums.StrokeJoinStyle">StrokeJoinStyle</a></li>
+<li><a title="fpdf.enums.TextMode" href="#fpdf.enums.TextMode">TextMode</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.enums.CoerciveIntEnum.coerce"><code class="name flex">
+<span>def <span class="ident">coerce</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attempt to coerce <code>value</code> into a member of this enumeration.</p>
+<p>If value is already a member of this enumeration it is returned unchanged.
+Otherwise, if it is a string, attempt to convert it (case insensitively, by
+upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+convert it as an enumeration value.</p>
+<p>Otherwise, an exception is raised.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong> :&ensp;<code>IntEnum, str, int</code></dt>
+<dd>the value to be coerced.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if <code>value</code> is an int but not a member of this enumeration.</dd>
+<dt><code>ValueError</code></dt>
+<dd>if <code>value</code> is a string but not a member by name.</dd>
+<dt><code>TypeError</code></dt>
+<dd>if <code>value</code>'s type is neither a member of the enumeration nor an
+int or a string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def coerce(cls, value):
+    &#34;&#34;&#34;
+    Attempt to coerce `value` into a member of this enumeration.
+
+    If value is already a member of this enumeration it is returned unchanged.
+    Otherwise, if it is a string, attempt to convert it (case insensitively, by
+    upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+    convert it as an enumeration value.
+
+    Otherwise, an exception is raised.
+
+    Args:
+        value (IntEnum, str, int): the value to be coerced.
+
+    Raises:
+        ValueError: if `value` is an int but not a member of this enumeration.
+        ValueError: if `value` is a string but not a member by name.
+        TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
+            int or a string.
+    &#34;&#34;&#34;
+    if isinstance(value, cls):
+        return value
+
+    if isinstance(value, str):
+        try:
+            return cls[value.upper()]
+        except KeyError:
+            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
+
+    if isinstance(value, int):
+        return cls(value)
+
+    raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.CoerciveIntFlag"><code class="flex name class">
+<span>class <span class="ident">CoerciveIntFlag</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enumerated constants that can be combined using the bitwise operators,
+with a helper to coerce strings and integers into enumeration members.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CoerciveIntFlag(IntFlag):
+    &#34;&#34;&#34;
+    Enumerated constants that can be combined using the bitwise operators,
+    with a helper to coerce strings and integers into enumeration members.
+    &#34;&#34;&#34;
+
+    @classmethod
+    def coerce(cls, value):
+        &#34;&#34;&#34;
+        Attempt to coerce `value` into a member of this enumeration.
+        If value is already a member of this enumeration it is returned unchanged.
+        Otherwise, if it is a string, attempt to convert it (case insensitively, by
+        upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+        convert it as an enumeration value.
+        Otherwise, an exception is raised.
+        Args:
+            value (IntEnum, str, int): the value to be coerced.
+        Raises:
+            ValueError: if `value` is an int but not a member of this enumeration.
+            ValueError: if `value` is a string but not a member by name.
+            TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
+                int or a string.
+        &#34;&#34;&#34;
+        if isinstance(value, cls):
+            return value
+
+        if isinstance(value, str):
+            try:
+                flags = cls[value[0].upper()]
+                for char in value[1:]:
+                    flags = flags | cls[char.upper()]
+                return flags
+            except KeyError:
+                raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
+
+        if isinstance(value, int):
+            return cls(value)
+
+        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntFlag</li>
+<li>builtins.int</li>
+<li>enum.Flag</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.TextEmphasis" href="#fpdf.enums.TextEmphasis">TextEmphasis</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.enums.CoerciveIntFlag.coerce"><code class="name flex">
+<span>def <span class="ident">coerce</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attempt to coerce <code>value</code> into a member of this enumeration.
+If value is already a member of this enumeration it is returned unchanged.
+Otherwise, if it is a string, attempt to convert it (case insensitively, by
+upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+convert it as an enumeration value.
+Otherwise, an exception is raised.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong> :&ensp;<code>IntEnum, str, int</code></dt>
+<dd>the value to be coerced.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if <code>value</code> is an int but not a member of this enumeration.</dd>
+<dt><code>ValueError</code></dt>
+<dd>if <code>value</code> is a string but not a member by name.</dd>
+<dt><code>TypeError</code></dt>
+<dd>if <code>value</code>'s type is neither a member of the enumeration nor an
+int or a string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def coerce(cls, value):
+    &#34;&#34;&#34;
+    Attempt to coerce `value` into a member of this enumeration.
+    If value is already a member of this enumeration it is returned unchanged.
+    Otherwise, if it is a string, attempt to convert it (case insensitively, by
+    upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
+    convert it as an enumeration value.
+    Otherwise, an exception is raised.
+    Args:
+        value (IntEnum, str, int): the value to be coerced.
+    Raises:
+        ValueError: if `value` is an int but not a member of this enumeration.
+        ValueError: if `value` is a string but not a member by name.
+        TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
+            int or a string.
+    &#34;&#34;&#34;
+    if isinstance(value, cls):
+        return value
+
+    if isinstance(value, str):
+        try:
+            flags = cls[value[0].upper()]
+            for char in value[1:]:
+                flags = flags | cls[char.upper()]
+            return flags
+        except KeyError:
+            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
+
+    if isinstance(value, int):
+        return cls(value)
+
+    raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.Corner"><code class="flex name class">
+<span>class <span class="ident">Corner</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Corner(CoerciveEnum):
+    TOP_RIGHT = &#34;TOP_RIGHT&#34;
+    TOP_LEFT = &#34;TOP_LEFT&#34;
+    BOTTOM_RIGHT = &#34;BOTTOM_RIGHT&#34;
+    BOTTOM_LEFT = &#34;BOTTOM_LEFT&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.Corner.BOTTOM_LEFT"><code class="name">var <span class="ident">BOTTOM_LEFT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.Corner.BOTTOM_RIGHT"><code class="name">var <span class="ident">BOTTOM_RIGHT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.Corner.TOP_LEFT"><code class="name">var <span class="ident">TOP_LEFT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.Corner.TOP_RIGHT"><code class="name">var <span class="ident">TOP_RIGHT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.EncryptionMethod"><code class="flex name class">
+<span>class <span class="ident">EncryptionMethod</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Algorithm to be used to encrypt the document</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EncryptionMethod(Enum):
+    &#34;Algorithm to be used to encrypt the document&#34;
+
+    NO_ENCRYPTION = 0
+    RC4 = 1
+    AES_128 = 2</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.EncryptionMethod.AES_128"><code class="name">var <span class="ident">AES_128</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.EncryptionMethod.NO_ENCRYPTION"><code class="name">var <span class="ident">NO_ENCRYPTION</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.EncryptionMethod.RC4"><code class="name">var <span class="ident">RC4</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.FileAttachmentAnnotationName"><code class="flex name class">
+<span>class <span class="ident">FileAttachmentAnnotationName</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The name of an icon that shall be used in displaying the annotation</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FileAttachmentAnnotationName(CoerciveEnum):
+    &#34;The name of an icon that shall be used in displaying the annotation&#34;
+
+    PUSH_PIN = Name(&#34;PushPin&#34;)
+    GRAPH_PUSH_PIN = Name(&#34;GraphPushPin&#34;)
+    PAPERCLIP_TAG = Name(&#34;PaperclipTag&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.FileAttachmentAnnotationName.GRAPH_PUSH_PIN"><code class="name">var <span class="ident">GRAPH_PUSH_PIN</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.FileAttachmentAnnotationName.PAPERCLIP_TAG"><code class="name">var <span class="ident">PAPERCLIP_TAG</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.FileAttachmentAnnotationName.PUSH_PIN"><code class="name">var <span class="ident">PUSH_PIN</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.FontDescriptorFlags"><code class="flex name class">
+<span>class <span class="ident">FontDescriptorFlags</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of the flags for the unsigned 32-bit integer entry in the font descriptor specifying various
+characteristics of the font. Bit positions are numbered from 1 (low-order) to 32 (high-order).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FontDescriptorFlags(Flag):
+    &#34;&#34;&#34;An enumeration of the flags for the unsigned 32-bit integer entry in the font descriptor specifying various
+    characteristics of the font. Bit positions are numbered from 1 (low-order) to 32 (high-order).
+    &#34;&#34;&#34;
+
+    FIXED_PITCH = 0x0000001
+    &#34;&#34;&#34;
+    &#34;All glyphs have the same width (as opposed to proportional or
+    variable-pitch fonts, which have different widths.&#34;
+    &#34;&#34;&#34;
+
+    SYMBOLIC = 0x0000004
+    &#34;&#34;&#34;
+    &#34;Font contains glyphs outside the Adobe standard Latin character set.
+    This flag and the Nonsymbolic flag shall not both be set or both be clear.&#34;
+    &#34;&#34;&#34;
+
+    ITALIC = 0x0000040
+    &#34;&#34;&#34;
+    &#34;Glyphs have dominant vertical strokes that are slanted.&#34;
+    &#34;&#34;&#34;
+
+    FORCE_BOLD = 0x0040000
+    &#34;&#34;&#34;
+    &#34;The flag shall determine whether bold glyphs shall be painted with extra pixels even at very
+    small text sizes by a conforming reader. If set, features of bold glyphs may be thickened at
+    small text sizes.&#34;
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Flag</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.FontDescriptorFlags.FIXED_PITCH"><code class="name">var <span class="ident">FIXED_PITCH</span></code></dt>
+<dd>
+<div class="desc"><p>"All glyphs have the same width (as opposed to proportional or
+variable-pitch fonts, which have different widths."</p></div>
+</dd>
+<dt id="fpdf.enums.FontDescriptorFlags.FORCE_BOLD"><code class="name">var <span class="ident">FORCE_BOLD</span></code></dt>
+<dd>
+<div class="desc"><p>"The flag shall determine whether bold glyphs shall be painted with extra pixels even at very
+small text sizes by a conforming reader. If set, features of bold glyphs may be thickened at
+small text sizes."</p></div>
+</dd>
+<dt id="fpdf.enums.FontDescriptorFlags.ITALIC"><code class="name">var <span class="ident">ITALIC</span></code></dt>
+<dd>
+<div class="desc"><p>"Glyphs have dominant vertical strokes that are slanted."</p></div>
+</dd>
+<dt id="fpdf.enums.FontDescriptorFlags.SYMBOLIC"><code class="name">var <span class="ident">SYMBOLIC</span></code></dt>
+<dd>
+<div class="desc"><p>"Font contains glyphs outside the Adobe standard Latin character set.
+This flag and the Nonsymbolic flag shall not both be set or both be clear."</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.IntersectionRule"><code class="flex name class">
+<span>class <span class="ident">IntersectionRule</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration representing the two possible PDF intersection rules.</p>
+<p>The intersection rule is used by the renderer to determine which points are
+considered to be inside the path and which points are outside the path. This
+primarily affects fill rendering and clipping paths.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IntersectionRule(CoerciveEnum):
+    &#34;&#34;&#34;
+    An enumeration representing the two possible PDF intersection rules.
+
+    The intersection rule is used by the renderer to determine which points are
+    considered to be inside the path and which points are outside the path. This
+    primarily affects fill rendering and clipping paths.
+    &#34;&#34;&#34;
+
+    NONZERO = &#34;nonzero&#34;
+    &#34;&#34;&#34;
+    &#34;The nonzero winding number rule determines whether a given point is inside a path
+    by conceptually drawing a ray from that point to infinity in any direction and
+    then examining the places where a segment of the path crosses the ray. Starting
+    with a count of 0, the rule adds 1 each time a path segment crosses the ray from
+    left to right and subtracts 1 each time a segment crosses from right to left.
+    After counting all the crossings, if the result is 0, the point is outside the
+    path; otherwise, it is inside.&#34;
+    &#34;&#34;&#34;
+    EVENODD = &#34;evenodd&#34;
+    &#34;&#34;&#34;
+    &#34;An alternative to the nonzero winding number rule is the even-odd rule. This rule
+    determines whether a point is inside a path by drawing a ray from that point in
+    any direction and simply counting the number of path segments that cross the ray,
+    regardless of direction. If this number is odd, the point is inside; if even, the
+    point is outside. This yields the same results as the nonzero winding number rule
+    for paths with simple shapes, but produces different results for more complex
+    shapes.&#34;
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.IntersectionRule.EVENODD"><code class="name">var <span class="ident">EVENODD</span></code></dt>
+<dd>
+<div class="desc"><p>"An alternative to the nonzero winding number rule is the even-odd rule. This rule
+determines whether a point is inside a path by drawing a ray from that point in
+any direction and simply counting the number of path segments that cross the ray,
+regardless of direction. If this number is odd, the point is inside; if even, the
+point is outside. This yields the same results as the nonzero winding number rule
+for paths with simple shapes, but produces different results for more complex
+shapes."</p></div>
+</dd>
+<dt id="fpdf.enums.IntersectionRule.NONZERO"><code class="name">var <span class="ident">NONZERO</span></code></dt>
+<dd>
+<div class="desc"><p>"The nonzero winding number rule determines whether a given point is inside a path
+by conceptually drawing a ray from that point to infinity in any direction and
+then examining the places where a segment of the path crosses the ray. Starting
+with a count of 0, the rule adds 1 each time a path segment crosses the ray from
+left to right and subtracts 1 each time a segment crosses from right to left.
+After counting all the crossings, if the result is 0, the point is outside the
+path; otherwise, it is inside."</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys"><code class="flex name class">
+<span>class <span class="ident">PDFStyleKeys</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of the graphics state parameter dictionary keys.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PDFStyleKeys(Enum):
+    &#34;An enumeration of the graphics state parameter dictionary keys.&#34;
+
+    FILL_ALPHA = Name(&#34;ca&#34;)
+    BLEND_MODE = Name(&#34;BM&#34;)  # shared between stroke and fill
+    STROKE_ALPHA = Name(&#34;CA&#34;)
+    STROKE_ADJUSTMENT = Name(&#34;SA&#34;)
+    STROKE_WIDTH = Name(&#34;LW&#34;)
+    STROKE_CAP_STYLE = Name(&#34;LC&#34;)
+    STROKE_JOIN_STYLE = Name(&#34;LJ&#34;)
+    STROKE_MITER_LIMIT = Name(&#34;ML&#34;)
+    STROKE_DASH_PATTERN = Name(&#34;D&#34;)  # array of array, number, e.g. [[1 1] 0]</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.PDFStyleKeys.BLEND_MODE"><code class="name">var <span class="ident">BLEND_MODE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.FILL_ALPHA"><code class="name">var <span class="ident">FILL_ALPHA</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_ADJUSTMENT"><code class="name">var <span class="ident">STROKE_ADJUSTMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_ALPHA"><code class="name">var <span class="ident">STROKE_ALPHA</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_CAP_STYLE"><code class="name">var <span class="ident">STROKE_CAP_STYLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_DASH_PATTERN"><code class="name">var <span class="ident">STROKE_DASH_PATTERN</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_JOIN_STYLE"><code class="name">var <span class="ident">STROKE_JOIN_STYLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_MITER_LIMIT"><code class="name">var <span class="ident">STROKE_MITER_LIMIT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.PDFStyleKeys.STROKE_WIDTH"><code class="name">var <span class="ident">STROKE_WIDTH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.PageLayout"><code class="flex name class">
+<span>class <span class="ident">PageLayout</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Specify the page layout shall be used when the document is opened</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PageLayout(CoerciveEnum):
+    &#34;Specify the page layout shall be used when the document is opened&#34;
+
+    SINGLE_PAGE = Name(&#34;SinglePage&#34;)
+    &#34;Display one page at a time&#34;
+
+    ONE_COLUMN = Name(&#34;OneColumn&#34;)
+    &#34;Display the pages in one column&#34;
+
+    TWO_COLUMN_LEFT = Name(&#34;TwoColumnLeft&#34;)
+    &#34;Display the pages in two columns, with odd-numbered pages on the left&#34;
+
+    TWO_COLUMN_RIGHT = Name(&#34;TwoColumnRight&#34;)
+    &#34;Display the pages in two columns, with odd-numbered pages on the right&#34;
+
+    TWO_PAGE_LEFT = Name(&#34;TwoPageLeft&#34;)
+    &#34;Display the pages two at a time, with odd-numbered pages on the left&#34;
+
+    TWO_PAGE_RIGHT = Name(&#34;TwoPageRight&#34;)
+    &#34;Display the pages two at a time, with odd-numbered pages on the right&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.PageLayout.ONE_COLUMN"><code class="name">var <span class="ident">ONE_COLUMN</span></code></dt>
+<dd>
+<div class="desc"><p>Display the pages in one column</p></div>
+</dd>
+<dt id="fpdf.enums.PageLayout.SINGLE_PAGE"><code class="name">var <span class="ident">SINGLE_PAGE</span></code></dt>
+<dd>
+<div class="desc"><p>Display one page at a time</p></div>
+</dd>
+<dt id="fpdf.enums.PageLayout.TWO_COLUMN_LEFT"><code class="name">var <span class="ident">TWO_COLUMN_LEFT</span></code></dt>
+<dd>
+<div class="desc"><p>Display the pages in two columns, with odd-numbered pages on the left</p></div>
+</dd>
+<dt id="fpdf.enums.PageLayout.TWO_COLUMN_RIGHT"><code class="name">var <span class="ident">TWO_COLUMN_RIGHT</span></code></dt>
+<dd>
+<div class="desc"><p>Display the pages in two columns, with odd-numbered pages on the right</p></div>
+</dd>
+<dt id="fpdf.enums.PageLayout.TWO_PAGE_LEFT"><code class="name">var <span class="ident">TWO_PAGE_LEFT</span></code></dt>
+<dd>
+<div class="desc"><p>Display the pages two at a time, with odd-numbered pages on the left</p></div>
+</dd>
+<dt id="fpdf.enums.PageLayout.TWO_PAGE_RIGHT"><code class="name">var <span class="ident">TWO_PAGE_RIGHT</span></code></dt>
+<dd>
+<div class="desc"><p>Display the pages two at a time, with odd-numbered pages on the right</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.PageMode"><code class="flex name class">
+<span>class <span class="ident">PageMode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Specifying how to display the document on exiting full-screen mode</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PageMode(CoerciveEnum):
+    &#34;Specifying how to display the document on exiting full-screen mode&#34;
+
+    USE_NONE = Name(&#34;UseNone&#34;)
+    &#34;Neither document outline nor thumbnail images visible&#34;
+
+    USE_OUTLINES = Name(&#34;UseOutlines&#34;)
+    &#34;Document outline visible&#34;
+
+    USE_THUMBS = Name(&#34;UseThumbs&#34;)
+    &#34;Thumbnail images visible&#34;
+
+    FULL_SCREEN = Name(&#34;FullScreen&#34;)
+    &#34;Full-screen mode, with no menu bar, window controls, or any other window visible&#34;
+
+    USE_OC = Name(&#34;UseOC&#34;)
+    &#34;Optional content group panel visible&#34;
+
+    USE_ATTACHMENTS = Name(&#34;UseAttachments&#34;)
+    &#34;Attachments panel visible&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.PageMode.FULL_SCREEN"><code class="name">var <span class="ident">FULL_SCREEN</span></code></dt>
+<dd>
+<div class="desc"><p>Full-screen mode, with no menu bar, window controls, or any other window visible</p></div>
+</dd>
+<dt id="fpdf.enums.PageMode.USE_ATTACHMENTS"><code class="name">var <span class="ident">USE_ATTACHMENTS</span></code></dt>
+<dd>
+<div class="desc"><p>Attachments panel visible</p></div>
+</dd>
+<dt id="fpdf.enums.PageMode.USE_NONE"><code class="name">var <span class="ident">USE_NONE</span></code></dt>
+<dd>
+<div class="desc"><p>Neither document outline nor thumbnail images visible</p></div>
+</dd>
+<dt id="fpdf.enums.PageMode.USE_OC"><code class="name">var <span class="ident">USE_OC</span></code></dt>
+<dd>
+<div class="desc"><p>Optional content group panel visible</p></div>
+</dd>
+<dt id="fpdf.enums.PageMode.USE_OUTLINES"><code class="name">var <span class="ident">USE_OUTLINES</span></code></dt>
+<dd>
+<div class="desc"><p>Document outline visible</p></div>
+</dd>
+<dt id="fpdf.enums.PageMode.USE_THUMBS"><code class="name">var <span class="ident">USE_THUMBS</span></code></dt>
+<dd>
+<div class="desc"><p>Thumbnail images visible</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.PathPaintRule"><code class="flex name class">
+<span>class <span class="ident">PathPaintRule</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of the PDF drawing directives that determine how the renderer should
+paint a given path.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PathPaintRule(CoerciveEnum):
+    &#34;&#34;&#34;
+    An enumeration of the PDF drawing directives that determine how the renderer should
+    paint a given path.
+    &#34;&#34;&#34;
+
+    # the auto-close paint rules are omitted here because it&#39;s easier to just emit
+    # close operators when appropriate, programmatically
+    STROKE = &#34;S&#34;
+    &#39;&#39;&#39;&#34;Stroke the path.&#34;&#39;&#39;&#39;
+
+    FILL_NONZERO = &#34;f&#34;
+    &#34;&#34;&#34;
+    &#34;Fill the path, using the nonzero winding number rule to determine the region to
+    fill. Any subpaths that are open are implicitly closed before being filled.&#34;
+    &#34;&#34;&#34;
+
+    FILL_EVENODD = &#34;f*&#34;
+    &#34;&#34;&#34;
+    &#34;Fill the path, using the even-odd rule to determine the region to fill. Any
+    subpaths that are open are implicitly closed before being filled.&#34;
+    &#34;&#34;&#34;
+
+    STROKE_FILL_NONZERO = &#34;B&#34;
+    &#34;&#34;&#34;
+    &#34;Fill and then stroke the path, using the nonzero winding number rule to determine
+    the region to fill. This operator produces the same result as constructing two
+    identical path objects, painting the first with `FILL_NONZERO` and the second with
+    `STROKE`.&#34;
+    &#34;&#34;&#34;
+
+    STROKE_FILL_EVENODD = &#34;B*&#34;
+    &#34;&#34;&#34;
+    &#34;Fill and then stroke the path, using the even-odd rule to determine the region to
+    fill. This operator produces the same result as `STROKE_FILL_NONZERO`, except that
+    the path is filled as if with `FILL_EVENODD` instead of `FILL_NONZERO`.&#34;
+    &#34;&#34;&#34;
+
+    DONT_PAINT = &#34;n&#34;
+    &#34;&#34;&#34;
+    &#34;End the path object without filling or stroking it. This operator is a
+    path-painting no-op, used primarily for the side effect of changing the current
+    clipping path.&#34;
+    &#34;&#34;&#34;
+
+    AUTO = &#34;auto&#34;
+    &#34;&#34;&#34;
+    Automatically determine which `PathPaintRule` should be used.
+
+    PaintedPath will select one of the above `PathPaintRule`s based on the resolved
+    set/inherited values of its style property.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.PathPaintRule.AUTO"><code class="name">var <span class="ident">AUTO</span></code></dt>
+<dd>
+<div class="desc"><p>Automatically determine which <code><a title="fpdf.enums.PathPaintRule" href="#fpdf.enums.PathPaintRule">PathPaintRule</a></code> should be used.</p>
+<p>PaintedPath will select one of the above <code><a title="fpdf.enums.PathPaintRule" href="#fpdf.enums.PathPaintRule">PathPaintRule</a></code>s based on the resolved
+set/inherited values of its style property.</p></div>
+</dd>
+<dt id="fpdf.enums.PathPaintRule.DONT_PAINT"><code class="name">var <span class="ident">DONT_PAINT</span></code></dt>
+<dd>
+<div class="desc"><p>"End the path object without filling or stroking it. This operator is a
+path-painting no-op, used primarily for the side effect of changing the current
+clipping path."</p></div>
+</dd>
+<dt id="fpdf.enums.PathPaintRule.FILL_EVENODD"><code class="name">var <span class="ident">FILL_EVENODD</span></code></dt>
+<dd>
+<div class="desc"><p>"Fill the path, using the even-odd rule to determine the region to fill. Any
+subpaths that are open are implicitly closed before being filled."</p></div>
+</dd>
+<dt id="fpdf.enums.PathPaintRule.FILL_NONZERO"><code class="name">var <span class="ident">FILL_NONZERO</span></code></dt>
+<dd>
+<div class="desc"><p>"Fill the path, using the nonzero winding number rule to determine the region to
+fill. Any subpaths that are open are implicitly closed before being filled."</p></div>
+</dd>
+<dt id="fpdf.enums.PathPaintRule.STROKE"><code class="name">var <span class="ident">STROKE</span></code></dt>
+<dd>
+<div class="desc"><p>"Stroke the path."</p></div>
+</dd>
+<dt id="fpdf.enums.PathPaintRule.STROKE_FILL_EVENODD"><code class="name">var <span class="ident">STROKE_FILL_EVENODD</span></code></dt>
+<dd>
+<div class="desc"><p>"Fill and then stroke the path, using the even-odd rule to determine the region to
+fill. This operator produces the same result as <code>STROKE_FILL_NONZERO</code>, except that
+the path is filled as if with <code>FILL_EVENODD</code> instead of <code>FILL_NONZERO</code>."</p></div>
+</dd>
+<dt id="fpdf.enums.PathPaintRule.STROKE_FILL_NONZERO"><code class="name">var <span class="ident">STROKE_FILL_NONZERO</span></code></dt>
+<dd>
+<div class="desc"><p>"Fill and then stroke the path, using the nonzero winding number rule to determine
+the region to fill. This operator produces the same result as constructing two
+identical path objects, painting the first with <code>FILL_NONZERO</code> and the second with
+<code>STROKE</code>."</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.RenderStyle"><code class="flex name class">
+<span>class <span class="ident">RenderStyle</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines how to render shapes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RenderStyle(CoerciveEnum):
+    &#34;Defines how to render shapes&#34;
+
+    D = intern(&#34;DRAW&#34;)
+    &#34;&#34;&#34;
+    Draw lines.
+    Line color can be controlled with `fpdf.fpdf.FPDF.set_draw_color()`.
+    Line thickness can be controlled with `fpdf.fpdf.FPDF.set_line_width()`.
+    &#34;&#34;&#34;
+
+    F = intern(&#34;FILL&#34;)
+    &#34;&#34;&#34;
+    Fill areas.
+    Filling color can be controlled with `fpdf.fpdf.FPDF.set_fill_color()`.
+    &#34;&#34;&#34;
+
+    DF = intern(&#34;DRAW_FILL&#34;)
+    &#34;Draw lines and fill areas&#34;
+
+    @property
+    def operator(self):
+        return {self.D: &#34;S&#34;, self.F: &#34;f&#34;, self.DF: &#34;B&#34;}[self]
+
+    @property
+    def is_draw(self):
+        return self in (self.D, self.DF)
+
+    @property
+    def is_fill(self):
+        return self in (self.F, self.DF)
+
+    @classmethod
+    def coerce(cls, value):
+        if not value:
+            return cls.D
+        if value == &#34;FD&#34;:
+            value = &#34;DF&#34;
+        return super(cls, cls).coerce(value)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.RenderStyle.D"><code class="name">var <span class="ident">D</span></code></dt>
+<dd>
+<div class="desc"><p>Draw lines.
+Line color can be controlled with <code><a title="fpdf.fpdf.FPDF.set_draw_color" href="fpdf.html#fpdf.fpdf.FPDF.set_draw_color">FPDF.set_draw_color()</a></code>.
+Line thickness can be controlled with <code><a title="fpdf.fpdf.FPDF.set_line_width" href="fpdf.html#fpdf.fpdf.FPDF.set_line_width">FPDF.set_line_width()</a></code>.</p></div>
+</dd>
+<dt id="fpdf.enums.RenderStyle.DF"><code class="name">var <span class="ident">DF</span></code></dt>
+<dd>
+<div class="desc"><p>Draw lines and fill areas</p></div>
+</dd>
+<dt id="fpdf.enums.RenderStyle.F"><code class="name">var <span class="ident">F</span></code></dt>
+<dd>
+<div class="desc"><p>Fill areas.
+Filling color can be controlled with <code><a title="fpdf.fpdf.FPDF.set_fill_color" href="fpdf.html#fpdf.fpdf.FPDF.set_fill_color">FPDF.set_fill_color()</a></code>.</p></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.enums.RenderStyle.is_draw"><code class="name">var <span class="ident">is_draw</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def is_draw(self):
+    return self in (self.D, self.DF)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.enums.RenderStyle.is_fill"><code class="name">var <span class="ident">is_fill</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def is_fill(self):
+    return self in (self.F, self.DF)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.enums.RenderStyle.operator"><code class="name">var <span class="ident">operator</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def operator(self):
+    return {self.D: &#34;S&#34;, self.F: &#34;f&#34;, self.DF: &#34;B&#34;}[self]</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.SignatureFlag"><code class="flex name class">
+<span>class <span class="ident">SignatureFlag</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SignatureFlag(IntEnum):
+    SIGNATURES_EXIST = 1
+    &#34;If set, the document contains at least one signature field.&#34;
+    APPEND_ONLY = 2
+    &#34;&#34;&#34;
+    If set, the document contains signatures that may be invalidated
+    if the file is saved (written) in a way that alters its previous contents,
+    as opposed to an incremental update.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.SignatureFlag.APPEND_ONLY"><code class="name">var <span class="ident">APPEND_ONLY</span></code></dt>
+<dd>
+<div class="desc"><p>If set, the document contains signatures that may be invalidated
+if the file is saved (written) in a way that alters its previous contents,
+as opposed to an incremental update.</p></div>
+</dd>
+<dt id="fpdf.enums.SignatureFlag.SIGNATURES_EXIST"><code class="name">var <span class="ident">SIGNATURES_EXIST</span></code></dt>
+<dd>
+<div class="desc"><p>If set, the document contains at least one signature field.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.enums.StrokeCapStyle"><code class="flex name class">
+<span>class <span class="ident">StrokeCapStyle</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of values defining how the end of a stroke should be rendered.</p>
+<p>This affects the ends of the segments of dashed strokes, as well.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StrokeCapStyle(CoerciveIntEnum):
+    &#34;&#34;&#34;
+    An enumeration of values defining how the end of a stroke should be rendered.
+
+    This affects the ends of the segments of dashed strokes, as well.
+    &#34;&#34;&#34;
+
+    BUTT = 0
+    &#34;&#34;&#34;
+    &#34;The stroke is squared off at the endpoint of the path. There is no projection
+    beyond the end of the path.&#34;
+    &#34;&#34;&#34;
+    ROUND = 1
+    &#34;&#34;&#34;
+    &#34;A semicircular arc with a diameter equal to the line width is drawn around the
+    endpoint and filled in.&#34;
+    &#34;&#34;&#34;
+    SQUARE = 2
+    &#34;&#34;&#34;
+    &#34;The stroke continues beyond the endpoint of the path for a distance equal to half
+    the line width and is squared off.&#34;
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.StrokeCapStyle.BUTT"><code class="name">var <span class="ident">BUTT</span></code></dt>
+<dd>
+<div class="desc"><p>"The stroke is squared off at the endpoint of the path. There is no projection
+beyond the end of the path."</p></div>
+</dd>
+<dt id="fpdf.enums.StrokeCapStyle.ROUND"><code class="name">var <span class="ident">ROUND</span></code></dt>
+<dd>
+<div class="desc"><p>"A semicircular arc with a diameter equal to the line width is drawn around the
+endpoint and filled in."</p></div>
+</dd>
+<dt id="fpdf.enums.StrokeCapStyle.SQUARE"><code class="name">var <span class="ident">SQUARE</span></code></dt>
+<dd>
+<div class="desc"><p>"The stroke continues beyond the endpoint of the path for a distance equal to half
+the line width and is squared off."</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveIntEnum.coerce" href="#fpdf.enums.CoerciveIntEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.StrokeJoinStyle"><code class="flex name class">
+<span>class <span class="ident">StrokeJoinStyle</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration of values defining how the corner joining two path components should
+be rendered.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StrokeJoinStyle(CoerciveIntEnum):
+    &#34;&#34;&#34;
+    An enumeration of values defining how the corner joining two path components should
+    be rendered.
+    &#34;&#34;&#34;
+
+    MITER = 0
+    &#34;&#34;&#34;
+    &#34;The outer edges of the strokes for the two segments are extended until they meet at
+    an angle, as in a picture frame. If the segments meet at too sharp an angle
+    (as defined by the miter limit parameter), a bevel join is used instead.&#34;
+    &#34;&#34;&#34;
+    ROUND = 1
+    &#34;&#34;&#34;
+    &#34;An arc of a circle with a diameter equal to the line width is drawn around the
+    point where the two segments meet, connecting the outer edges of the strokes for
+    the two segments. This pieslice-shaped figure is filled in, pro- ducing a rounded
+    corner.&#34;
+    &#34;&#34;&#34;
+    BEVEL = 2
+    &#34;&#34;&#34;
+    &#34;The two segments are finished with butt caps and the resulting notch beyond the
+    ends of the segments is filled with a triangle.&#34;
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.StrokeJoinStyle.BEVEL"><code class="name">var <span class="ident">BEVEL</span></code></dt>
+<dd>
+<div class="desc"><p>"The two segments are finished with butt caps and the resulting notch beyond the
+ends of the segments is filled with a triangle."</p></div>
+</dd>
+<dt id="fpdf.enums.StrokeJoinStyle.MITER"><code class="name">var <span class="ident">MITER</span></code></dt>
+<dd>
+<div class="desc"><p>"The outer edges of the strokes for the two segments are extended until they meet at
+an angle, as in a picture frame. If the segments meet at too sharp an angle
+(as defined by the miter limit parameter), a bevel join is used instead."</p></div>
+</dd>
+<dt id="fpdf.enums.StrokeJoinStyle.ROUND"><code class="name">var <span class="ident">ROUND</span></code></dt>
+<dd>
+<div class="desc"><p>"An arc of a circle with a diameter equal to the line width is drawn around the
+point where the two segments meet, connecting the outer edges of the strokes for
+the two segments. This pieslice-shaped figure is filled in, pro- ducing a rounded
+corner."</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveIntEnum.coerce" href="#fpdf.enums.CoerciveIntEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.TextEmphasis"><code class="flex name class">
+<span>class <span class="ident">TextEmphasis</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Indicates use of bold / italics / underline.
+This enum values can be combined with &amp; and | operators:
+style = B | I</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TextEmphasis(CoerciveIntFlag):
+    &#34;&#34;&#34;
+    Indicates use of bold / italics / underline.
+    This enum values can be combined with &amp; and | operators:
+        style = B | I
+    &#34;&#34;&#34;
+
+    B = 1
+    &#34;Bold&#34;
+
+    I = 2
+    &#34;Italics&#34;
+
+    U = 4
+    &#34;Underline&#34;
+
+    @property
+    def style(self):
+        return &#34;&#34;.join(
+            name for name, value in self.__class__.__members__.items() if value &amp; self
+        )
+
+    @classmethod
+    def coerce(cls, value):
+        if isinstance(value, str):
+            if value == &#34;&#34;:
+                return 0
+            if value.upper() == &#34;BOLD&#34;:
+                return cls.B
+            if value.upper() == &#34;ITALICS&#34;:
+                return cls.I
+            if value.upper() == &#34;UNDERLINE&#34;:
+                return cls.U
+        return super(cls, cls).coerce(value)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveIntFlag" href="#fpdf.enums.CoerciveIntFlag">CoerciveIntFlag</a></li>
+<li>enum.IntFlag</li>
+<li>builtins.int</li>
+<li>enum.Flag</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.TextEmphasis.B"><code class="name">var <span class="ident">B</span></code></dt>
+<dd>
+<div class="desc"><p>Bold</p></div>
+</dd>
+<dt id="fpdf.enums.TextEmphasis.I"><code class="name">var <span class="ident">I</span></code></dt>
+<dd>
+<div class="desc"><p>Italics</p></div>
+</dd>
+<dt id="fpdf.enums.TextEmphasis.U"><code class="name">var <span class="ident">U</span></code></dt>
+<dd>
+<div class="desc"><p>Underline</p></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.enums.TextEmphasis.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def style(self):
+    return &#34;&#34;.join(
+        name for name, value in self.__class__.__members__.items() if value &amp; self
+    )</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveIntFlag" href="#fpdf.enums.CoerciveIntFlag">CoerciveIntFlag</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveIntFlag.coerce" href="#fpdf.enums.CoerciveIntFlag.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.TextMarkupType"><code class="flex name class">
+<span>class <span class="ident">TextMarkupType</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Subtype of a text markup annotation</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TextMarkupType(CoerciveEnum):
+    &#34;Subtype of a text markup annotation&#34;
+
+    HIGHLIGHT = Name(&#34;Highlight&#34;)
+
+    UNDERLINE = Name(&#34;Underline&#34;)
+
+    SQUIGGLY = Name(&#34;Squiggly&#34;)
+
+    STRIKE_OUT = Name(&#34;StrikeOut&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.TextMarkupType.HIGHLIGHT"><code class="name">var <span class="ident">HIGHLIGHT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMarkupType.SQUIGGLY"><code class="name">var <span class="ident">SQUIGGLY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMarkupType.STRIKE_OUT"><code class="name">var <span class="ident">STRIKE_OUT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMarkupType.UNDERLINE"><code class="name">var <span class="ident">UNDERLINE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.TextMode"><code class="flex name class">
+<span>class <span class="ident">TextMode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Values described in PDF spec section 'Text Rendering Mode'</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TextMode(CoerciveIntEnum):
+    &#34;Values described in PDF spec section &#39;Text Rendering Mode&#39;&#34;
+    FILL = 0
+    STROKE = 1
+    FILL_STROKE = 2
+    INVISIBLE = 3
+    FILL_CLIP = 4
+    STROKE_CLIP = 5
+    FILL_STROKE_CLIP = 6
+    CLIP = 7</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.TextMode.CLIP"><code class="name">var <span class="ident">CLIP</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.FILL"><code class="name">var <span class="ident">FILL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.FILL_CLIP"><code class="name">var <span class="ident">FILL_CLIP</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.FILL_STROKE"><code class="name">var <span class="ident">FILL_STROKE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.FILL_STROKE_CLIP"><code class="name">var <span class="ident">FILL_STROKE_CLIP</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.INVISIBLE"><code class="name">var <span class="ident">INVISIBLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.STROKE"><code class="name">var <span class="ident">STROKE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextMode.STROKE_CLIP"><code class="name">var <span class="ident">STROKE_CLIP</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveIntEnum.coerce" href="#fpdf.enums.CoerciveIntEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.WrapMode"><code class="flex name class">
+<span>class <span class="ident">WrapMode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines how to break and wrap lines in multi-line text.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WrapMode(CoerciveEnum):
+    &#34;Defines how to break and wrap lines in multi-line text.&#34;
+    WORD = intern(&#34;WORD&#34;)
+    &#34;Wrap by word&#34;
+
+    CHAR = intern(&#34;CHAR&#34;)
+    &#34;Wrap by character&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.WrapMode.CHAR"><code class="name">var <span class="ident">CHAR</span></code></dt>
+<dd>
+<div class="desc"><p>Wrap by character</p></div>
+</dd>
+<dt id="fpdf.enums.WrapMode.WORD"><code class="name">var <span class="ident">WORD</span></code></dt>
+<dd>
+<div class="desc"><p>Wrap by word</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.XPos"><code class="flex name class">
+<span>class <span class="ident">XPos</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Positional values in horizontal direction for use after printing text.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class XPos(CoerciveEnum):
+    &#34;Positional values in horizontal direction for use after printing text.&#34;
+
+    LEFT = intern(&#34;LEFT&#34;)  # self.x
+    &#34;left end of the cell&#34;
+
+    RIGHT = intern(&#34;RIGHT&#34;)  # self.x + w
+    &#34;right end of the cell (default)&#34;
+
+    START = intern(&#34;START&#34;)
+    &#34;left start of actual text&#34;
+
+    END = intern(&#34;END&#34;)
+    &#34;right end of actual text&#34;
+
+    WCONT = intern(&#34;WCONT&#34;)
+    &#34;for write() to continue next (slightly left of END)&#34;
+
+    CENTER = intern(&#34;CENTER&#34;)
+    &#34;center of actual text&#34;
+
+    LMARGIN = intern(&#34;LMARGIN&#34;)  # self.l_margin
+    &#34;left page margin (start of printable area)&#34;
+
+    RMARGIN = intern(&#34;RMARGIN&#34;)  # self.w - self.r_margin
+    &#34;right page margin (end of printable area)&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.XPos.CENTER"><code class="name">var <span class="ident">CENTER</span></code></dt>
+<dd>
+<div class="desc"><p>center of actual text</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.END"><code class="name">var <span class="ident">END</span></code></dt>
+<dd>
+<div class="desc"><p>right end of actual text</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.LEFT"><code class="name">var <span class="ident">LEFT</span></code></dt>
+<dd>
+<div class="desc"><p>left end of the cell</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.LMARGIN"><code class="name">var <span class="ident">LMARGIN</span></code></dt>
+<dd>
+<div class="desc"><p>left page margin (start of printable area)</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.RIGHT"><code class="name">var <span class="ident">RIGHT</span></code></dt>
+<dd>
+<div class="desc"><p>right end of the cell (default)</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.RMARGIN"><code class="name">var <span class="ident">RMARGIN</span></code></dt>
+<dd>
+<div class="desc"><p>right page margin (end of printable area)</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.START"><code class="name">var <span class="ident">START</span></code></dt>
+<dd>
+<div class="desc"><p>left start of actual text</p></div>
+</dd>
+<dt id="fpdf.enums.XPos.WCONT"><code class="name">var <span class="ident">WCONT</span></code></dt>
+<dd>
+<div class="desc"><p>for write() to continue next (slightly left of END)</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.enums.YPos"><code class="flex name class">
+<span>class <span class="ident">YPos</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Positional values in vertical direction for use after printing text</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class YPos(CoerciveEnum):
+    &#34;Positional values in vertical direction for use after printing text&#34;
+
+    TOP = intern(&#34;TOP&#34;)  # self.y
+    &#34;top of the first line (default)&#34;
+
+    LAST = intern(&#34;LAST&#34;)
+    &#34;top of the last line (same as TOP for single-line text)&#34;
+
+    NEXT = intern(&#34;NEXT&#34;)  # LAST + h
+    &#34;top of next line (bottom of current text)&#34;
+
+    TMARGIN = intern(&#34;TMARGIN&#34;)  # self.t_margin
+    &#34;top page margin (start of printable area)&#34;
+
+    BMARGIN = intern(&#34;BMARGIN&#34;)  # self.h - self.b_margin
+    &#34;bottom page margin (end of printable area)&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.enums.YPos.BMARGIN"><code class="name">var <span class="ident">BMARGIN</span></code></dt>
+<dd>
+<div class="desc"><p>bottom page margin (end of printable area)</p></div>
+</dd>
+<dt id="fpdf.enums.YPos.LAST"><code class="name">var <span class="ident">LAST</span></code></dt>
+<dd>
+<div class="desc"><p>top of the last line (same as TOP for single-line text)</p></div>
+</dd>
+<dt id="fpdf.enums.YPos.NEXT"><code class="name">var <span class="ident">NEXT</span></code></dt>
+<dd>
+<div class="desc"><p>top of next line (bottom of current text)</p></div>
+</dd>
+<dt id="fpdf.enums.YPos.TMARGIN"><code class="name">var <span class="ident">TMARGIN</span></code></dt>
+<dd>
+<div class="desc"><p>top page margin (start of printable area)</p></div>
+</dd>
+<dt id="fpdf.enums.YPos.TOP"><code class="name">var <span class="ident">TOP</span></code></dt>
+<dd>
+<div class="desc"><p>top of the first line (default)</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.enums.AccessPermission" href="#fpdf.enums.AccessPermission">AccessPermission</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.AccessPermission.ANNOTATION" href="#fpdf.enums.AccessPermission.ANNOTATION">ANNOTATION</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.ASSEMBLE" href="#fpdf.enums.AccessPermission.ASSEMBLE">ASSEMBLE</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.COPY" href="#fpdf.enums.AccessPermission.COPY">COPY</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.COPY_FOR_ACCESSIBILITY" href="#fpdf.enums.AccessPermission.COPY_FOR_ACCESSIBILITY">COPY_FOR_ACCESSIBILITY</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.FILL_FORMS" href="#fpdf.enums.AccessPermission.FILL_FORMS">FILL_FORMS</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.MODIFY" href="#fpdf.enums.AccessPermission.MODIFY">MODIFY</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.PRINT_HIGH_RES" href="#fpdf.enums.AccessPermission.PRINT_HIGH_RES">PRINT_HIGH_RES</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.PRINT_LOW_RES" href="#fpdf.enums.AccessPermission.PRINT_LOW_RES">PRINT_LOW_RES</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.all" href="#fpdf.enums.AccessPermission.all">all</a></code></li>
+<li><code><a title="fpdf.enums.AccessPermission.none" href="#fpdf.enums.AccessPermission.none">none</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.Align" href="#fpdf.enums.Align">Align</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.Align.C" href="#fpdf.enums.Align.C">C</a></code></li>
+<li><code><a title="fpdf.enums.Align.J" href="#fpdf.enums.Align.J">J</a></code></li>
+<li><code><a title="fpdf.enums.Align.L" href="#fpdf.enums.Align.L">L</a></code></li>
+<li><code><a title="fpdf.enums.Align.R" href="#fpdf.enums.Align.R">R</a></code></li>
+<li><code><a title="fpdf.enums.Align.X" href="#fpdf.enums.Align.X">X</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.AnnotationFlag" href="#fpdf.enums.AnnotationFlag">AnnotationFlag</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.AnnotationFlag.HIDDEN" href="#fpdf.enums.AnnotationFlag.HIDDEN">HIDDEN</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.INVISIBLE" href="#fpdf.enums.AnnotationFlag.INVISIBLE">INVISIBLE</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.LOCKED" href="#fpdf.enums.AnnotationFlag.LOCKED">LOCKED</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.LOCKED_CONTENTS" href="#fpdf.enums.AnnotationFlag.LOCKED_CONTENTS">LOCKED_CONTENTS</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.NO_ROTATE" href="#fpdf.enums.AnnotationFlag.NO_ROTATE">NO_ROTATE</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.NO_VIEW" href="#fpdf.enums.AnnotationFlag.NO_VIEW">NO_VIEW</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.NO_ZOOM" href="#fpdf.enums.AnnotationFlag.NO_ZOOM">NO_ZOOM</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.PRINT" href="#fpdf.enums.AnnotationFlag.PRINT">PRINT</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.READ_ONLY" href="#fpdf.enums.AnnotationFlag.READ_ONLY">READ_ONLY</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationFlag.TOGGLE_NO_VIEW" href="#fpdf.enums.AnnotationFlag.TOGGLE_NO_VIEW">TOGGLE_NO_VIEW</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.AnnotationName" href="#fpdf.enums.AnnotationName">AnnotationName</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.AnnotationName.COMMENT" href="#fpdf.enums.AnnotationName.COMMENT">COMMENT</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationName.HELP" href="#fpdf.enums.AnnotationName.HELP">HELP</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationName.INSERT" href="#fpdf.enums.AnnotationName.INSERT">INSERT</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationName.NEW_PARAGRAPH" href="#fpdf.enums.AnnotationName.NEW_PARAGRAPH">NEW_PARAGRAPH</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationName.NOTE" href="#fpdf.enums.AnnotationName.NOTE">NOTE</a></code></li>
+<li><code><a title="fpdf.enums.AnnotationName.PARAGRAPH" href="#fpdf.enums.AnnotationName.PARAGRAPH">PARAGRAPH</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.BlendMode" href="#fpdf.enums.BlendMode">BlendMode</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.BlendMode.COLOR" href="#fpdf.enums.BlendMode.COLOR">COLOR</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.COLOR_BURN" href="#fpdf.enums.BlendMode.COLOR_BURN">COLOR_BURN</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.COLOR_DODGE" href="#fpdf.enums.BlendMode.COLOR_DODGE">COLOR_DODGE</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.DARKEN" href="#fpdf.enums.BlendMode.DARKEN">DARKEN</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.DIFFERENCE" href="#fpdf.enums.BlendMode.DIFFERENCE">DIFFERENCE</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.EXCLUSION" href="#fpdf.enums.BlendMode.EXCLUSION">EXCLUSION</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.HARD_LIGHT" href="#fpdf.enums.BlendMode.HARD_LIGHT">HARD_LIGHT</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.HUE" href="#fpdf.enums.BlendMode.HUE">HUE</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.LIGHTEN" href="#fpdf.enums.BlendMode.LIGHTEN">LIGHTEN</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.LUMINOSITY" href="#fpdf.enums.BlendMode.LUMINOSITY">LUMINOSITY</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.MULTIPLY" href="#fpdf.enums.BlendMode.MULTIPLY">MULTIPLY</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.NORMAL" href="#fpdf.enums.BlendMode.NORMAL">NORMAL</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.OVERLAY" href="#fpdf.enums.BlendMode.OVERLAY">OVERLAY</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.SATURATION" href="#fpdf.enums.BlendMode.SATURATION">SATURATION</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.SCREEN" href="#fpdf.enums.BlendMode.SCREEN">SCREEN</a></code></li>
+<li><code><a title="fpdf.enums.BlendMode.SOFT_LIGHT" href="#fpdf.enums.BlendMode.SOFT_LIGHT">SOFT_LIGHT</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.CharVPos" href="#fpdf.enums.CharVPos">CharVPos</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.CharVPos.DENOM" href="#fpdf.enums.CharVPos.DENOM">DENOM</a></code></li>
+<li><code><a title="fpdf.enums.CharVPos.LINE" href="#fpdf.enums.CharVPos.LINE">LINE</a></code></li>
+<li><code><a title="fpdf.enums.CharVPos.NOM" href="#fpdf.enums.CharVPos.NOM">NOM</a></code></li>
+<li><code><a title="fpdf.enums.CharVPos.SUB" href="#fpdf.enums.CharVPos.SUB">SUB</a></code></li>
+<li><code><a title="fpdf.enums.CharVPos.SUP" href="#fpdf.enums.CharVPos.SUP">SUP</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.ClippingPathIntersectionRule" href="#fpdf.enums.ClippingPathIntersectionRule">ClippingPathIntersectionRule</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.ClippingPathIntersectionRule.EVENODD" href="#fpdf.enums.ClippingPathIntersectionRule.EVENODD">EVENODD</a></code></li>
+<li><code><a title="fpdf.enums.ClippingPathIntersectionRule.NONZERO" href="#fpdf.enums.ClippingPathIntersectionRule.NONZERO">NONZERO</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.CoerciveEnum" href="#fpdf.enums.CoerciveEnum">CoerciveEnum</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.CoerciveEnum.coerce" href="#fpdf.enums.CoerciveEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.CoerciveIntEnum" href="#fpdf.enums.CoerciveIntEnum">CoerciveIntEnum</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.CoerciveIntEnum.coerce" href="#fpdf.enums.CoerciveIntEnum.coerce">coerce</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.CoerciveIntFlag" href="#fpdf.enums.CoerciveIntFlag">CoerciveIntFlag</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.CoerciveIntFlag.coerce" href="#fpdf.enums.CoerciveIntFlag.coerce">coerce</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.Corner" href="#fpdf.enums.Corner">Corner</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.Corner.BOTTOM_LEFT" href="#fpdf.enums.Corner.BOTTOM_LEFT">BOTTOM_LEFT</a></code></li>
+<li><code><a title="fpdf.enums.Corner.BOTTOM_RIGHT" href="#fpdf.enums.Corner.BOTTOM_RIGHT">BOTTOM_RIGHT</a></code></li>
+<li><code><a title="fpdf.enums.Corner.TOP_LEFT" href="#fpdf.enums.Corner.TOP_LEFT">TOP_LEFT</a></code></li>
+<li><code><a title="fpdf.enums.Corner.TOP_RIGHT" href="#fpdf.enums.Corner.TOP_RIGHT">TOP_RIGHT</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.EncryptionMethod" href="#fpdf.enums.EncryptionMethod">EncryptionMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.EncryptionMethod.AES_128" href="#fpdf.enums.EncryptionMethod.AES_128">AES_128</a></code></li>
+<li><code><a title="fpdf.enums.EncryptionMethod.NO_ENCRYPTION" href="#fpdf.enums.EncryptionMethod.NO_ENCRYPTION">NO_ENCRYPTION</a></code></li>
+<li><code><a title="fpdf.enums.EncryptionMethod.RC4" href="#fpdf.enums.EncryptionMethod.RC4">RC4</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.FileAttachmentAnnotationName" href="#fpdf.enums.FileAttachmentAnnotationName">FileAttachmentAnnotationName</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.FileAttachmentAnnotationName.GRAPH_PUSH_PIN" href="#fpdf.enums.FileAttachmentAnnotationName.GRAPH_PUSH_PIN">GRAPH_PUSH_PIN</a></code></li>
+<li><code><a title="fpdf.enums.FileAttachmentAnnotationName.PAPERCLIP_TAG" href="#fpdf.enums.FileAttachmentAnnotationName.PAPERCLIP_TAG">PAPERCLIP_TAG</a></code></li>
+<li><code><a title="fpdf.enums.FileAttachmentAnnotationName.PUSH_PIN" href="#fpdf.enums.FileAttachmentAnnotationName.PUSH_PIN">PUSH_PIN</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.FontDescriptorFlags" href="#fpdf.enums.FontDescriptorFlags">FontDescriptorFlags</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.FontDescriptorFlags.FIXED_PITCH" href="#fpdf.enums.FontDescriptorFlags.FIXED_PITCH">FIXED_PITCH</a></code></li>
+<li><code><a title="fpdf.enums.FontDescriptorFlags.FORCE_BOLD" href="#fpdf.enums.FontDescriptorFlags.FORCE_BOLD">FORCE_BOLD</a></code></li>
+<li><code><a title="fpdf.enums.FontDescriptorFlags.ITALIC" href="#fpdf.enums.FontDescriptorFlags.ITALIC">ITALIC</a></code></li>
+<li><code><a title="fpdf.enums.FontDescriptorFlags.SYMBOLIC" href="#fpdf.enums.FontDescriptorFlags.SYMBOLIC">SYMBOLIC</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.IntersectionRule" href="#fpdf.enums.IntersectionRule">IntersectionRule</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.IntersectionRule.EVENODD" href="#fpdf.enums.IntersectionRule.EVENODD">EVENODD</a></code></li>
+<li><code><a title="fpdf.enums.IntersectionRule.NONZERO" href="#fpdf.enums.IntersectionRule.NONZERO">NONZERO</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.PDFStyleKeys" href="#fpdf.enums.PDFStyleKeys">PDFStyleKeys</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.PDFStyleKeys.BLEND_MODE" href="#fpdf.enums.PDFStyleKeys.BLEND_MODE">BLEND_MODE</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.FILL_ALPHA" href="#fpdf.enums.PDFStyleKeys.FILL_ALPHA">FILL_ALPHA</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_ADJUSTMENT" href="#fpdf.enums.PDFStyleKeys.STROKE_ADJUSTMENT">STROKE_ADJUSTMENT</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_ALPHA" href="#fpdf.enums.PDFStyleKeys.STROKE_ALPHA">STROKE_ALPHA</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_CAP_STYLE" href="#fpdf.enums.PDFStyleKeys.STROKE_CAP_STYLE">STROKE_CAP_STYLE</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_DASH_PATTERN" href="#fpdf.enums.PDFStyleKeys.STROKE_DASH_PATTERN">STROKE_DASH_PATTERN</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_JOIN_STYLE" href="#fpdf.enums.PDFStyleKeys.STROKE_JOIN_STYLE">STROKE_JOIN_STYLE</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_MITER_LIMIT" href="#fpdf.enums.PDFStyleKeys.STROKE_MITER_LIMIT">STROKE_MITER_LIMIT</a></code></li>
+<li><code><a title="fpdf.enums.PDFStyleKeys.STROKE_WIDTH" href="#fpdf.enums.PDFStyleKeys.STROKE_WIDTH">STROKE_WIDTH</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.PageLayout" href="#fpdf.enums.PageLayout">PageLayout</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.PageLayout.ONE_COLUMN" href="#fpdf.enums.PageLayout.ONE_COLUMN">ONE_COLUMN</a></code></li>
+<li><code><a title="fpdf.enums.PageLayout.SINGLE_PAGE" href="#fpdf.enums.PageLayout.SINGLE_PAGE">SINGLE_PAGE</a></code></li>
+<li><code><a title="fpdf.enums.PageLayout.TWO_COLUMN_LEFT" href="#fpdf.enums.PageLayout.TWO_COLUMN_LEFT">TWO_COLUMN_LEFT</a></code></li>
+<li><code><a title="fpdf.enums.PageLayout.TWO_COLUMN_RIGHT" href="#fpdf.enums.PageLayout.TWO_COLUMN_RIGHT">TWO_COLUMN_RIGHT</a></code></li>
+<li><code><a title="fpdf.enums.PageLayout.TWO_PAGE_LEFT" href="#fpdf.enums.PageLayout.TWO_PAGE_LEFT">TWO_PAGE_LEFT</a></code></li>
+<li><code><a title="fpdf.enums.PageLayout.TWO_PAGE_RIGHT" href="#fpdf.enums.PageLayout.TWO_PAGE_RIGHT">TWO_PAGE_RIGHT</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.PageMode" href="#fpdf.enums.PageMode">PageMode</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.PageMode.FULL_SCREEN" href="#fpdf.enums.PageMode.FULL_SCREEN">FULL_SCREEN</a></code></li>
+<li><code><a title="fpdf.enums.PageMode.USE_ATTACHMENTS" href="#fpdf.enums.PageMode.USE_ATTACHMENTS">USE_ATTACHMENTS</a></code></li>
+<li><code><a title="fpdf.enums.PageMode.USE_NONE" href="#fpdf.enums.PageMode.USE_NONE">USE_NONE</a></code></li>
+<li><code><a title="fpdf.enums.PageMode.USE_OC" href="#fpdf.enums.PageMode.USE_OC">USE_OC</a></code></li>
+<li><code><a title="fpdf.enums.PageMode.USE_OUTLINES" href="#fpdf.enums.PageMode.USE_OUTLINES">USE_OUTLINES</a></code></li>
+<li><code><a title="fpdf.enums.PageMode.USE_THUMBS" href="#fpdf.enums.PageMode.USE_THUMBS">USE_THUMBS</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.PathPaintRule" href="#fpdf.enums.PathPaintRule">PathPaintRule</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.PathPaintRule.AUTO" href="#fpdf.enums.PathPaintRule.AUTO">AUTO</a></code></li>
+<li><code><a title="fpdf.enums.PathPaintRule.DONT_PAINT" href="#fpdf.enums.PathPaintRule.DONT_PAINT">DONT_PAINT</a></code></li>
+<li><code><a title="fpdf.enums.PathPaintRule.FILL_EVENODD" href="#fpdf.enums.PathPaintRule.FILL_EVENODD">FILL_EVENODD</a></code></li>
+<li><code><a title="fpdf.enums.PathPaintRule.FILL_NONZERO" href="#fpdf.enums.PathPaintRule.FILL_NONZERO">FILL_NONZERO</a></code></li>
+<li><code><a title="fpdf.enums.PathPaintRule.STROKE" href="#fpdf.enums.PathPaintRule.STROKE">STROKE</a></code></li>
+<li><code><a title="fpdf.enums.PathPaintRule.STROKE_FILL_EVENODD" href="#fpdf.enums.PathPaintRule.STROKE_FILL_EVENODD">STROKE_FILL_EVENODD</a></code></li>
+<li><code><a title="fpdf.enums.PathPaintRule.STROKE_FILL_NONZERO" href="#fpdf.enums.PathPaintRule.STROKE_FILL_NONZERO">STROKE_FILL_NONZERO</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.RenderStyle" href="#fpdf.enums.RenderStyle">RenderStyle</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.RenderStyle.D" href="#fpdf.enums.RenderStyle.D">D</a></code></li>
+<li><code><a title="fpdf.enums.RenderStyle.DF" href="#fpdf.enums.RenderStyle.DF">DF</a></code></li>
+<li><code><a title="fpdf.enums.RenderStyle.F" href="#fpdf.enums.RenderStyle.F">F</a></code></li>
+<li><code><a title="fpdf.enums.RenderStyle.is_draw" href="#fpdf.enums.RenderStyle.is_draw">is_draw</a></code></li>
+<li><code><a title="fpdf.enums.RenderStyle.is_fill" href="#fpdf.enums.RenderStyle.is_fill">is_fill</a></code></li>
+<li><code><a title="fpdf.enums.RenderStyle.operator" href="#fpdf.enums.RenderStyle.operator">operator</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.SignatureFlag" href="#fpdf.enums.SignatureFlag">SignatureFlag</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.SignatureFlag.APPEND_ONLY" href="#fpdf.enums.SignatureFlag.APPEND_ONLY">APPEND_ONLY</a></code></li>
+<li><code><a title="fpdf.enums.SignatureFlag.SIGNATURES_EXIST" href="#fpdf.enums.SignatureFlag.SIGNATURES_EXIST">SIGNATURES_EXIST</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.StrokeCapStyle" href="#fpdf.enums.StrokeCapStyle">StrokeCapStyle</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.StrokeCapStyle.BUTT" href="#fpdf.enums.StrokeCapStyle.BUTT">BUTT</a></code></li>
+<li><code><a title="fpdf.enums.StrokeCapStyle.ROUND" href="#fpdf.enums.StrokeCapStyle.ROUND">ROUND</a></code></li>
+<li><code><a title="fpdf.enums.StrokeCapStyle.SQUARE" href="#fpdf.enums.StrokeCapStyle.SQUARE">SQUARE</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.StrokeJoinStyle" href="#fpdf.enums.StrokeJoinStyle">StrokeJoinStyle</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.StrokeJoinStyle.BEVEL" href="#fpdf.enums.StrokeJoinStyle.BEVEL">BEVEL</a></code></li>
+<li><code><a title="fpdf.enums.StrokeJoinStyle.MITER" href="#fpdf.enums.StrokeJoinStyle.MITER">MITER</a></code></li>
+<li><code><a title="fpdf.enums.StrokeJoinStyle.ROUND" href="#fpdf.enums.StrokeJoinStyle.ROUND">ROUND</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.TextEmphasis" href="#fpdf.enums.TextEmphasis">TextEmphasis</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.TextEmphasis.B" href="#fpdf.enums.TextEmphasis.B">B</a></code></li>
+<li><code><a title="fpdf.enums.TextEmphasis.I" href="#fpdf.enums.TextEmphasis.I">I</a></code></li>
+<li><code><a title="fpdf.enums.TextEmphasis.U" href="#fpdf.enums.TextEmphasis.U">U</a></code></li>
+<li><code><a title="fpdf.enums.TextEmphasis.style" href="#fpdf.enums.TextEmphasis.style">style</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.TextMarkupType" href="#fpdf.enums.TextMarkupType">TextMarkupType</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.TextMarkupType.HIGHLIGHT" href="#fpdf.enums.TextMarkupType.HIGHLIGHT">HIGHLIGHT</a></code></li>
+<li><code><a title="fpdf.enums.TextMarkupType.SQUIGGLY" href="#fpdf.enums.TextMarkupType.SQUIGGLY">SQUIGGLY</a></code></li>
+<li><code><a title="fpdf.enums.TextMarkupType.STRIKE_OUT" href="#fpdf.enums.TextMarkupType.STRIKE_OUT">STRIKE_OUT</a></code></li>
+<li><code><a title="fpdf.enums.TextMarkupType.UNDERLINE" href="#fpdf.enums.TextMarkupType.UNDERLINE">UNDERLINE</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.TextMode" href="#fpdf.enums.TextMode">TextMode</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.TextMode.CLIP" href="#fpdf.enums.TextMode.CLIP">CLIP</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.FILL" href="#fpdf.enums.TextMode.FILL">FILL</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.FILL_CLIP" href="#fpdf.enums.TextMode.FILL_CLIP">FILL_CLIP</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.FILL_STROKE" href="#fpdf.enums.TextMode.FILL_STROKE">FILL_STROKE</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.FILL_STROKE_CLIP" href="#fpdf.enums.TextMode.FILL_STROKE_CLIP">FILL_STROKE_CLIP</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.INVISIBLE" href="#fpdf.enums.TextMode.INVISIBLE">INVISIBLE</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.STROKE" href="#fpdf.enums.TextMode.STROKE">STROKE</a></code></li>
+<li><code><a title="fpdf.enums.TextMode.STROKE_CLIP" href="#fpdf.enums.TextMode.STROKE_CLIP">STROKE_CLIP</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.WrapMode" href="#fpdf.enums.WrapMode">WrapMode</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.WrapMode.CHAR" href="#fpdf.enums.WrapMode.CHAR">CHAR</a></code></li>
+<li><code><a title="fpdf.enums.WrapMode.WORD" href="#fpdf.enums.WrapMode.WORD">WORD</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.XPos" href="#fpdf.enums.XPos">XPos</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.enums.XPos.CENTER" href="#fpdf.enums.XPos.CENTER">CENTER</a></code></li>
+<li><code><a title="fpdf.enums.XPos.END" href="#fpdf.enums.XPos.END">END</a></code></li>
+<li><code><a title="fpdf.enums.XPos.LEFT" href="#fpdf.enums.XPos.LEFT">LEFT</a></code></li>
+<li><code><a title="fpdf.enums.XPos.LMARGIN" href="#fpdf.enums.XPos.LMARGIN">LMARGIN</a></code></li>
+<li><code><a title="fpdf.enums.XPos.RIGHT" href="#fpdf.enums.XPos.RIGHT">RIGHT</a></code></li>
+<li><code><a title="fpdf.enums.XPos.RMARGIN" href="#fpdf.enums.XPos.RMARGIN">RMARGIN</a></code></li>
+<li><code><a title="fpdf.enums.XPos.START" href="#fpdf.enums.XPos.START">START</a></code></li>
+<li><code><a title="fpdf.enums.XPos.WCONT" href="#fpdf.enums.XPos.WCONT">WCONT</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.enums.YPos" href="#fpdf.enums.YPos">YPos</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.enums.YPos.BMARGIN" href="#fpdf.enums.YPos.BMARGIN">BMARGIN</a></code></li>
+<li><code><a title="fpdf.enums.YPos.LAST" href="#fpdf.enums.YPos.LAST">LAST</a></code></li>
+<li><code><a title="fpdf.enums.YPos.NEXT" href="#fpdf.enums.YPos.NEXT">NEXT</a></code></li>
+<li><code><a title="fpdf.enums.YPos.TMARGIN" href="#fpdf.enums.YPos.TMARGIN">TMARGIN</a></code></li>
+<li><code><a title="fpdf.enums.YPos.TOP" href="#fpdf.enums.YPos.TOP">TOP</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
