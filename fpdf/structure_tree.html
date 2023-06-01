@@ -36,6 +36,7 @@ located by means of the <strong>StructTreeRoot</strong> entry in the document ca
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L1-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Quoting the PDF spec:
@@ -67,7 +68,7 @@ class NumberTree(PDFObject):
     and names) be specified as direct objects
     &#34;&#34;&#34;
 
-    __slots__ = (&#34;_id&#34;, &#34;nums&#34;)
+    __slots__ = (&#34;_id&#34;, &#34;nums&#34;)  # RAM usage optimization
 
     def __init__(self):
         super().__init__()
@@ -83,7 +84,7 @@ class NumberTree(PDFObject):
 
 
 class StructTreeRoot(PDFObject):
-    __slots__ = (&#34;_id&#34;, &#34;type&#34;, &#34;parent_tree&#34;, &#34;k&#34;)
+    __slots__ = (&#34;_id&#34;, &#34;type&#34;, &#34;parent_tree&#34;, &#34;k&#34;)  # RAM usage optimization
 
     def __init__(self):
         super().__init__()
@@ -95,9 +96,17 @@ class StructTreeRoot(PDFObject):
 
 
 class StructElem(PDFObject):
-    # The main reason to use __slots__ in PDFObject child classes is to save up some memory
-    # when very many instances of this class are created.
-    __slots__ = (&#34;_id&#34;, &#34;type&#34;, &#34;s&#34;, &#34;p&#34;, &#34;k&#34;, &#34;t&#34;, &#34;alt&#34;, &#34;pg&#34;, &#34;_page_number&#34;)
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;type&#34;,
+        &#34;s&#34;,
+        &#34;p&#34;,
+        &#34;k&#34;,
+        &#34;t&#34;,
+        &#34;alt&#34;,
+        &#34;pg&#34;,
+        &#34;_page_number&#34;,
+    )
 
     def __init__(
         self,
@@ -202,6 +211,7 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L17-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NumberTree(PDFObject):
     &#34;&#34;&#34;A number tree is similar to a name tree, except that its keys are integers
@@ -217,7 +227,7 @@ and names) be specified as direct objects</p></div>
     and names) be specified as direct objects
     &#34;&#34;&#34;
 
-    __slots__ = (&#34;_id&#34;, &#34;nums&#34;)
+    __slots__ = (&#34;_id&#34;, &#34;nums&#34;)  # RAM usage optimization
 
     def __init__(self):
         super().__init__()
@@ -263,11 +273,20 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L58-L94" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StructElem(PDFObject):
-    # The main reason to use __slots__ in PDFObject child classes is to save up some memory
-    # when very many instances of this class are created.
-    __slots__ = (&#34;_id&#34;, &#34;type&#34;, &#34;s&#34;, &#34;p&#34;, &#34;k&#34;, &#34;t&#34;, &#34;alt&#34;, &#34;pg&#34;, &#34;_page_number&#34;)
+    __slots__ = (  # RAM usage optimization
+        &#34;_id&#34;,
+        &#34;type&#34;,
+        &#34;s&#34;,
+        &#34;p&#34;,
+        &#34;k&#34;,
+        &#34;t&#34;,
+        &#34;alt&#34;,
+        &#34;pg&#34;,
+        &#34;_page_number&#34;,
+    )
 
     def __init__(
         self,
@@ -339,6 +358,7 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L93-L94" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def page_number(self):
     return self._page_number</code></pre>
@@ -365,9 +385,10 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L46-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StructTreeRoot(PDFObject):
-    __slots__ = (&#34;_id&#34;, &#34;type&#34;, &#34;parent_tree&#34;, &#34;k&#34;)
+    __slots__ = (&#34;_id&#34;, &#34;type&#34;, &#34;parent_tree&#34;, &#34;k&#34;)  # RAM usage optimization
 
     def __init__(self):
         super().__init__()
@@ -414,6 +435,7 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L97-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StructureTreeBuilder:
     def __init__(self):
@@ -476,6 +498,7 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L106-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_marked_content(
     self,
@@ -510,6 +533,7 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L138-L139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def empty(self):
     return not self.doc_struct_elem.k</code></pre>
@@ -523,6 +547,7 @@ and names) be specified as direct objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/structure_tree.py#L130-L136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def next_mcid_for_page(self, page_number):
     return sum(

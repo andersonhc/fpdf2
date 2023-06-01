@@ -25,8 +25,10 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L1-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import hashlib
+import logging
 import math
 from os import urandom
 
@@ -43,6 +45,9 @@ try:
     import_error = None
 except ImportError as error:
     import_error = error
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ARC4:
@@ -209,6 +214,7 @@ class StandardSecurityHandler:
     def encrypt_string(self, string, obj_id):
         if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
             return PDFString(string).serialize()
+        LOGGER.debug(&#34;Encrypting string: %s&#34;, string)
         return f&#34;&lt;{bytes(self.encrypt_bytes(string.encode(&#39;latin-1&#39;), obj_id)).hex().upper()}&gt;&#34;
 
     def encrypt_stream(self, stream, obj_id):
@@ -252,7 +258,8 @@ class StandardSecurityHandler:
         iv.extend(data)
         return iv
 
-    def get_initialization_vector(self, size):
+    @classmethod
+    def get_initialization_vector(cls, size):
         return bytearray(urandom(size))
 
     def padded_password(self, password):
@@ -299,7 +306,7 @@ class StandardSecurityHandler:
                 new_key.append(k ^ i)
             result = ARC4().encrypt(new_key, result)
         result.extend(
-            map(lambda x: (result[x] ^ self.DEFAULT_PADDING[x]), range(16))
+            (result[x] ^ self.DEFAULT_PADDING[x]) for x in range(16)
         )  # add 16 bytes of random padding
         return bytes(result).hex()
 
@@ -352,6 +359,7 @@ def int32(n):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L312-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def int32(n):
     &#34;&#34;&#34;convert long to signed 32 bit integer&#34;&#34;&#34;
@@ -367,6 +375,7 @@ def int32(n):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L306-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def md5(data):
     h = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
@@ -393,6 +402,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L24-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ARC4:
     &#34;&#34;&#34;
@@ -451,6 +461,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L38-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def KSA(self, key):
     key_length = len(key)
@@ -470,6 +481,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L47-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def PRGA(self, S):
     i = 0
@@ -490,6 +502,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L57-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encrypt(self, key, text):
     keystream = self.PRGA(self.KSA(key))
@@ -510,6 +523,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L65-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CryptFilter:
     &#34;&#34;&#34;Represents one crypt filter, listed under CF inside the encryption dictionary&#34;&#34;&#34;
@@ -534,6 +548,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L74-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self):
     obj_dict = build_obj_dict({key: getattr(self, key) for key in dir(self)})
@@ -553,6 +568,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L79-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EncryptionDictionary(PDFObject):
     &#34;&#34;&#34;
@@ -607,6 +623,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L107-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StandardSecurityHandler:
     &#34;&#34;&#34;
@@ -689,6 +706,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
     def encrypt_string(self, string, obj_id):
         if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
             return PDFString(string).serialize()
+        LOGGER.debug(&#34;Encrypting string: %s&#34;, string)
         return f&#34;&lt;{bytes(self.encrypt_bytes(string.encode(&#39;latin-1&#39;), obj_id)).hex().upper()}&gt;&#34;
 
     def encrypt_stream(self, stream, obj_id):
@@ -732,7 +750,8 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
         iv.extend(data)
         return iv
 
-    def get_initialization_vector(self, size):
+    @classmethod
+    def get_initialization_vector(cls, size):
         return bytearray(urandom(size))
 
     def padded_password(self, password):
@@ -779,7 +798,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
                 new_key.append(k ^ i)
             result = ARC4().encrypt(new_key, result)
         result.extend(
-            map(lambda x: (result[x] ^ self.DEFAULT_PADDING[x]), range(16))
+            (result[x] ^ self.DEFAULT_PADDING[x]) for x in range(16)
         )  # add 16 bytes of random padding
         return bytes(result).hex()
 
@@ -811,6 +830,24 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <div class="desc"></div>
 </dd>
 </dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.encryption.StandardSecurityHandler.get_initialization_vector"><code class="name flex">
+<span>def <span class="ident">get_initialization_vector</span></span>(<span>size)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L232-L234" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@classmethod
+def get_initialization_vector(cls, size):
+    return bytearray(urandom(size))</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="fpdf.encryption.StandardSecurityHandler.encrypt"><code class="name flex">
@@ -821,6 +858,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L177-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encrypt(self, text, obj_id):
     &#34;&#34;&#34;Method invoked by PDFObject and PDFContentStream to encrypt strings and streams&#34;&#34;&#34;
@@ -839,6 +877,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L221-L230" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encrypt_AES_cryptography(self, key, data):
     iv = self.get_initialization_vector(16)
@@ -862,6 +901,7 @@ Generation ID is fixed as 0. Will need to revisit if the application start chang
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L199-L219" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encrypt_bytes(self, data, obj_id):
     &#34;&#34;&#34;
@@ -894,6 +934,7 @@ Generation ID is fixed as 0. Will need to revisit if the application start chang
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L191-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encrypt_stream(self, stream, obj_id):
     if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
@@ -909,10 +950,12 @@ Generation ID is fixed as 0. Will need to revisit if the application start chang
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L185-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encrypt_string(self, string, obj_id):
     if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
         return PDFString(string).serialize()
+    LOGGER.debug(&#34;Encrypting string: %s&#34;, string)
     return f&#34;&lt;{bytes(self.encrypt_bytes(string.encode(&#39;latin-1&#39;), obj_id)).hex().upper()}&gt;&#34;</code></pre>
 </details>
 </dd>
@@ -925,6 +968,7 @@ Algorithm 2: Computing an encryption key</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L284-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generate_encryption_key(self):
     &#34;&#34;&#34;
@@ -957,6 +1001,7 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L247-L262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generate_owner_password(self):
     &#34;&#34;&#34;
@@ -984,6 +1029,7 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L165-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generate_passwords(self, file_id):
     &#34;&#34;&#34;Return the first hash of the PDF file id&#34;&#34;&#34;
@@ -1003,6 +1049,7 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L264-L282" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generate_user_password(self):
     &#34;&#34;&#34;
@@ -1020,7 +1067,7 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
             new_key.append(k ^ i)
         result = ARC4().encrypt(new_key, result)
     result.extend(
-        map(lambda x: (result[x] ^ self.DEFAULT_PADDING[x]), range(16))
+        (result[x] ^ self.DEFAULT_PADDING[x]) for x in range(16)
     )  # add 16 bytes of random padding
     return bytes(result).hex()</code></pre>
 </details>
@@ -1033,23 +1080,11 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L173-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_encryption_obj(self):
     &#34;&#34;&#34;Return an encryption dictionary&#34;&#34;&#34;
     return EncryptionDictionary(self)</code></pre>
-</details>
-</dd>
-<dt id="fpdf.encryption.StandardSecurityHandler.get_initialization_vector"><code class="name flex">
-<span>def <span class="ident">get_initialization_vector</span></span>(<span>self, size)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_initialization_vector(self, size):
-    return bytearray(urandom(size))</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.is_aes_algorithm"><code class="name flex">
@@ -1060,6 +1095,7 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L196-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_aes_algorithm(self):
     return self.encryption_method == EncryptionMethod.AES_128</code></pre>
@@ -1074,6 +1110,7 @@ Step (a) - Add the default padding at the end of provided password to make it 32
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/encryption.py#L236-L245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def padded_password(self, password):
     &#34;&#34;&#34;

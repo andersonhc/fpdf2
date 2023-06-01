@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>fpdf.syntax API documentation</title>
-<meta name="description" content="**PDF Syntax Helpers** …" />
+<meta name="description" content="Classes &amp; functions that represent core elements of the PDF syntax …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Module <code>fpdf.syntax</code></h1>
 </header>
 <section id="section-intro">
-<p><strong>PDF Syntax Helpers</strong></p>
+<p>Classes &amp; functions that represent core elements of the PDF syntax</p>
 <p>Functions in this module take variable input and produce PDF Syntax features.</p>
 <p>Most of what happens in a PDF happens in objects, which are formatted like so:</p>
 <pre><code>3 0 obj
@@ -73,8 +73,9 @@ endobj
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L1-L372" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;**PDF Syntax Helpers**
+<pre><code class="python">&#34;&#34;&#34;Classes &amp; functions that represent core elements of the PDF syntax
 
 Functions in this module take variable input and produce PDF Syntax features.
 
@@ -139,6 +140,7 @@ import re, zlib
 from abc import ABC
 from binascii import hexlify
 from codecs import BOM_UTF16_BE
+from datetime import datetime, timezone
 
 
 def clear_empty_fields(d):
@@ -217,7 +219,8 @@ class PDFObject:
     * implement serializing
     &#34;&#34;&#34;
 
-    # pylint: disable=redefined-builtin
+    # Note: several child classes use __slots__ to save up some memory
+
     def __init__(self):
         self._id = None
 
@@ -244,8 +247,6 @@ class PDFObject:
         output.append(&#34;&lt;&lt;&#34;)
         if not obj_dict:
             obj_dict = self._build_obj_dict(_security_handler)
-        elif _security_handler:
-            obj_dict = self._encrypt_obj_dict(obj_dict, _security_handler)
         output.append(create_dictionary_string(obj_dict, open_dict=&#34;&#34;, close_dict=&#34;&#34;))
         output.append(&#34;&gt;&gt;&#34;)
         content_stream = self.content_stream()
@@ -254,8 +255,9 @@ class PDFObject:
         output.append(&#34;endobj&#34;)
         return &#34;\n&#34;.join(output)
 
+    # pylint: disable=no-self-use
     def content_stream(self):
-        &#34;Subclass can override this method to indicate the presence of a content stream&#34;
+        &#34;Subclasses can override this method to indicate the presence of a content stream&#34;
         return b&#34;&#34;
 
     def _build_obj_dict(self, security_handler=None):
@@ -271,18 +273,6 @@ class PDFObject:
             _obj_id=self.id,
         )
 
-    def _encrypt_obj_dict(self, obj_dict, security_handler):
-        &#34;&#34;&#34;Encrypt the strings present in the object dictionary&#34;&#34;&#34;
-        for key in obj_dict:
-            string = obj_dict[key]
-            if (
-                isinstance(string, str)
-                and string.startswith(&#34;(&#34;)
-                and string.endswith(&#34;)&#34;)
-            ):
-                obj_dict[key] = security_handler.encrypt(string[1:-1], self.id)
-        return obj_dict
-
 
 class PDFContentStream(PDFObject):
     def __init__(self, contents, compress=False):
@@ -295,9 +285,15 @@ class PDFContentStream(PDFObject):
     def content_stream(self):
         return self._contents
 
-    def encrypt(self, security_handler):
-        self._contents = security_handler.encrypt(self._contents, self.id)
-        self.length = len(self._contents)
+    # method override
+    def serialize(self, obj_dict=None, _security_handler=None):
+        if _security_handler:
+            assert not obj_dict
+            if not isinstance(self._contents, (bytearray, bytes)):
+                self._contents = self._contents.encode(&#34;latin-1&#34;)
+            self._contents = _security_handler.encrypt(self._contents, self.id)
+            self.length = len(self._contents)
+        return super().serialize(obj_dict, _security_handler)
 
 
 def build_obj_dict(key_values, _security_handler=None, _obj_id=None):
@@ -315,6 +311,7 @@ def build_obj_dict(key_values, _security_handler=None, _obj_id=None):
             or value is None
         ):
             continue
+        # pylint: disable=redefined-loop-name
         if hasattr(value, &#34;value&#34;):  # e.g. Enum subclass
             value = value.value
         if isinstance(value, PDFObject):  # indirect object reference
@@ -326,13 +323,6 @@ def build_obj_dict(key_values, _security_handler=None, _obj_id=None):
             )
         elif isinstance(value, bool):
             value = str(value).lower()
-        if (
-            _security_handler
-            and isinstance(value, str)
-            and value.startswith(&#34;(&#34;)
-            and value.endswith(&#34;)&#34;)
-        ):
-            value = _security_handler.encrypt(value[1:-1], _obj_id)
         obj_dict[f&#34;/{camel_case(key)}&#34;] = value
     return obj_dict
 
@@ -348,7 +338,26 @@ class PDFString(str):
     but then there can be a risk of badly encoding some unicode strings - cf. issue #458
     &#34;&#34;&#34;
 
+    def __new__(cls, content, encrypt=False):
+        &#34;&#34;&#34;
+        Args:
+            content (str): text
+            encrypt (bool): if document encryption is enabled, should this string be encrypted?
+        &#34;&#34;&#34;
+        self = super().__new__(cls, content)
+        self.encrypt = encrypt
+        return self
+
     def serialize(self, _security_handler=None, _obj_id=None):
+        if _security_handler and self.encrypt:
+            assert _obj_id
+            return _security_handler.encrypt_string(self, _obj_id)
+        try:
+            self.encode(&#34;ascii&#34;)
+            # =&gt; this string only contains ASCII characters, no need for special encoding:
+            return f&#34;({self})&#34;
+        except UnicodeEncodeError:
+            pass
         if self.USE_HEX_ENCODING:
             # Using the &#34;Hexadecimal String&#34; format defined in the PDF spec:
             hex_str = hexlify(BOM_UTF16_BE + self.encode(&#34;utf-16-be&#34;)).decode(&#34;latin-1&#34;)
@@ -356,12 +365,43 @@ class PDFString(str):
         return f&#39;({self.encode(&#34;UTF-16&#34;).decode(&#34;latin-1&#34;)})&#39;
 
 
+class PDFDate:
+    def __init__(self, date: datetime, with_tz=False, encrypt=False):
+        &#34;&#34;&#34;
+        Args:
+            date (datetime): self-explanatory
+            with_tz (bool): should the timezone be encoded in included in the date?
+            encrypt (bool): if document encryption is enabled, should this string be encrypted?
+        &#34;&#34;&#34;
+        self.date = date
+        self.with_tz = with_tz
+        self.encrypt = encrypt
+
+    def __repr__(self):
+        return f&#34;PDFDate({self.date}, with_tz={self.with_tz}, encrypt={self.encrypt})&#34;
+
+    def serialize(self, _security_handler=None, _obj_id=None):
+        if self.with_tz:
+            assert self.date.tzinfo
+            if self.date.tzinfo == timezone.utc:
+                out_str = f&#34;D:{self.date:%Y%m%d%H%M%SZ%H&#39;%M&#39;}&#34;
+            else:
+                out_str = f&#34;D:{self.date:%Y%m%d%H%M%S%z}&#34;
+                out_str = out_str[:-2] + &#34;&#39;&#34; + out_str[-2:] + &#34;&#39;&#34;
+        else:
+            out_str = f&#34;D:{self.date:%Y%m%d%H%M%S}&#34;
+        if _security_handler and self.encrypt:
+            assert _obj_id
+            return _security_handler.encrypt_string(out_str, _obj_id)
+        return f&#34;({out_str})&#34;
+
+
 class PDFArray(list):
     def serialize(self, _security_handler=None, _obj_id=None):
         if all(isinstance(elem, str) for elem in self):
             serialized_elems = &#34; &#34;.join(self)
         elif all(isinstance(elem, int) for elem in self):
-            serialized_elems = &#34; &#34;.join(map(str, self))
+            serialized_elems = &#34; &#34;.join(str(elem) for elem in self)
         else:
             serialized_elems = &#34;\n&#34;.join(
                 elem.ref
@@ -396,6 +436,9 @@ class DestinationXYZ(Destination):
             and self.zoom == dest.zoom
         )
 
+    def __hash__(self):
+        return hash((self.page_number, self.top, self.left, self.zoom))
+
     def __repr__(self):
         return f&#39;DestinationXYZ(page_number={self.page_number}, top={self.top}, left={self.left}, zoom=&#34;{self.zoom}&#34;, page_ref={self.page_ref})&#39;
 
@@ -423,6 +466,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L222-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def build_obj_dict(key_values, _security_handler=None, _obj_id=None):
     &#34;&#34;&#34;
@@ -439,6 +483,7 @@ and prefixed with a slash character "/".</p></div>
             or value is None
         ):
             continue
+        # pylint: disable=redefined-loop-name
         if hasattr(value, &#34;value&#34;):  # e.g. Enum subclass
             value = value.value
         if isinstance(value, PDFObject):  # indirect object reference
@@ -450,13 +495,6 @@ and prefixed with a slash character "/".</p></div>
             )
         elif isinstance(value, bool):
             value = str(value).lower()
-        if (
-            _security_handler
-            and isinstance(value, str)
-            and value.startswith(&#34;(&#34;)
-            and value.endswith(&#34;)&#34;)
-        ):
-            value = _security_handler.encrypt(value[1:-1], _obj_id)
         obj_dict[f&#34;/{camel_case(key)}&#34;] = value
     return obj_dict</code></pre>
 </details>
@@ -469,6 +507,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L253-L254" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def camel_case(snake_case):
     return &#34;&#34;.join(x for x in snake_case.title() if x != &#34;_&#34;)</code></pre>
@@ -482,6 +521,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L69-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clear_empty_fields(d):
     return {k: v for k, v in d.items() if v}</code></pre>
@@ -501,6 +541,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L73-L99" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def create_dictionary_string(
     dict_,
@@ -539,6 +580,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L102-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def create_list_string(list_):
     &#34;&#34;&#34;format list of strings as PDF array&#34;&#34;&#34;
@@ -553,6 +595,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L112-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def create_stream(stream, encryption_handler=None, obj_id=None):
     if isinstance(stream, (bytearray, bytes)):
@@ -570,6 +613,7 @@ and prefixed with a slash character "/".</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L107-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def iobj_ref(n):
     &#34;&#34;&#34;format an indirect PDF Object reference from its id number&#34;&#34;&#34;
@@ -590,6 +634,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L341-L343" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Destination(ABC):
     def serialize(self, _security_handler=None, _obj_id=None):
@@ -613,6 +658,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L342-L343" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     raise NotImplementedError</code></pre>
@@ -630,6 +676,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L346-L372" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DestinationXYZ(Destination):
     def __init__(self, page, top, left=0, zoom=&#34;null&#34;):
@@ -646,6 +693,9 @@ inheritance.</p></div>
             and self.left == dest.left
             and self.zoom == dest.zoom
         )
+
+    def __hash__(self):
+        return hash((self.page_number, self.top, self.left, self.zoom))
 
     def __repr__(self):
         return f&#39;DestinationXYZ(page_number={self.page_number}, top={self.top}, left={self.left}, zoom=&#34;{self.zoom}&#34;, page_ref={self.page_ref})&#39;
@@ -671,6 +721,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L368-L372" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     left = round(self.left, 2) if isinstance(self.left, float) else self.left
@@ -690,6 +741,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L124-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Name(str):
     &#34;&#34;&#34;str subclass signifying a PDF name, which are emitted differently than normal strings.&#34;&#34;&#34;
@@ -725,6 +777,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L131-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None) -&gt; str:
     escaped = self.NAME_ESC.sub(
@@ -746,13 +799,14 @@ The argument must be an iterable if specified.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L322-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFArray(list):
     def serialize(self, _security_handler=None, _obj_id=None):
         if all(isinstance(elem, str) for elem in self):
             serialized_elems = &#34; &#34;.join(self)
         elif all(isinstance(elem, int) for elem in self):
-            serialized_elems = &#34; &#34;.join(map(str, self))
+            serialized_elems = &#34; &#34;.join(str(elem) for elem in self)
         else:
             serialized_elems = &#34;\n&#34;.join(
                 elem.ref
@@ -778,12 +832,13 @@ The argument must be an iterable if specified.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L323-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     if all(isinstance(elem, str) for elem in self):
         serialized_elems = &#34; &#34;.join(self)
     elif all(isinstance(elem, int) for elem in self):
-        serialized_elems = &#34; &#34;.join(map(str, self))
+        serialized_elems = &#34; &#34;.join(str(elem) for elem in self)
     else:
         serialized_elems = &#34;\n&#34;.join(
             elem.ref
@@ -809,6 +864,7 @@ The argument must be an iterable if specified.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L200-L219" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFContentStream(PDFObject):
     def __init__(self, contents, compress=False):
@@ -821,9 +877,15 @@ The argument must be an iterable if specified.</p></div>
     def content_stream(self):
         return self._contents
 
-    def encrypt(self, security_handler):
-        self._contents = security_handler.encrypt(self._contents, self.id)
-        self.length = len(self._contents)</code></pre>
+    # method override
+    def serialize(self, obj_dict=None, _security_handler=None):
+        if _security_handler:
+            assert not obj_dict
+            if not isinstance(self._contents, (bytearray, bytes)):
+                self._contents = self._contents.encode(&#34;latin-1&#34;)
+            self._contents = _security_handler.encrypt(self._contents, self.id)
+            self.length = len(self._contents)
+        return super().serialize(obj_dict, _security_handler)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -838,23 +900,6 @@ The argument must be an iterable if specified.</p></div>
 <li><a title="fpdf.output.PDFXObject" href="output.html#fpdf.output.PDFXObject">PDFXObject</a></li>
 <li><a title="fpdf.output.PDFXmpMetadata" href="output.html#fpdf.output.PDFXmpMetadata">PDFXmpMetadata</a></li>
 </ul>
-<h3>Methods</h3>
-<dl>
-<dt id="fpdf.syntax.PDFContentStream.encrypt"><code class="name flex">
-<span>def <span class="ident">encrypt</span></span>(<span>self, security_handler)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def encrypt(self, security_handler):
-    self._contents = security_handler.encrypt(self._contents, self.id)
-    self.length = len(self._contents)</code></pre>
-</details>
-</dd>
-</dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="fpdf.syntax.PDFObject" href="#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
@@ -864,6 +909,85 @@ The argument must be an iterable if specified.</p></div>
 </ul>
 </li>
 </ul>
+</dd>
+<dt id="fpdf.syntax.PDFDate"><code class="flex name class">
+<span>class <span class="ident">PDFDate</span></span>
+<span>(</span><span>date: datetime.datetime, with_tz=False, encrypt=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>date</code></strong> :&ensp;<code>datetime</code></dt>
+<dd>self-explanatory</dd>
+<dt><strong><code>with_tz</code></strong> :&ensp;<code>bool</code></dt>
+<dd>should the timezone be encoded in included in the date?</dd>
+<dt><strong><code>encrypt</code></strong> :&ensp;<code>bool</code></dt>
+<dd>if document encryption is enabled, should this string be encrypted?</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L291-L319" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class PDFDate:
+    def __init__(self, date: datetime, with_tz=False, encrypt=False):
+        &#34;&#34;&#34;
+        Args:
+            date (datetime): self-explanatory
+            with_tz (bool): should the timezone be encoded in included in the date?
+            encrypt (bool): if document encryption is enabled, should this string be encrypted?
+        &#34;&#34;&#34;
+        self.date = date
+        self.with_tz = with_tz
+        self.encrypt = encrypt
+
+    def __repr__(self):
+        return f&#34;PDFDate({self.date}, with_tz={self.with_tz}, encrypt={self.encrypt})&#34;
+
+    def serialize(self, _security_handler=None, _obj_id=None):
+        if self.with_tz:
+            assert self.date.tzinfo
+            if self.date.tzinfo == timezone.utc:
+                out_str = f&#34;D:{self.date:%Y%m%d%H%M%SZ%H&#39;%M&#39;}&#34;
+            else:
+                out_str = f&#34;D:{self.date:%Y%m%d%H%M%S%z}&#34;
+                out_str = out_str[:-2] + &#34;&#39;&#34; + out_str[-2:] + &#34;&#39;&#34;
+        else:
+            out_str = f&#34;D:{self.date:%Y%m%d%H%M%S}&#34;
+        if _security_handler and self.encrypt:
+            assert _obj_id
+            return _security_handler.encrypt_string(out_str, _obj_id)
+        return f&#34;({out_str})&#34;</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.syntax.PDFDate.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L306-L319" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
+    if self.with_tz:
+        assert self.date.tzinfo
+        if self.date.tzinfo == timezone.utc:
+            out_str = f&#34;D:{self.date:%Y%m%d%H%M%SZ%H&#39;%M&#39;}&#34;
+        else:
+            out_str = f&#34;D:{self.date:%Y%m%d%H%M%S%z}&#34;
+            out_str = out_str[:-2] + &#34;&#39;&#34; + out_str[-2:] + &#34;&#39;&#34;
+    else:
+        out_str = f&#34;D:{self.date:%Y%m%d%H%M%S}&#34;
+    if _security_handler and self.encrypt:
+        assert _obj_id
+        return _security_handler.encrypt_string(out_str, _obj_id)
+    return f&#34;({out_str})&#34;</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="fpdf.syntax.PDFObject"><code class="flex name class">
 <span>class <span class="ident">PDFObject</span></span>
@@ -875,6 +999,7 @@ The argument must be an iterable if specified.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L138-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFObject:
     &#34;&#34;&#34;
@@ -883,7 +1008,8 @@ The argument must be an iterable if specified.</p></div>
     * implement serializing
     &#34;&#34;&#34;
 
-    # pylint: disable=redefined-builtin
+    # Note: several child classes use __slots__ to save up some memory
+
     def __init__(self):
         self._id = None
 
@@ -910,8 +1036,6 @@ The argument must be an iterable if specified.</p></div>
         output.append(&#34;&lt;&lt;&#34;)
         if not obj_dict:
             obj_dict = self._build_obj_dict(_security_handler)
-        elif _security_handler:
-            obj_dict = self._encrypt_obj_dict(obj_dict, _security_handler)
         output.append(create_dictionary_string(obj_dict, open_dict=&#34;&#34;, close_dict=&#34;&#34;))
         output.append(&#34;&gt;&gt;&#34;)
         content_stream = self.content_stream()
@@ -920,8 +1044,9 @@ The argument must be an iterable if specified.</p></div>
         output.append(&#34;endobj&#34;)
         return &#34;\n&#34;.join(output)
 
+    # pylint: disable=no-self-use
     def content_stream(self):
-        &#34;Subclass can override this method to indicate the presence of a content stream&#34;
+        &#34;Subclasses can override this method to indicate the presence of a content stream&#34;
         return b&#34;&#34;
 
     def _build_obj_dict(self, security_handler=None):
@@ -935,19 +1060,7 @@ The argument must be an iterable if specified.</p></div>
             {key: getattr(self, key) for key in dir(self)},
             _security_handler=security_handler,
             _obj_id=self.id,
-        )
-
-    def _encrypt_obj_dict(self, obj_dict, security_handler):
-        &#34;&#34;&#34;Encrypt the strings present in the object dictionary&#34;&#34;&#34;
-        for key in obj_dict:
-            string = obj_dict[key]
-            if (
-                isinstance(string, str)
-                and string.startswith(&#34;(&#34;)
-                and string.endswith(&#34;)&#34;)
-            ):
-                obj_dict[key] = security_handler.encrypt(string[1:-1], self.id)
-        return obj_dict</code></pre>
+        )</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -978,6 +1091,7 @@ The argument must be an iterable if specified.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L150-L156" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def id(self):
@@ -994,6 +1108,7 @@ def id(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L162-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def ref(self):
@@ -1007,13 +1122,14 @@ def ref(self):
 <span>def <span class="ident">content_stream</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Subclass can override this method to indicate the presence of a content stream</p></div>
+<div class="desc"><p>Subclasses can override this method to indicate the presence of a content stream</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L182-L184" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def content_stream(self):
-    &#34;Subclass can override this method to indicate the presence of a content stream&#34;
+    &#34;Subclasses can override this method to indicate the presence of a content stream&#34;
     return b&#34;&#34;</code></pre>
 </details>
 </dd>
@@ -1025,6 +1141,7 @@ def ref(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L166-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, obj_dict=None, _security_handler=None):
     &#34;Serialize the PDF object as an obj&lt;&lt;/&gt;&gt;endobj text block&#34;
@@ -1033,8 +1150,6 @@ def ref(self):
     output.append(&#34;&lt;&lt;&#34;)
     if not obj_dict:
         obj_dict = self._build_obj_dict(_security_handler)
-    elif _security_handler:
-        obj_dict = self._encrypt_obj_dict(obj_dict, _security_handler)
     output.append(create_dictionary_string(obj_dict, open_dict=&#34;&#34;, close_dict=&#34;&#34;))
     output.append(&#34;&gt;&gt;&#34;)
     content_stream = self.content_stream()
@@ -1048,7 +1163,7 @@ def ref(self):
 </dd>
 <dt id="fpdf.syntax.PDFString"><code class="flex name class">
 <span>class <span class="ident">PDFString</span></span>
-<span>(</span><span>...)</span>
+<span>(</span><span>content, encrypt=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>str(object='') -&gt; str
@@ -1063,6 +1178,7 @@ errors defaults to 'strict'.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L257-L288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFString(str):
     USE_HEX_ENCODING = True
@@ -1071,7 +1187,26 @@ errors defaults to 'strict'.</p></div>
     but then there can be a risk of badly encoding some unicode strings - cf. issue #458
     &#34;&#34;&#34;
 
+    def __new__(cls, content, encrypt=False):
+        &#34;&#34;&#34;
+        Args:
+            content (str): text
+            encrypt (bool): if document encryption is enabled, should this string be encrypted?
+        &#34;&#34;&#34;
+        self = super().__new__(cls, content)
+        self.encrypt = encrypt
+        return self
+
     def serialize(self, _security_handler=None, _obj_id=None):
+        if _security_handler and self.encrypt:
+            assert _obj_id
+            return _security_handler.encrypt_string(self, _obj_id)
+        try:
+            self.encode(&#34;ascii&#34;)
+            # =&gt; this string only contains ASCII characters, no need for special encoding:
+            return f&#34;({self})&#34;
+        except UnicodeEncodeError:
+            pass
         if self.USE_HEX_ENCODING:
             # Using the &#34;Hexadecimal String&#34; format defined in the PDF spec:
             hex_str = hexlify(BOM_UTF16_BE + self.encode(&#34;utf-16-be&#34;)).decode(&#34;latin-1&#34;)
@@ -1100,8 +1235,18 @@ but then there can be a risk of badly encoding some unicode strings - cf. issue 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L274-L288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
+    if _security_handler and self.encrypt:
+        assert _obj_id
+        return _security_handler.encrypt_string(self, _obj_id)
+    try:
+        self.encode(&#34;ascii&#34;)
+        # =&gt; this string only contains ASCII characters, no need for special encoding:
+        return f&#34;({self})&#34;
+    except UnicodeEncodeError:
+        pass
     if self.USE_HEX_ENCODING:
         # Using the &#34;Hexadecimal String&#34; format defined in the PDF spec:
         hex_str = hexlify(BOM_UTF16_BE + self.encode(&#34;utf-16-be&#34;)).decode(&#34;latin-1&#34;)
@@ -1120,6 +1265,7 @@ but then there can be a risk of badly encoding some unicode strings - cf. issue 
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/syntax.py#L120-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Raw(str):
     &#34;&#34;&#34;str subclass signifying raw data to be directly emitted to PDF without transformation.&#34;&#34;&#34;</code></pre>
@@ -1183,8 +1329,11 @@ but then there can be a risk of badly encoding some unicode strings - cf. issue 
 </li>
 <li>
 <h4><code><a title="fpdf.syntax.PDFContentStream" href="#fpdf.syntax.PDFContentStream">PDFContentStream</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.syntax.PDFDate" href="#fpdf.syntax.PDFDate">PDFDate</a></code></h4>
 <ul class="">
-<li><code><a title="fpdf.syntax.PDFContentStream.encrypt" href="#fpdf.syntax.PDFContentStream.encrypt">encrypt</a></code></li>
+<li><code><a title="fpdf.syntax.PDFDate.serialize" href="#fpdf.syntax.PDFDate.serialize">serialize</a></code></li>
 </ul>
 </li>
 <li>

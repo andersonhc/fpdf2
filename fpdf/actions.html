@@ -25,12 +25,12 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L1-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from abc import ABC
 import warnings
 
-from .util import enclose_in_parens
-from .syntax import build_obj_dict, create_dictionary_string
+from .syntax import PDFString, build_obj_dict, create_dictionary_string
 
 
 class Action(ABC):
@@ -49,22 +49,8 @@ class Action(ABC):
             key_values = {}
         if self.next:
             key_values[&#34;Next&#34;] = self.next
-        obj_dict = build_obj_dict(key_values)
-        if _security_handler:
-            obj_dict = self._encrypt_obj_dict(obj_dict, _security_handler, _obj_id)
+        obj_dict = build_obj_dict(key_values, _security_handler, _obj_id)
         return create_dictionary_string(obj_dict, field_join=&#34; &#34;)
-
-    def _encrypt_obj_dict(self, obj_dict, security_handler, obj_id):
-        &#34;&#34;&#34;Encrypt the strings present in the object dictionary&#34;&#34;&#34;
-        for key in obj_dict:
-            string = obj_dict[key]
-            if (
-                isinstance(string, str)
-                and string.startswith(&#34;(&#34;)
-                and string.endswith(&#34;)&#34;)
-            ):
-                obj_dict[key] = security_handler.encrypt(string[1:-1], obj_id)
-        return obj_dict
 
 
 class URIAction(Action):
@@ -74,7 +60,7 @@ class URIAction(Action):
 
     def serialize(self, _security_handler=None, _obj_id=None):
         return super()._serialize(
-            {&#34;s&#34;: &#34;/URI&#34;, &#34;u_r_i&#34;: enclose_in_parens(self.uri)},
+            {&#34;s&#34;: &#34;/URI&#34;, &#34;u_r_i&#34;: PDFString(self.uri, encrypt=True)},
             _security_handler=_security_handler,
             _obj_id=_obj_id,
         )
@@ -118,7 +104,7 @@ class GoToRemoteAction(Action):
 
     def serialize(self, _security_handler=None, _obj_id=None):
         return super()._serialize(
-            {&#34;s&#34;: &#34;/GoToR&#34;, &#34;f&#34;: enclose_in_parens(self.file), &#34;d&#34;: self.dest},
+            {&#34;s&#34;: &#34;/GoToR&#34;, &#34;f&#34;: PDFString(self.file, encrypt=True), &#34;d&#34;: self.dest},
             _security_handler=_security_handler,
             _obj_id=_obj_id,
         )
@@ -133,7 +119,7 @@ class LaunchAction(Action):
 
     def serialize(self, _security_handler=None, _obj_id=None):
         return super()._serialize(
-            {&#34;s&#34;: &#34;/Launch&#34;, &#34;f&#34;: enclose_in_parens(self.file)},
+            {&#34;s&#34;: &#34;/Launch&#34;, &#34;f&#34;: PDFString(self.file, encrypt=True)},
             _security_handler=_security_handler,
             _obj_id=_obj_id,
         )
@@ -169,6 +155,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L7-L24" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Action(ABC):
     def __init__(self, next_action=None):
@@ -186,22 +173,8 @@ inheritance.</p>
             key_values = {}
         if self.next:
             key_values[&#34;Next&#34;] = self.next
-        obj_dict = build_obj_dict(key_values)
-        if _security_handler:
-            obj_dict = self._encrypt_obj_dict(obj_dict, _security_handler, _obj_id)
-        return create_dictionary_string(obj_dict, field_join=&#34; &#34;)
-
-    def _encrypt_obj_dict(self, obj_dict, security_handler, obj_id):
-        &#34;&#34;&#34;Encrypt the strings present in the object dictionary&#34;&#34;&#34;
-        for key in obj_dict:
-            string = obj_dict[key]
-            if (
-                isinstance(string, str)
-                and string.startswith(&#34;(&#34;)
-                and string.endswith(&#34;)&#34;)
-            ):
-                obj_dict[key] = security_handler.encrypt(string[1:-1], obj_id)
-        return obj_dict</code></pre>
+        obj_dict = build_obj_dict(key_values, _security_handler, _obj_id)
+        return create_dictionary_string(obj_dict, field_join=&#34; &#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -225,6 +198,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L15-L16" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     raise NotImplementedError</code></pre>
@@ -243,6 +217,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L55-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GoToAction(Action):
     &#34;As of 2022, this does not seem honored by neither Adobe Acrobat nor Sumatra readers.&#34;
@@ -273,6 +248,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L62-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return super()._serialize(
@@ -296,6 +272,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L70-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GoToRemoteAction(Action):
     def __init__(self, file, dest, next_action=None):
@@ -305,7 +282,7 @@ inheritance.</p>
 
     def serialize(self, _security_handler=None, _obj_id=None):
         return super()._serialize(
-            {&#34;s&#34;: &#34;/GoToR&#34;, &#34;f&#34;: enclose_in_parens(self.file), &#34;d&#34;: self.dest},
+            {&#34;s&#34;: &#34;/GoToR&#34;, &#34;f&#34;: PDFString(self.file, encrypt=True), &#34;d&#34;: self.dest},
             _security_handler=_security_handler,
             _obj_id=_obj_id,
         )</code></pre>
@@ -325,10 +302,11 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L76-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return super()._serialize(
-        {&#34;s&#34;: &#34;/GoToR&#34;, &#34;f&#34;: enclose_in_parens(self.file), &#34;d&#34;: self.dest},
+        {&#34;s&#34;: &#34;/GoToR&#34;, &#34;f&#34;: PDFString(self.file, encrypt=True), &#34;d&#34;: self.dest},
         _security_handler=_security_handler,
         _obj_id=_obj_id,
     )</code></pre>
@@ -347,6 +325,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L84-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class LaunchAction(Action):
     &#34;As of 2022, this does not seem honored by neither Adobe Acrobat nor Sumatra readers.&#34;
@@ -357,7 +336,7 @@ inheritance.</p>
 
     def serialize(self, _security_handler=None, _obj_id=None):
         return super()._serialize(
-            {&#34;s&#34;: &#34;/Launch&#34;, &#34;f&#34;: enclose_in_parens(self.file)},
+            {&#34;s&#34;: &#34;/Launch&#34;, &#34;f&#34;: PDFString(self.file, encrypt=True)},
             _security_handler=_security_handler,
             _obj_id=_obj_id,
         )</code></pre>
@@ -377,10 +356,11 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L91-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return super()._serialize(
-        {&#34;s&#34;: &#34;/Launch&#34;, &#34;f&#34;: enclose_in_parens(self.file)},
+        {&#34;s&#34;: &#34;/Launch&#34;, &#34;f&#34;: PDFString(self.file, encrypt=True)},
         _security_handler=_security_handler,
         _obj_id=_obj_id,
     )</code></pre>
@@ -400,6 +380,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L40-L52" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NamedAction(Action):
     def __init__(self, action_name, next_action=None):
@@ -430,6 +411,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L47-L52" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return super()._serialize(
@@ -453,6 +435,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L27-L37" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class URIAction(Action):
     def __init__(self, uri, next_action=None):
@@ -461,7 +444,7 @@ inheritance.</p>
 
     def serialize(self, _security_handler=None, _obj_id=None):
         return super()._serialize(
-            {&#34;s&#34;: &#34;/URI&#34;, &#34;u_r_i&#34;: enclose_in_parens(self.uri)},
+            {&#34;s&#34;: &#34;/URI&#34;, &#34;u_r_i&#34;: PDFString(self.uri, encrypt=True)},
             _security_handler=_security_handler,
             _obj_id=_obj_id,
         )</code></pre>
@@ -481,10 +464,11 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/actions.py#L32-L37" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return super()._serialize(
-        {&#34;s&#34;: &#34;/URI&#34;, &#34;u_r_i&#34;: enclose_in_parens(self.uri)},
+        {&#34;s&#34;: &#34;/URI&#34;, &#34;u_r_i&#34;: PDFString(self.uri, encrypt=True)},
         _security_handler=_security_handler,
         _obj_id=_obj_id,
     )</code></pre>

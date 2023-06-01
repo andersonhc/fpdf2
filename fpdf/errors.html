@@ -25,6 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/errors.py#L1-L53" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFException(Exception):
     pass
@@ -37,6 +38,7 @@ class FPDFPageFormatException(FPDFException):
         super().__init__()
         if unknown and one:
             raise TypeError(
+                # pylint: disable=implicit-str-concat
                 &#34;FPDF Page Format Exception cannot be both for &#34;
                 &#34;unknown type and for wrong number of arguments&#34;
             )
@@ -98,6 +100,7 @@ class FPDFUnicodeEncodingException(FPDFException):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/errors.py#L1-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFException(Exception):
     pass</code></pre>
@@ -122,6 +125,7 @@ class FPDFUnicodeEncodingException(FPDFException):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/errors.py#L5-L33" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFPageFormatException(FPDFException):
     &#34;&#34;&#34;Error is thrown when a bad page format is given&#34;&#34;&#34;
@@ -130,6 +134,7 @@ class FPDFUnicodeEncodingException(FPDFException):
         super().__init__()
         if unknown and one:
             raise TypeError(
+                # pylint: disable=implicit-str-concat
                 &#34;FPDF Page Format Exception cannot be both for &#34;
                 &#34;unknown type and for wrong number of arguments&#34;
             )
@@ -168,6 +173,7 @@ class FPDFUnicodeEncodingException(FPDFException):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/errors.py#L36-L53" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFUnicodeEncodingException(FPDFException):
     &#34;&#34;&#34;Error is thrown when a character that cannot be encoded by the chosen encoder is provided&#34;&#34;&#34;

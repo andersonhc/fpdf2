@@ -25,9 +25,9 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L1-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import gc, os, warnings
-from datetime import datetime, timezone
 from numbers import Number
 from tracemalloc import get_traced_memory, is_tracing
 from typing import Iterable, Tuple, Union
@@ -42,26 +42,6 @@ def buffer_subst(buffer, placeholder, value):
     buffer = buffer.replace(placeholder.encode(), value.encode(), 1)
     assert len(buffer) == buffer_size
     return buffer
-
-
-def format_date(date: datetime, with_tz=False) -&gt; str:
-    if with_tz:
-        assert date.tzinfo
-        if date.tzinfo == timezone.utc:
-            str_date = f&#34;D:{date:%Y%m%d%H%M%SZ%H&#39;%M&#39;}&#34;
-        else:
-            str_date = f&#34;D:{date:%Y%m%d%H%M%S%z}&#34;
-            str_date = str_date[:-2] + &#34;&#39;&#34; + str_date[-2:] + &#34;&#39;&#34;
-        return enclose_in_parens(str_date)
-    return enclose_in_parens(f&#34;D:{date:%Y%m%d%H%M%S}&#34;)
-
-
-def enclose_in_parens(s):
-    &#34;&#34;&#34;Format a text string&#34;&#34;&#34;
-    if s:
-        assert isinstance(s, str)
-        return f&#34;({escape_parens(s)})&#34;
-    return &#34;&#34;
 
 
 def escape_parens(s):
@@ -79,15 +59,6 @@ def escape_parens(s):
         .replace(b&#34;(&#34;, b&#34;\\(&#34;)
         .replace(b&#34;\r&#34;, b&#34;\\r&#34;)
     )
-
-
-# shortcut to bytes conversion (b prefix)
-def b(s):
-    if isinstance(s, str):
-        return s.encode(&#34;latin1&#34;)
-    if isinstance(s, int):
-        return bytes([s])  # http://bugs.python.org/issue4588
-    raise ValueError(f&#34;Invalid input: {s}&#34;)
 
 
 def get_scale_factor(unit: Union[str, Number]) -&gt; float:
@@ -134,9 +105,7 @@ def convert_unit(
     &#34;&#34;&#34;
     unit_conversion_factor = get_scale_factor(new_unit) / get_scale_factor(old_unit)
     if isinstance(to_convert, Iterable):
-        return tuple(
-            map(lambda i: convert_unit(i, 1, unit_conversion_factor), to_convert)
-        )
+        return tuple(convert_unit(i, 1, unit_conversion_factor) for i in to_convert)
     return to_convert / unit_conversion_factor
 
 
@@ -155,11 +124,11 @@ def get_mem_usage(prefix) -&gt; str:
     # heap_size, stack_size = get_process_heap_and_stack_sizes()
     # objs_size_sum = get_gc_managed_objs_total_size()
     pillow = get_pillow_allocated_memory()
+    # malloc_stats = &#34;Malloc stats: &#34; + get_pymalloc_allocated_over_total_size()
+    malloc_stats = &#34;&#34;
     if is_tracing():
-        malloc_stats = get_tracemalloc_traced_memory()
-    else:
-        malloc_stats = get_pymalloc_allocated_over_total_size()
-    return f&#34;{prefix:&lt;40} Malloc stats: {malloc_stats} | Pillow: {pillow} | Process RSS: {rss}&#34;
+        malloc_stats = &#34;Malloc stats: &#34; + get_tracemalloc_traced_memory()
+    return f&#34;{prefix:&lt;40} {malloc_stats} | Pillow: {pillow} | Process RSS: {rss}&#34;
 
 
 def get_process_rss() -&gt; str:
@@ -180,7 +149,7 @@ def get_process_rss_as_mib() -&gt; Union[Number, None]:
                 / 1024
                 / 1024
             )
-    except FileNotFoundError:  # This file only exists under Linux
+    except FileNotFoundError:  # /proc files only exist under Linux
         return None
 
 
@@ -193,8 +162,8 @@ def get_process_heap_and_stack_sizes() -&gt; Tuple[str]:
     except FileNotFoundError:  # This file only exists under Linux
         return heap_size_in_mib, stack_size_in_mib
     for line in maps_lines:
-        line = line.split()
-        addr_range, path = line[0], line[-1]
+        words = line.split()
+        addr_range, path = words[0], words[-1]
         addr_start, addr_end = addr_range.split(&#34;-&#34;)
         addr_start, addr_end = int(addr_start, 16), int(addr_end, 16)
         size = addr_end - addr_start
@@ -261,23 +230,6 @@ def get_pillow_allocated_memory() -&gt; str:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="fpdf.util.b"><code class="name flex">
-<span>def <span class="ident">b</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def b(s):
-    if isinstance(s, str):
-        return s.encode(&#34;latin1&#34;)
-    if isinstance(s, int):
-        return bytes([s])  # http://bugs.python.org/issue4588
-    raise ValueError(f&#34;Invalid input: {s}&#34;)</code></pre>
-</details>
-</dd>
 <dt id="fpdf.util.buffer_subst"><code class="name flex">
 <span>def <span class="ident">buffer_subst</span></span>(<span>buffer, placeholder, value)</span>
 </code></dt>
@@ -286,6 +238,7 @@ def get_pillow_allocated_memory() -&gt; str:
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L10-L15" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def buffer_subst(buffer, placeholder, value):
     buffer_size = len(buffer)
@@ -311,6 +264,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L60-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convert_unit(
     to_convert: Union[float, int, Iterable[Union[float, int, Iterable]]],
@@ -331,27 +285,8 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
     &#34;&#34;&#34;
     unit_conversion_factor = get_scale_factor(new_unit) / get_scale_factor(old_unit)
     if isinstance(to_convert, Iterable):
-        return tuple(
-            map(lambda i: convert_unit(i, 1, unit_conversion_factor), to_convert)
-        )
+        return tuple(convert_unit(i, 1, unit_conversion_factor) for i in to_convert)
     return to_convert / unit_conversion_factor</code></pre>
-</details>
-</dd>
-<dt id="fpdf.util.enclose_in_parens"><code class="name flex">
-<span>def <span class="ident">enclose_in_parens</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Format a text string</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def enclose_in_parens(s):
-    &#34;&#34;&#34;Format a text string&#34;&#34;&#34;
-    if s:
-        assert isinstance(s, str)
-        return f&#34;({escape_parens(s)})&#34;
-    return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="fpdf.util.escape_parens"><code class="name flex">
@@ -362,6 +297,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L18-L32" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def escape_parens(s):
     &#34;&#34;&#34;Add a backslash character before , ( and )&#34;&#34;&#34;
@@ -380,27 +316,6 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
     )</code></pre>
 </details>
 </dd>
-<dt id="fpdf.util.format_date"><code class="name flex">
-<span>def <span class="ident">format_date</span></span>(<span>date: datetime.datetime, with_tz=False) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def format_date(date: datetime, with_tz=False) -&gt; str:
-    if with_tz:
-        assert date.tzinfo
-        if date.tzinfo == timezone.utc:
-            str_date = f&#34;D:{date:%Y%m%d%H%M%SZ%H&#39;%M&#39;}&#34;
-        else:
-            str_date = f&#34;D:{date:%Y%m%d%H%M%S%z}&#34;
-            str_date = str_date[:-2] + &#34;&#39;&#34; + str_date[-2:] + &#34;&#39;&#34;
-        return enclose_in_parens(str_date)
-    return enclose_in_parens(f&#34;D:{date:%Y%m%d%H%M%S}&#34;)</code></pre>
-</details>
-</dd>
 <dt id="fpdf.util.get_gc_managed_objs_total_size"><code class="name flex">
 <span>def <span class="ident">get_gc_managed_objs_total_size</span></span>(<span>) ‑> str</span>
 </code></dt>
@@ -409,6 +324,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L169-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_gc_managed_objs_total_size() -&gt; str:
     &#34;From experiments, not very reliable&#34;
@@ -431,6 +347,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L92-L102" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_mem_usage(prefix) -&gt; str:
     _collected_count = gc.collect()
@@ -438,11 +355,11 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
     # heap_size, stack_size = get_process_heap_and_stack_sizes()
     # objs_size_sum = get_gc_managed_objs_total_size()
     pillow = get_pillow_allocated_memory()
+    # malloc_stats = &#34;Malloc stats: &#34; + get_pymalloc_allocated_over_total_size()
+    malloc_stats = &#34;&#34;
     if is_tracing():
-        malloc_stats = get_tracemalloc_traced_memory()
-    else:
-        malloc_stats = get_pymalloc_allocated_over_total_size()
-    return f&#34;{prefix:&lt;40} Malloc stats: {malloc_stats} | Pillow: {pillow} | Process RSS: {rss}&#34;</code></pre>
+        malloc_stats = &#34;Malloc stats: &#34; + get_tracemalloc_traced_memory()
+    return f&#34;{prefix:&lt;40} {malloc_stats} | Pillow: {pillow} | Process RSS: {rss}&#34;</code></pre>
 </details>
 </dd>
 <dt id="fpdf.util.get_pillow_allocated_memory"><code class="name flex">
@@ -453,6 +370,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L188-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_pillow_allocated_memory() -&gt; str:
     # pylint: disable=c-extension-no-member,import-outside-toplevel
@@ -471,6 +389,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L127-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_heap_and_stack_sizes() -&gt; Tuple[str]:
     heap_size_in_mib, stack_size_in_mib = &#34;&lt;unavailable&gt;&#34;, &#34;&lt;unavailable&gt;&#34;
@@ -481,8 +400,8 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
     except FileNotFoundError:  # This file only exists under Linux
         return heap_size_in_mib, stack_size_in_mib
     for line in maps_lines:
-        line = line.split()
-        addr_range, path = line[0], line[-1]
+        words = line.split()
+        addr_range, path = words[0], words[-1]
         addr_start, addr_end = addr_range.split(&#34;-&#34;)
         addr_start, addr_end = int(addr_start, 16), int(addr_end, 16)
         size = addr_end - addr_start
@@ -501,6 +420,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L105-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_rss() -&gt; str:
     rss_as_mib = get_process_rss_as_mib()
@@ -517,6 +437,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L112-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_rss_as_mib() -&gt; Union[Number, None]:
     &#34;Inspired by psutil source code&#34;
@@ -529,7 +450,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
                 / 1024
                 / 1024
             )
-    except FileNotFoundError:  # This file only exists under Linux
+    except FileNotFoundError:  # /proc files only exist under Linux
         return None</code></pre>
 </details>
 </dd>
@@ -542,6 +463,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L148-L166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_pymalloc_allocated_over_total_size() -&gt; Tuple[str]:
     &#34;&#34;&#34;
@@ -584,6 +506,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L35-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_scale_factor(unit: Union[str, Number]) -&gt; float:
     &#34;&#34;&#34;
@@ -618,6 +541,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L182-L185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_tracemalloc_traced_memory() -&gt; str:
     &#34;Requires python -X tracemalloc&#34;
@@ -633,6 +557,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/util.py#L88-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def print_mem_usage(prefix):
     print(get_mem_usage(prefix))</code></pre>
@@ -656,12 +581,9 @@ From experiments, not very reliable</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="fpdf.util.b" href="#fpdf.util.b">b</a></code></li>
 <li><code><a title="fpdf.util.buffer_subst" href="#fpdf.util.buffer_subst">buffer_subst</a></code></li>
 <li><code><a title="fpdf.util.convert_unit" href="#fpdf.util.convert_unit">convert_unit</a></code></li>
-<li><code><a title="fpdf.util.enclose_in_parens" href="#fpdf.util.enclose_in_parens">enclose_in_parens</a></code></li>
 <li><code><a title="fpdf.util.escape_parens" href="#fpdf.util.escape_parens">escape_parens</a></code></li>
-<li><code><a title="fpdf.util.format_date" href="#fpdf.util.format_date">format_date</a></code></li>
 <li><code><a title="fpdf.util.get_gc_managed_objs_total_size" href="#fpdf.util.get_gc_managed_objs_total_size">get_gc_managed_objs_total_size</a></code></li>
 <li><code><a title="fpdf.util.get_mem_usage" href="#fpdf.util.get_mem_usage">get_mem_usage</a></code></li>
 <li><code><a title="fpdf.util.get_pillow_allocated_memory" href="#fpdf.util.get_pillow_allocated_memory">get_pillow_allocated_memory</a></code></li>

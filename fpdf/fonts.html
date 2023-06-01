@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>fpdf.fonts API documentation</title>
-<meta name="description" content="Definition of the character widths of all PDF standard fonts." />
+<meta name="description" content="Font-related classes &amp; constants.
+Includes the definition of the character widths of all PDF standard fonts." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,24 +23,66 @@
 <h1 class="title">Module <code>fpdf.fonts</code></h1>
 </header>
 <section id="section-intro">
-<p>Definition of the character widths of all PDF standard fonts.</p>
+<p>Font-related classes &amp; constants.
+Includes the definition of the character widths of all PDF standard fonts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/fonts.py#L1-L2641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Definition of the character widths of all PDF standard fonts.
+Font-related classes &amp; constants.
+Includes the definition of the character widths of all PDF standard fonts.
 &#34;&#34;&#34;
+from dataclasses import dataclass, replace
+from typing import Optional, Union
 
-courier = {chr(i): 600 for i in range(256)}
-fpdf_charwidths = {
-    &#34;courier&#34;: courier,
-    &#34;courierB&#34;: courier,
-    &#34;courierI&#34;: courier,
-    &#34;courierBI&#34;: courier,
+from .drawing import DeviceGray, DeviceRGB
+from .enums import TextEmphasis
+
+
+@dataclass
+class FontFace:
+    &#34;&#34;&#34;
+    Represent basic font styling properties.
+    This is a subset of `fpdf.graphics_state.GraphicsStateMixin` properties.
+    &#34;&#34;&#34;
+
+    __slots__ = (  # RAM usage optimization
+        &#34;family&#34;,
+        &#34;emphasis&#34;,
+        &#34;size_pt&#34;,
+        &#34;color&#34;,
+        &#34;fill_color&#34;,
+    )
+    family: Optional[str]
+    emphasis: Optional[TextEmphasis]  # can be a combination: B | U
+    size_pt: Optional[int]
+    # Colors are single number grey scales or (red, green, blue) tuples:
+    color: Optional[Union[int, tuple, DeviceGray, DeviceRGB]]
+    fill_color: Optional[Union[int, tuple, DeviceGray, DeviceRGB]]
+
+    def __init__(
+        self, family=None, emphasis=None, size_pt=None, color=None, fill_color=None
+    ):
+        self.family = family
+        self.emphasis = TextEmphasis.coerce(emphasis) if emphasis else None
+        self.size_pt = size_pt
+        self.color = color
+        self.fill_color = fill_color
+
+    replace = replace
+
+
+COURIER_FONT = {chr(i): 600 for i in range(256)}
+CORE_FONTS_CHARWIDTHS = {
+    &#34;courier&#34;: COURIER_FONT,
+    &#34;courierB&#34;: COURIER_FONT,
+    &#34;courierI&#34;: COURIER_FONT,
+    &#34;courierBI&#34;: COURIER_FONT,
 }
 
-fpdf_charwidths[&#34;helvetica&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;helvetica&#34;] = {
     &#34;\x00&#34;: 278,
     &#34;\x01&#34;: 278,
     &#34;\x02&#34;: 278,
@@ -298,7 +341,7 @@ fpdf_charwidths[&#34;helvetica&#34;] = {
     &#34;\xff&#34;: 500,
 }
 
-fpdf_charwidths[&#34;helveticaB&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;helveticaB&#34;] = {
     &#34;\x00&#34;: 278,
     &#34;\x01&#34;: 278,
     &#34;\x02&#34;: 278,
@@ -557,7 +600,7 @@ fpdf_charwidths[&#34;helveticaB&#34;] = {
     &#34;\xff&#34;: 556,
 }
 
-fpdf_charwidths[&#34;helveticaBI&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;helveticaBI&#34;] = {
     &#34;\x00&#34;: 278,
     &#34;\x01&#34;: 278,
     &#34;\x02&#34;: 278,
@@ -816,7 +859,7 @@ fpdf_charwidths[&#34;helveticaBI&#34;] = {
     &#34;\xff&#34;: 556,
 }
 
-fpdf_charwidths[&#34;helveticaI&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;helveticaI&#34;] = {
     &#34;\x00&#34;: 278,
     &#34;\x01&#34;: 278,
     &#34;\x02&#34;: 278,
@@ -1075,7 +1118,7 @@ fpdf_charwidths[&#34;helveticaI&#34;] = {
     &#34;\xff&#34;: 500,
 }
 
-fpdf_charwidths[&#34;symbol&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;symbol&#34;] = {
     &#34;\x00&#34;: 250,
     &#34;\x01&#34;: 250,
     &#34;\x02&#34;: 250,
@@ -1334,7 +1377,7 @@ fpdf_charwidths[&#34;symbol&#34;] = {
     &#34;\xff&#34;: 0,
 }
 
-fpdf_charwidths[&#34;times&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;times&#34;] = {
     &#34;\x00&#34;: 250,
     &#34;\x01&#34;: 250,
     &#34;\x02&#34;: 250,
@@ -1593,7 +1636,7 @@ fpdf_charwidths[&#34;times&#34;] = {
     &#34;\xff&#34;: 500,
 }
 
-fpdf_charwidths[&#34;timesB&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;timesB&#34;] = {
     &#34;\x00&#34;: 250,
     &#34;\x01&#34;: 250,
     &#34;\x02&#34;: 250,
@@ -1852,7 +1895,7 @@ fpdf_charwidths[&#34;timesB&#34;] = {
     &#34;\xff&#34;: 500,
 }
 
-fpdf_charwidths[&#34;timesBI&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;timesBI&#34;] = {
     &#34;\x00&#34;: 250,
     &#34;\x01&#34;: 250,
     &#34;\x02&#34;: 250,
@@ -2111,7 +2154,7 @@ fpdf_charwidths[&#34;timesBI&#34;] = {
     &#34;\xff&#34;: 444,
 }
 
-fpdf_charwidths[&#34;timesI&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;timesI&#34;] = {
     &#34;\x00&#34;: 250,
     &#34;\x01&#34;: 250,
     &#34;\x02&#34;: 250,
@@ -2370,7 +2413,7 @@ fpdf_charwidths[&#34;timesI&#34;] = {
     &#34;\xff&#34;: 444,
 }
 
-fpdf_charwidths[&#34;zapfdingbats&#34;] = {
+CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
     &#34;\x00&#34;: 0,
     &#34;\x01&#34;: 0,
     &#34;\x02&#34;: 0,
@@ -2637,6 +2680,153 @@ fpdf_charwidths[&#34;zapfdingbats&#34;] = {
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.fonts.FontFace"><code class="flex name class">
+<span>class <span class="ident">FontFace</span></span>
+<span>(</span><span>family=None, emphasis=None, size_pt=None, color=None, fill_color=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represent basic font styling properties.
+This is a subset of <code><a title="fpdf.graphics_state.GraphicsStateMixin" href="graphics_state.html#fpdf.graphics_state.GraphicsStateMixin">GraphicsStateMixin</a></code> properties.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/fonts.py#L12-L42" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@dataclass
+class FontFace:
+    &#34;&#34;&#34;
+    Represent basic font styling properties.
+    This is a subset of `fpdf.graphics_state.GraphicsStateMixin` properties.
+    &#34;&#34;&#34;
+
+    __slots__ = (  # RAM usage optimization
+        &#34;family&#34;,
+        &#34;emphasis&#34;,
+        &#34;size_pt&#34;,
+        &#34;color&#34;,
+        &#34;fill_color&#34;,
+    )
+    family: Optional[str]
+    emphasis: Optional[TextEmphasis]  # can be a combination: B | U
+    size_pt: Optional[int]
+    # Colors are single number grey scales or (red, green, blue) tuples:
+    color: Optional[Union[int, tuple, DeviceGray, DeviceRGB]]
+    fill_color: Optional[Union[int, tuple, DeviceGray, DeviceRGB]]
+
+    def __init__(
+        self, family=None, emphasis=None, size_pt=None, color=None, fill_color=None
+    ):
+        self.family = family
+        self.emphasis = TextEmphasis.coerce(emphasis) if emphasis else None
+        self.size_pt = size_pt
+        self.color = color
+        self.fill_color = fill_color
+
+    replace = replace</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fpdf.fpdf.TitleStyle" href="fpdf.html#fpdf.fpdf.TitleStyle">TitleStyle</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.fonts.FontFace.color"><code class="name">var <span class="ident">color</span> : Union[int, tuple, <a title="fpdf.drawing.DeviceGray" href="drawing.html#fpdf.drawing.DeviceGray">DeviceGray</a>, <a title="fpdf.drawing.DeviceRGB" href="drawing.html#fpdf.drawing.DeviceRGB">DeviceRGB</a>, ForwardRef(None)]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.FontFace.emphasis"><code class="name">var <span class="ident">emphasis</span> : Optional[<a title="fpdf.enums.TextEmphasis" href="enums.html#fpdf.enums.TextEmphasis">TextEmphasis</a>]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.FontFace.family"><code class="name">var <span class="ident">family</span> : Optional[str]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.FontFace.fill_color"><code class="name">var <span class="ident">fill_color</span> : Union[int, tuple, <a title="fpdf.drawing.DeviceGray" href="drawing.html#fpdf.drawing.DeviceGray">DeviceGray</a>, <a title="fpdf.drawing.DeviceRGB" href="drawing.html#fpdf.drawing.DeviceRGB">DeviceRGB</a>, ForwardRef(None)]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.FontFace.size_pt"><code class="name">var <span class="ident">size_pt</span> : Optional[int]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.fonts.FontFace.replace"><code class="name flex">
+<span>def <span class="ident">replace</span></span>(<span>obj, /, **changes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a new object replacing specified fields with new values.</p>
+<p>This is especially useful for frozen classes.
+Example usage:</p>
+<p>@dataclass(frozen=True)
+class C:
+x: int
+y: int</p>
+<p>c = C(1, 2)
+c1 = replace(c, x=3)
+assert c1.x == 3 and c1.y == 2</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def replace(obj, /, **changes):
+    &#34;&#34;&#34;Return a new object replacing specified fields with new values.
+
+    This is especially useful for frozen classes.  Example usage:
+
+      @dataclass(frozen=True)
+      class C:
+          x: int
+          y: int
+
+      c = C(1, 2)
+      c1 = replace(c, x=3)
+      assert c1.x == 3 and c1.y == 2
+      &#34;&#34;&#34;
+
+    # We&#39;re going to mutate &#39;changes&#39;, but that&#39;s okay because it&#39;s a
+    # new dict, even if called with &#39;replace(obj, **my_changes)&#39;.
+
+    if not _is_dataclass_instance(obj):
+        raise TypeError(&#34;replace() should be called on dataclass instances&#34;)
+
+    # It&#39;s an error to have init=False fields in &#39;changes&#39;.
+    # If a field is not in &#39;changes&#39;, read its value from the provided obj.
+
+    for f in getattr(obj, _FIELDS).values():
+        # Only consider normal fields or InitVars.
+        if f._field_type is _FIELD_CLASSVAR:
+            continue
+
+        if not f.init:
+            # Error if this field is specified in changes.
+            if f.name in changes:
+                raise ValueError(f&#39;field {f.name} is declared with &#39;
+                                 &#39;init=False, it cannot be specified with &#39;
+                                 &#39;replace()&#39;)
+            continue
+
+        if f.name not in changes:
+            if f._field_type is _FIELD_INITVAR and f.default is MISSING:
+                raise ValueError(f&#34;InitVar {f.name!r} &#34;
+                                 &#39;must be specified with replace()&#39;)
+            changes[f.name] = getattr(obj, f.name)
+
+    # Create the new object, which calls __init__() and
+    # __post_init__() (if defined), using all of the init fields we&#39;ve
+    # added and/or left in &#39;changes&#39;.  If there are values supplied in
+    # changes that aren&#39;t fields, this will correctly raise a
+    # TypeError.
+    return obj.__class__(**changes)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -2648,6 +2838,21 @@ fpdf_charwidths[&#34;zapfdingbats&#34;] = {
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.fonts.FontFace" href="#fpdf.fonts.FontFace">FontFace</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.fonts.FontFace.color" href="#fpdf.fonts.FontFace.color">color</a></code></li>
+<li><code><a title="fpdf.fonts.FontFace.emphasis" href="#fpdf.fonts.FontFace.emphasis">emphasis</a></code></li>
+<li><code><a title="fpdf.fonts.FontFace.family" href="#fpdf.fonts.FontFace.family">family</a></code></li>
+<li><code><a title="fpdf.fonts.FontFace.fill_color" href="#fpdf.fonts.FontFace.fill_color">fill_color</a></code></li>
+<li><code><a title="fpdf.fonts.FontFace.replace" href="#fpdf.fonts.FontFace.replace">replace</a></code></li>
+<li><code><a title="fpdf.fonts.FontFace.size_pt" href="#fpdf.fonts.FontFace.size_pt">size_pt</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

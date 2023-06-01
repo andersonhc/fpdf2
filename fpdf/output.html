@@ -25,6 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L1-L1068" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python"># pylint: disable=protected-access
 import logging
@@ -35,23 +36,20 @@ from io import BytesIO
 from .annotations import PDFAnnotation
 from .enums import SignatureFlag
 from .errors import FPDFException
-from .outline import build_outline_objs, OutlineItemDictionary
+from .outline import build_outline_objs
 from .sign import Signature, sign_content
 from .syntax import (
     build_obj_dict,
     Name,
     PDFArray,
     PDFContentStream,
+    PDFDate,
     PDFObject,
     PDFString,
 )
 from .syntax import create_dictionary_string as pdf_dict
 from .syntax import create_list_string as pdf_list
 from .syntax import iobj_ref as pdf_ref
-from .util import (
-    enclose_in_parens,
-    format_date,
-)
 
 from fontTools import ttLib
 from fontTools import subset as ftsubset
@@ -80,6 +78,7 @@ class PDFHeader(ContentWithoutID):
     def __init__(self, pdf_version):
         self.pdf_version = pdf_version
 
+    # method override
     def serialize(self, _security_handler=None):
         return f&#34;%PDF-{self.pdf_version}&#34;
 
@@ -126,11 +125,11 @@ class PDFFontDescriptor(PDFObject):
 
 
 class CIDSystemInfo(PDFObject):
-    def __init__(self, registry, ordering, supplement):
+    def __init__(self):
         super().__init__()
-        self.registry = enclose_in_parens(registry)
-        self.ordering = enclose_in_parens(ordering)
-        self.supplement = supplement
+        self.registry = PDFString(&#34;Adobe&#34;, encrypt=True)
+        self.ordering = PDFString(&#34;UCS&#34;, encrypt=True)
+        self.supplement = 0
 
 
 class PDFInfo(PDFObject):
@@ -142,7 +141,7 @@ class PDFInfo(PDFObject):
         keywords,
         creator,
         producer,
-        creation_date,
+        creation_date: PDFDate,
     ):
         super().__init__()
         self.title = PDFString(title) if title else None
@@ -174,7 +173,7 @@ class PDFCatalog(PDFObject):
     ):
         super().__init__()
         self.type = Name(&#34;Catalog&#34;)
-        self.lang = enclose_in_parens(lang) if lang else None
+        self.lang = PDFString(lang) if lang else None
         self.page_layout = page_layout
         self.page_mode = page_mode
         self.viewer_preferences = viewer_preferences
@@ -528,10 +527,6 @@ class OutputProducer:
         self.pdf_objs.append(pdf_obj)
         if trace_label:
             self.trace_labels_per_obj_id[self.obj_id] = trace_label
-        if isinstance(pdf_obj, PDFContentStream) and self.fpdf._security_handler:
-            if not isinstance(pdf_obj.content_stream(), (bytearray, bytes)):
-                pdf_obj._contents = pdf_obj.content_stream().encode(&#34;latin-1&#34;)
-            pdf_obj.encrypt(self.fpdf._security_handler)
         return self.obj_id
 
     def _add_pages_root(self):
@@ -729,9 +724,7 @@ class OutputProducer:
                 self._add_pdf_obj(to_unicode_obj, &#34;fonts&#34;)
                 composite_font_obj.to_unicode = to_unicode_obj
 
-                cid_system_info_obj = CIDSystemInfo(
-                    registry=&#34;Adobe&#34;, ordering=&#34;UCS&#34;, supplement=0
-                )
+                cid_system_info_obj = CIDSystemInfo()
                 self._add_pdf_obj(cid_system_info_obj, &#34;fonts&#34;)
                 cid_font_obj.c_i_d_system_info = cid_system_info_obj
 
@@ -802,10 +795,8 @@ class OutputProducer:
             iccp_pdf_i = self._ensure_iccp(info)
             color_space = PDFArray([&#34;/ICCBased&#34;, str(iccp_pdf_i), str(&#34;0&#34;), &#34;R&#34;])
         elif color_space == &#34;DeviceCMYK&#34;:
-            decode = &#34;[1 0 1 0 1 0 1 0]&#34;
-            raise NotImplementedError(
-                &#34;fpdf2 does not support DeviceCMYK ColorSpace yet - cf. issue #711&#34;
-            )
+            if info[&#34;inverted&#34;] is True:
+                decode = &#34;[1 0 1 0 1 0 1 0]&#34;
 
         decode_parms = f&#34;&lt;&lt;{info[&#39;dp&#39;]} /BitsPerComponent {info[&#39;bpc&#39;]}&gt;&gt;&#34;
         img_obj = PDFXObject(
@@ -915,13 +906,7 @@ class OutputProducer:
                 outline_dict_obj = pdf_obj
             else:
                 outline_items.append(pdf_obj)
-            obj_id = self._add_pdf_obj(pdf_obj, &#34;document_outline&#34;)
-            if self.fpdf._security_handler and isinstance(
-                pdf_obj, OutlineItemDictionary
-            ):
-                pdf_obj.title = self.fpdf._security_handler.encrypt(
-                    pdf_obj.title, obj_id
-                )
+            self._add_pdf_obj(pdf_obj, &#34;document_outline&#34;)
         return outline_dict_obj, outline_items
 
     def _add_xmp_metadata(self):
@@ -937,7 +922,7 @@ class OutputProducer:
         creation_date = None
         if fpdf.creation_date:
             try:
-                creation_date = format_date(fpdf.creation_date, with_tz=True)
+                creation_date = PDFDate(fpdf.creation_date, with_tz=True, encrypt=True)
             except Exception as error:
                 raise FPDFException(
                     f&#34;Could not format date: {fpdf.creation_date}&#34;
@@ -1005,7 +990,7 @@ class OutputProducer:
             catalog_obj.mark_info = pdf_dict({&#34;/Marked&#34;: &#34;true&#34;})
         if fpdf.embedded_files:
             file_spec_names = [
-                f&#34;{enclose_in_parens(embedded_file.basename())} {embedded_file.file_spec().serialize()}&#34;
+                f&#34;{PDFString(embedded_file.basename()).serialize()} {embedded_file.file_spec().serialize()}&#34;
                 for embedded_file in fpdf.embedded_files
                 if embedded_file.globally_enclosed
             ]
@@ -1130,6 +1115,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L127-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AcroForm:
     def __init__(self, fields, sig_flags):
@@ -1154,6 +1140,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L132-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(
@@ -1168,7 +1155,6 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 </dd>
 <dt id="fpdf.output.CIDSystemInfo"><code class="flex name class">
 <span>class <span class="ident">CIDSystemInfo</span></span>
-<span>(</span><span>registry, ordering, supplement)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Main features of this class:
@@ -1177,13 +1163,14 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L98-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CIDSystemInfo(PDFObject):
-    def __init__(self, registry, ordering, supplement):
+    def __init__(self):
         super().__init__()
-        self.registry = enclose_in_parens(registry)
-        self.ordering = enclose_in_parens(ordering)
-        self.supplement = supplement</code></pre>
+        self.registry = PDFString(&#34;Adobe&#34;, encrypt=True)
+        self.ordering = PDFString(&#34;UCS&#34;, encrypt=True)
+        self.supplement = 0</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1207,6 +1194,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L43-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ContentWithoutID:
     def serialize(self, _security_handler=None):
@@ -1228,6 +1216,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L44-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     pass</code></pre>
@@ -1244,6 +1233,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L356-L981" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OutputProducer:
     &#34;Generates the final bytearray representing the PDF document, based on a FPDF instance.&#34;
@@ -1390,10 +1380,6 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
         self.pdf_objs.append(pdf_obj)
         if trace_label:
             self.trace_labels_per_obj_id[self.obj_id] = trace_label
-        if isinstance(pdf_obj, PDFContentStream) and self.fpdf._security_handler:
-            if not isinstance(pdf_obj.content_stream(), (bytearray, bytes)):
-                pdf_obj._contents = pdf_obj.content_stream().encode(&#34;latin-1&#34;)
-            pdf_obj.encrypt(self.fpdf._security_handler)
         return self.obj_id
 
     def _add_pages_root(self):
@@ -1591,9 +1577,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 self._add_pdf_obj(to_unicode_obj, &#34;fonts&#34;)
                 composite_font_obj.to_unicode = to_unicode_obj
 
-                cid_system_info_obj = CIDSystemInfo(
-                    registry=&#34;Adobe&#34;, ordering=&#34;UCS&#34;, supplement=0
-                )
+                cid_system_info_obj = CIDSystemInfo()
                 self._add_pdf_obj(cid_system_info_obj, &#34;fonts&#34;)
                 cid_font_obj.c_i_d_system_info = cid_system_info_obj
 
@@ -1664,10 +1648,8 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
             iccp_pdf_i = self._ensure_iccp(info)
             color_space = PDFArray([&#34;/ICCBased&#34;, str(iccp_pdf_i), str(&#34;0&#34;), &#34;R&#34;])
         elif color_space == &#34;DeviceCMYK&#34;:
-            decode = &#34;[1 0 1 0 1 0 1 0]&#34;
-            raise NotImplementedError(
-                &#34;fpdf2 does not support DeviceCMYK ColorSpace yet - cf. issue #711&#34;
-            )
+            if info[&#34;inverted&#34;] is True:
+                decode = &#34;[1 0 1 0 1 0 1 0]&#34;
 
         decode_parms = f&#34;&lt;&lt;{info[&#39;dp&#39;]} /BitsPerComponent {info[&#39;bpc&#39;]}&gt;&gt;&#34;
         img_obj = PDFXObject(
@@ -1777,13 +1759,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 outline_dict_obj = pdf_obj
             else:
                 outline_items.append(pdf_obj)
-            obj_id = self._add_pdf_obj(pdf_obj, &#34;document_outline&#34;)
-            if self.fpdf._security_handler and isinstance(
-                pdf_obj, OutlineItemDictionary
-            ):
-                pdf_obj.title = self.fpdf._security_handler.encrypt(
-                    pdf_obj.title, obj_id
-                )
+            self._add_pdf_obj(pdf_obj, &#34;document_outline&#34;)
         return outline_dict_obj, outline_items
 
     def _add_xmp_metadata(self):
@@ -1799,7 +1775,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
         creation_date = None
         if fpdf.creation_date:
             try:
-                creation_date = format_date(fpdf.creation_date, with_tz=True)
+                creation_date = PDFDate(fpdf.creation_date, with_tz=True, encrypt=True)
             except Exception as error:
                 raise FPDFException(
                     f&#34;Could not format date: {fpdf.creation_date}&#34;
@@ -1867,7 +1843,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
             catalog_obj.mark_info = pdf_dict({&#34;/Marked&#34;: &#34;true&#34;})
         if fpdf.embedded_files:
             file_spec_names = [
-                f&#34;{enclose_in_parens(embedded_file.basename())} {embedded_file.file_spec().serialize()}&#34;
+                f&#34;{PDFString(embedded_file.basename()).serialize()} {embedded_file.file_spec().serialize()}&#34;
                 for embedded_file in fpdf.embedded_files
                 if embedded_file.globally_enclosed
             ]
@@ -1902,6 +1878,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L370-L485" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bufferize(self):
     &#34;&#34;&#34;
@@ -2034,6 +2011,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L141-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFCatalog(PDFObject):
     def __init__(
@@ -2041,7 +2019,7 @@ plus a few other properties on PDFPage instances</p></div>
     ):
         super().__init__()
         self.type = Name(&#34;Catalog&#34;)
-        self.lang = enclose_in_parens(lang) if lang else None
+        self.lang = PDFString(lang) if lang else None
         self.page_layout = page_layout
         self.page_mode = page_mode
         self.viewer_preferences = viewer_preferences
@@ -2079,6 +2057,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L306-L313" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFExtGState(PDFObject):
     def __init__(self, dict_as_str):
@@ -2114,6 +2093,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L57-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFont(PDFObject):
     def __init__(self, subtype, base_font, encoding=None, d_w=None, w=None):
@@ -2155,6 +2135,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L73-L95" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontDescriptor(PDFObject):
     def __init__(
@@ -2205,6 +2186,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L170-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontStream(PDFContentStream):
     def __init__(self, contents):
@@ -2235,11 +2217,13 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L48-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFHeader(ContentWithoutID):
     def __init__(self, pdf_version):
         self.pdf_version = pdf_version
 
+    # method override
     def serialize(self, _security_handler=None):
         return f&#34;%PDF-{self.pdf_version}&#34;</code></pre>
 </details>
@@ -2257,6 +2241,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L53-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     return f&#34;%PDF-{self.pdf_version}&#34;</code></pre>
@@ -2275,6 +2260,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L225-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFICCPObject(PDFContentStream):
     __slots__ = (  # RAM usage optimization
@@ -2332,7 +2318,7 @@ plus a few other properties on PDFPage instances</p></div>
 </dd>
 <dt id="fpdf.output.PDFInfo"><code class="flex name class">
 <span>class <span class="ident">PDFInfo</span></span>
-<span>(</span><span>title, subject, author, keywords, creator, producer, creation_date)</span>
+<span>(</span><span>title, subject, author, keywords, creator, producer, creation_date: <a title="fpdf.syntax.PDFDate" href="syntax.html#fpdf.syntax.PDFDate">PDFDate</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Main features of this class:
@@ -2341,6 +2327,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L106-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFInfo(PDFObject):
     def __init__(
@@ -2351,7 +2338,7 @@ plus a few other properties on PDFPage instances</p></div>
         keywords,
         creator,
         producer,
-        creation_date,
+        creation_date: PDFDate,
     ):
         super().__init__()
         self.title = PDFString(title) if title else None
@@ -2387,6 +2374,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L246-L294" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFPage(PDFObject):
     __slots__ = (  # RAM usage optimization
@@ -2495,6 +2483,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L288-L290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dimensions(self):
     &#34;Return a pair (width, height) in the unit specified to FPDF constructor&#34;
@@ -2509,6 +2498,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L285-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def index(self):
     return self._index</code></pre>
@@ -2522,6 +2512,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L292-L294" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_dimensions(self, width_pt, height_pt):
     &#34;Accepts a pair (width, height) in the unit specified to FPDF constructor&#34;
@@ -2550,6 +2541,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L297-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFPagesRoot(PDFObject):
     def __init__(self, count, media_box):
@@ -2584,6 +2576,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L161-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFResources(PDFObject):
     def __init__(self, proc_set, font, x_object, ext_g_state):
@@ -2618,6 +2611,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L183-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXObject(PDFContentStream):
     __slots__ = (  # RAM usage optimization
@@ -2733,6 +2727,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L176-L180" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXmpMetadata(PDFContentStream):
     def __init__(self, contents):
@@ -2764,6 +2759,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L316-L353" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXrefAndTrailer(ContentWithoutID):
     def __init__(self, output_builder):
@@ -2818,6 +2814,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/output.py#L325-L353" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     builder = self.output_builder

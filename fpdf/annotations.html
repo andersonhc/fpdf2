@@ -25,6 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L1-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import hashlib
 from datetime import datetime
@@ -32,8 +33,15 @@ from typing import NamedTuple, Tuple, Union
 
 from .actions import Action
 from .enums import AnnotationFlag, AnnotationName, FileAttachmentAnnotationName
-from .util import enclose_in_parens, format_date
-from .syntax import build_obj_dict, Destination, Name, PDFObject, PDFContentStream
+from .syntax import (
+    build_obj_dict,
+    Destination,
+    Name,
+    PDFContentStream,
+    PDFDate,
+    PDFObject,
+    PDFString,
+)
 from .syntax import create_dictionary_string as pdf_dict
 from .syntax import create_list_string as pdf_list
 from .syntax import iobj_ref as pdf_ref
@@ -73,12 +81,12 @@ class AnnotationMixin:
         self.f_t = Name(field_type) if field_type else None
         self.v = value
         self.f = sum(flags)
-        self.contents = enclose_in_parens(contents) if contents else None
+        self.contents = PDFString(contents) if contents else None
         self.a = action
         self.dest = dest
         self.c = f&#34;[{color[0]} {color[1]} {color[2]}]&#34; if color else None
-        self.t = enclose_in_parens(title) if title else None
-        self.m = format_date(modification_time) if modification_time else None
+        self.t = PDFString(title) if title else None
+        self.m = PDFDate(modification_time) if modification_time else None
         self.quad_points = (
             pdf_list(f&#34;{quad_point:.2f}&#34; for quad_point in quad_points)
             if quad_points
@@ -153,9 +161,9 @@ class PDFEmbeddedFile(PDFContentStream):
         self.type = Name(&#34;EmbeddedFile&#34;)
         params = {&#34;/Size&#34;: len(contents)}
         if creation_date:
-            params[&#34;/CreationDate&#34;] = format_date(creation_date, with_tz=True)
+            params[&#34;/CreationDate&#34;] = PDFDate(creation_date, with_tz=True).serialize()
         if modification_date:
-            params[&#34;/ModDate&#34;] = format_date(modification_date, with_tz=True)
+            params[&#34;/ModDate&#34;] = PDFDate(modification_date, with_tz=True).serialize()
         if checksum:
             file_hash = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
             file_hash.update(self._contents)
@@ -187,11 +195,11 @@ class FileSpec(NamedTuple):
     def serialize(self, _security_handler=None, _obj_id=None):
         obj_dict = {
             &#34;/Type&#34;: &#34;/Filespec&#34;,
-            &#34;/F&#34;: enclose_in_parens(self.basename),
+            &#34;/F&#34;: PDFString(self.basename).serialize(),
             &#34;/EF&#34;: pdf_dict({&#34;/F&#34;: pdf_ref(self.embedded_file.id)}),
         }
         if self.desc:
-            obj_dict[&#34;/Desc&#34;] = enclose_in_parens(self.desc)
+            obj_dict[&#34;/Desc&#34;] = PDFString(self.desc).serialize()
         return pdf_dict(obj_dict, field_join=&#34; &#34;)</code></pre>
 </details>
 </section>
@@ -213,6 +221,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L83-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AnnotationDict(AnnotationMixin):
     &#34;A PDF annotation that get serialized as an inline &lt;&lt;dictionnary&gt;&gt;&#34;
@@ -335,6 +344,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L105-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(
@@ -356,6 +366,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L25-L73" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AnnotationMixin:
     def __init__(
@@ -387,12 +398,12 @@ class FileSpec(NamedTuple):
         self.f_t = Name(field_type) if field_type else None
         self.v = value
         self.f = sum(flags)
-        self.contents = enclose_in_parens(contents) if contents else None
+        self.contents = PDFString(contents) if contents else None
         self.a = action
         self.dest = dest
         self.c = f&#34;[{color[0]} {color[1]} {color[2]}]&#34; if color else None
-        self.t = enclose_in_parens(title) if title else None
-        self.m = format_date(modification_time) if modification_time else None
+        self.t = PDFString(title) if title else None
+        self.m = PDFDate(modification_time) if modification_time else None
         self.quad_points = (
             pdf_list(f&#34;{quad_point:.2f}&#34; for quad_point in quad_points)
             if quad_points
@@ -422,6 +433,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L161-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FileSpec(NamedTuple):
     embedded_file: PDFEmbeddedFile
@@ -431,11 +443,11 @@ class FileSpec(NamedTuple):
     def serialize(self, _security_handler=None, _obj_id=None):
         obj_dict = {
             &#34;/Type&#34;: &#34;/Filespec&#34;,
-            &#34;/F&#34;: enclose_in_parens(self.basename),
+            &#34;/F&#34;: PDFString(self.basename).serialize(),
             &#34;/EF&#34;: pdf_dict({&#34;/F&#34;: pdf_ref(self.embedded_file.id)}),
         }
         if self.desc:
-            obj_dict[&#34;/Desc&#34;] = enclose_in_parens(self.desc)
+            obj_dict[&#34;/Desc&#34;] = PDFString(self.desc).serialize()
         return pdf_dict(obj_dict, field_join=&#34; &#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -467,15 +479,16 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L166-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = {
         &#34;/Type&#34;: &#34;/Filespec&#34;,
-        &#34;/F&#34;: enclose_in_parens(self.basename),
+        &#34;/F&#34;: PDFString(self.basename).serialize(),
         &#34;/EF&#34;: pdf_dict({&#34;/F&#34;: pdf_ref(self.embedded_file.id)}),
     }
     if self.desc:
-        obj_dict[&#34;/Desc&#34;] = enclose_in_parens(self.desc)
+        obj_dict[&#34;/Desc&#34;] = PDFString(self.desc).serialize()
     return pdf_dict(obj_dict, field_join=&#34; &#34;)</code></pre>
 </details>
 </dd>
@@ -490,6 +503,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L76-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFAnnotation(AnnotationMixin, PDFObject):
     &#34;A PDF annotation that get serialized as an obj&lt;&lt;/&gt;&gt;endobj block&#34;
@@ -523,6 +537,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L120-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFEmbeddedFile(PDFContentStream):
     def __init__(
@@ -539,9 +554,9 @@ class FileSpec(NamedTuple):
         self.type = Name(&#34;EmbeddedFile&#34;)
         params = {&#34;/Size&#34;: len(contents)}
         if creation_date:
-            params[&#34;/CreationDate&#34;] = format_date(creation_date, with_tz=True)
+            params[&#34;/CreationDate&#34;] = PDFDate(creation_date, with_tz=True).serialize()
         if modification_date:
-            params[&#34;/ModDate&#34;] = format_date(modification_date, with_tz=True)
+            params[&#34;/ModDate&#34;] = PDFDate(modification_date, with_tz=True).serialize()
         if checksum:
             file_hash = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
             file_hash.update(self._contents)
@@ -579,6 +594,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L154-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basename(self):
     return self._basename</code></pre>
@@ -592,6 +608,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L157-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def file_spec(self):
     return FileSpec(self, self._basename, self._desc)</code></pre>
@@ -605,6 +622,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L148-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def globally_enclosed(self):
     return self._globally_enclosed</code></pre>
@@ -618,6 +636,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/annotations.py#L151-L152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_globally_enclosed(self, value):
     self._globally_enclosed = value</code></pre>

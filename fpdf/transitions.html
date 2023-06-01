@@ -25,6 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L1-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from abc import ABC
 
@@ -175,6 +176,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L26-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class BlindsTransition(Transition):
     def __init__(self, dimension):
@@ -202,6 +204,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L34-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Blinds /DM /{self.dimension}&gt;&gt;&#34;</code></pre>
@@ -219,6 +222,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L38-L47" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class BoxTransition(Transition):
     def __init__(self, direction):
@@ -246,6 +250,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L46-L47" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Blinds /M /{self.direction}&gt;&gt;&#34;</code></pre>
@@ -263,6 +268,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L106-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoverTransition(Transition):
     def __init__(self, direction):
@@ -288,6 +294,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L112-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Cover /Di /{self.direction}&gt;&gt;&#34;</code></pre>
@@ -304,6 +311,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L62-L64" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DissolveTransition(Transition):
     def serialize(self, _security_handler=None, _obj_id=None):
@@ -324,6 +332,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L63-L64" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return &#34;&lt;&lt;/Type /Trans /S /Dissolve&gt;&gt;&#34;</code></pre>
@@ -340,6 +349,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L126-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FadeTransition(Transition):
     def serialize(self, _security_handler=None, _obj_id=None):
@@ -360,6 +370,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L127-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return &#34;&lt;&lt;/Type /Fade /S /Dissolve&gt;&gt;&#34;</code></pre>
@@ -377,6 +388,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L77-L93" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FlyTransition(Transition):
     def __init__(self, dimension, direction=None):
@@ -411,6 +423,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L90-L93" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return (
@@ -430,6 +443,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L67-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GlitterTransition(Transition):
     def __init__(self, direction):
@@ -455,6 +469,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L73-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Glitter /Di /{self.direction}&gt;&gt;&#34;</code></pre>
@@ -472,6 +487,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L96-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PushTransition(Transition):
     def __init__(self, direction):
@@ -497,6 +513,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L102-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Push /Di /{self.direction}&gt;&gt;&#34;</code></pre>
@@ -514,6 +531,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L9-L23" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SplitTransition(Transition):
     def __init__(self, dimension, direction):
@@ -546,6 +564,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L22-L23" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Split /DM /{self.dimension} /M /{self.direction}&gt;&gt;&#34;</code></pre>
@@ -562,6 +581,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L4-L6" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transition(ABC):
     def serialize(self, _security_handler=None, _obj_id=None):
@@ -595,6 +615,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L5-L6" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     raise NotImplementedError</code></pre>
@@ -612,6 +633,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L116-L123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class UncoverTransition(Transition):
     def __init__(self, direction):
@@ -637,6 +659,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L122-L123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Uncover /Di /{self.direction}&gt;&gt;&#34;</code></pre>
@@ -654,6 +677,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L50-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WipeTransition(Transition):
     def __init__(self, direction):
@@ -681,6 +705,7 @@ inheritance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/transitions.py#L58-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     return f&#34;&lt;&lt;/Type /Trans /S /Wipe /Di /{self.direction}&gt;&gt;&#34;</code></pre>

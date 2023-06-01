@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>fpdf.table API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fpdf.table</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L1-L394" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">from dataclasses import dataclass
+from numbers import Number
+from typing import Optional, Union
+
+from .enums import Align, TableBordersLayout, TableCellFillMode, WrapMode
+from .enums import MethodReturnValue
+from .errors import FPDFException
+from .fonts import FontFace
+
+
+DEFAULT_HEADINGS_STYLE = FontFace(emphasis=&#34;BOLD&#34;)
+
+
+@dataclass(frozen=True)
+class RowLayoutInfo:
+    height: float
+    triggers_page_jump: bool
+
+
+class Table:
+    &#34;&#34;&#34;
+    Object that `fpdf.FPDF.table()` yields, used to build a table in the document.
+    Detailed usage documentation: https://pyfpdf.github.io/fpdf2/Tables.html
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        fpdf,
+        rows=(),
+        *,
+        align=&#34;CENTER&#34;,
+        borders_layout=TableBordersLayout.ALL,
+        cell_fill_color=None,
+        cell_fill_mode=TableCellFillMode.NONE,
+        col_widths=None,
+        first_row_as_headings=True,
+        gutter_height=0,
+        gutter_width=0,
+        headings_style=DEFAULT_HEADINGS_STYLE,
+        line_height=None,
+        markdown=False,
+        text_align=&#34;JUSTIFY&#34;,
+        width=None,
+        wrapmode=WrapMode.WORD,
+    ):
+        &#34;&#34;&#34;
+        Args:
+            fpdf (fpdf.FPDF): FPDF current instance
+            rows: optional. Sequence of rows (iterable) of str to initiate the table cells with text content
+            align (str, fpdf.enums.Align): optional, default to CENTER. Sets the table horizontal position relative to the page,
+                when it&#39;s not using the full page width
+            borders_layout (str, fpdf.enums.TableBordersLayout): optional, default to ALL. Control what cell borders are drawn
+            cell_fill_color (float, tuple, fpdf.drawing.DeviceGray, fpdf.drawing.DeviceRGB): optional.
+                Defines the cells background color
+            cell_fill_mode (str, fpdf.enums.TableCellFillMode): optional. Defines which cells are filled with color in the background
+            col_widths (float, tuple): optional. Sets column width. Can be a single number or a sequence of numbers
+            first_row_as_headings (bool): optional, default to True. If False, the first row of the table
+                is not styled differently from the others
+            gutter_height (float): optional vertical space between rows
+            gutter_width (float): optional horizontal space between columns
+            headings_style (fpdf.fonts.FontFace): optional, default to bold.
+                Defines the visual style of the top headings row: size, color, emphasis...
+            line_height (number): optional. Defines how much vertical space a line of text will occupy
+            markdown (bool): optional, default to False. Enable markdown interpretation of cells textual content
+            text_align (str, fpdf.enums.Align): optional, default to JUSTIFY. Control text alignment inside cells.
+            width (number): optional. Sets the table width
+            wrapmode (fpdf.enums.WrapMode): &#34;WORD&#34; for word based line wrapping (default),
+                &#34;CHAR&#34; for character based line wrapping.
+        &#34;&#34;&#34;
+        self._fpdf = fpdf
+        self._align = align
+        self._borders_layout = TableBordersLayout.coerce(borders_layout)
+        self._cell_fill_color = cell_fill_color
+        self._cell_fill_mode = TableCellFillMode.coerce(cell_fill_mode)
+        self._col_widths = col_widths
+        self._first_row_as_headings = first_row_as_headings
+        self._gutter_height = gutter_height
+        self._gutter_width = gutter_width
+        self._headings_style = headings_style
+        self._line_height = 2 * fpdf.font_size if line_height is None else line_height
+        self._markdown = markdown
+        self._text_align = text_align
+        self._width = fpdf.epw if width is None else width
+        self._wrapmode = wrapmode
+        self.rows = []
+        for row in rows:
+            self.row(row)
+
+    def row(self, cells=()):
+        &#34;Adds a row to the table. Yields a `Row` object.&#34;
+        row = Row(self._fpdf)
+        self.rows.append(row)
+        for cell in cells:
+            row.cell(cell)
+        return row
+
+    def render(self):
+        &#34;This is an internal method called by `fpdf.FPDF.table()` once the table is finished&#34;
+        # Starting with some sanity checks:
+        if self._width &gt; self._fpdf.epw:
+            raise ValueError(
+                f&#34;Invalid value provided width={self._width}: effective page width is {self._fpdf.epw}&#34;
+            )
+        table_align = Align.coerce(self._align)
+        if table_align == Align.J:
+            raise ValueError(
+                &#34;JUSTIFY is an invalid value for FPDF.table() &#39;align&#39; parameter&#34;
+            )
+        if self._first_row_as_headings:
+            if not self._headings_style:
+                raise ValueError(
+                    &#34;headings_style must be provided to FPDF.table() if first_row_as_headings=True&#34;
+                )
+            emphasis = self._headings_style.emphasis
+            if emphasis is not None:
+                family = self._headings_style.family or self._fpdf.font_family
+                font_key = family + emphasis.style
+                if (
+                    font_key not in self._fpdf.core_fonts
+                    and font_key not in self._fpdf.fonts
+                ):
+                    # Raising a more explicit error than the one from set_font():
+                    raise FPDFException(
+                        f&#34;Using font emphasis &#39;{emphasis.style}&#39; in table headings require the corresponding font style to be added using add_font()&#34;
+                    )
+        # Defining table global horizontal position:
+        prev_l_margin = self._fpdf.l_margin
+        if table_align == Align.C:
+            self._fpdf.l_margin = (self._fpdf.w - self._width) / 2
+            self._fpdf.x = self._fpdf.l_margin
+        elif table_align == Align.R:
+            self._fpdf.l_margin = self._fpdf.w - self._fpdf.r_margin - self._width
+            self._fpdf.x = self._fpdf.l_margin
+        elif self._fpdf.x != self._fpdf.l_margin:
+            self._fpdf.l_margin = self._fpdf.x
+        # Starting the actual rows &amp; cells rendering:
+        for i in range(len(self.rows)):
+            row_layout_info = self._get_row_layout_info(i)
+            if row_layout_info.triggers_page_jump:
+                # pylint: disable=protected-access
+                self._fpdf._perform_page_break()
+                if self._first_row_as_headings:  # repeat headings on top:
+                    self._render_table_row(0)
+            elif i and self._gutter_height:
+                self._fpdf.y += self._gutter_height
+            self._render_table_row(i, row_layout_info)
+        # Restoring altered FPDF settings:
+        self._fpdf.l_margin = prev_l_margin
+        self._fpdf.x = self._fpdf.l_margin
+
+    def get_cell_border(self, i, j):
+        &#34;&#34;&#34;
+        Defines which cell borders should be drawn.
+        Returns a string containing some or all of the letters L/R/T/B,
+        to be passed to `fpdf.FPDF.multi_cell()`.
+        Can be overriden to customize this logic
+        &#34;&#34;&#34;
+        if self._borders_layout == TableBordersLayout.ALL:
+            return 1
+        if self._borders_layout == TableBordersLayout.NONE:
+            return 0
+        columns_count = max(row.cols_count for row in self.rows)
+        rows_count = len(self.rows)
+        border = list(&#34;LRTB&#34;)
+        if self._borders_layout == TableBordersLayout.INTERNAL:
+            if i == 0 and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i == rows_count - 1 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+            if j == 0 and &#34;L&#34; in border:
+                border.remove(&#34;L&#34;)
+            if j == columns_count - 1 and &#34;R&#34; in border:
+                border.remove(&#34;R&#34;)
+        if self._borders_layout == TableBordersLayout.MINIMAL:
+            if (i != 1 or rows_count == 1) and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i != 0 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+            if j == 0 and &#34;L&#34; in border:
+                border.remove(&#34;L&#34;)
+            if j == columns_count - 1 and &#34;R&#34; in border:
+                border.remove(&#34;R&#34;)
+        if self._borders_layout == TableBordersLayout.NO_HORIZONTAL_LINES:
+            if i not in (0, 1) and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i not in (0, rows_count - 1) and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+        if self._borders_layout == TableBordersLayout.HORIZONTAL_LINES:
+            if rows_count == 1:
+                return 0
+            border = list(&#34;TB&#34;)
+            if i == 0 and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i == rows_count - 1 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+        if self._borders_layout == TableBordersLayout.SINGLE_TOP_LINE:
+            if rows_count == 1:
+                return 0
+            border = list(&#34;TB&#34;)
+            if i != 1 and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i != 0 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+        return &#34;&#34;.join(border)
+
+    def _render_table_row(self, i, row_layout_info=None, fill=False, **kwargs):
+        if not row_layout_info:
+            row_layout_info = self._get_row_layout_info(i)
+        row = self.rows[i]
+        j = 0
+        while j &lt; len(row.cells):
+            self._render_table_cell(
+                i,
+                j,
+                row_height=row_layout_info.height,
+                fill=fill,
+                **kwargs,
+            )
+            j += row.cells[j].colspan
+        self._fpdf.ln(row_layout_info.height)
+
+    def _render_table_cell(
+        self,
+        i,
+        j,
+        row_height,
+        fill=False,
+        **kwargs,
+    ):
+        row = self.rows[i]
+        cell = row.cells[j]
+        col_width = self._get_col_width(i, j, cell.colspan)
+        if j and self._gutter_width:
+            self._fpdf.x += self._gutter_width
+        img_height = 0
+        if cell.img:
+            x, y = self._fpdf.x, self._fpdf.y
+            img_height = self._fpdf.image(
+                cell.img,
+                w=col_width,
+                h=0 if cell.img_fill_width else row_height,
+                keep_aspect_ratio=True,
+            ).rendered_height
+            self._fpdf.set_xy(x, y)
+        text_align = cell.align or self._text_align
+        if not isinstance(text_align, (Align, str)):
+            text_align = text_align[j]
+        if i == 0 and self._first_row_as_headings:
+            style = self._headings_style
+        else:
+            style = cell.style or row.style
+        if style and style.fill_color:
+            fill = True
+        elif (
+            not fill
+            and self._cell_fill_color
+            and self._cell_fill_mode != TableCellFillMode.NONE
+        ):
+            if self._cell_fill_mode == TableCellFillMode.ALL:
+                fill = True
+            elif self._cell_fill_mode == TableCellFillMode.ROWS:
+                fill = bool(i % 2)
+            elif self._cell_fill_mode == TableCellFillMode.COLUMNS:
+                fill = bool(j % 2)
+        if fill and self._cell_fill_color and not (style and style.fill_color):
+            style = (
+                style.replace(fill_color=self._cell_fill_color)
+                if style
+                else FontFace(fill_color=self._cell_fill_color)
+            )
+        with self._fpdf.use_font_face(style):
+            page_break, cell_height = self._fpdf.multi_cell(
+                w=col_width,
+                h=row_height,
+                txt=cell.text,
+                max_line_height=self._line_height,
+                border=self.get_cell_border(i, j),
+                align=text_align,
+                new_x=&#34;RIGHT&#34;,
+                new_y=&#34;TOP&#34;,
+                fill=fill,
+                markdown=self._markdown,
+                output=MethodReturnValue.PAGE_BREAK | MethodReturnValue.HEIGHT,
+                wrapmode=self._wrapmode,
+                **kwargs,
+            )
+        return page_break, max(img_height, cell_height)
+
+    def _get_col_width(self, i, j, colspan=1):
+        cols_count = self.rows[i].cols_count
+        width = self._width - (cols_count - 1) * self._gutter_width
+        if not self._col_widths:
+            return colspan * (width / cols_count)
+        if isinstance(self._col_widths, Number):
+            return colspan * self._col_widths
+        if j &gt;= len(self._col_widths):
+            raise ValueError(
+                f&#34;Invalid .col_widths specified: missing width for table() column {j + 1} on row {i + 1}&#34;
+            )
+        col_width = 0
+        for k in range(j, j + colspan):
+            col_ratio = self._col_widths[k] / sum(self._col_widths)
+            col_width += col_ratio * width
+        return col_width
+
+    def _get_row_layout_info(self, i):
+        &#34;&#34;&#34;
+        Uses FPDF.offset_rendering() to detect a potential page jump
+        and compute the cells heights.
+        &#34;&#34;&#34;
+        row = self.rows[i]
+        heights_per_cell = []
+        any_page_break = False
+        # pylint: disable=protected-access
+        with self._fpdf._disable_writing():
+            for j in range(len(row.cells)):
+                page_break, height = self._render_table_cell(
+                    i,
+                    j,
+                    row_height=self._line_height,
+                )
+                any_page_break = any_page_break or page_break
+                heights_per_cell.append(height)
+        row_height = (
+            max(height for height in heights_per_cell) if heights_per_cell else 0
+        )
+        return RowLayoutInfo(row_height, any_page_break)
+
+
+class Row:
+    &#34;Object that `Table.row()` yields, used to build a row in a table&#34;
+
+    def __init__(self, fpdf):
+        self._fpdf = fpdf
+        self.cells = []
+        self.style = fpdf.font_face()
+
+    @property
+    def cols_count(self):
+        return sum(cell.colspan for cell in self.cells)
+
+    def cell(
+        self, text=&#34;&#34;, align=None, style=None, img=None, img_fill_width=False, colspan=1
+    ):
+        &#34;&#34;&#34;
+        Adds a cell to the row.
+
+        Args:
+            text (str): string content, can contain several lines.
+                In that case, the row height will grow proportionally.
+            align (str, fpdf.enums.Align): optional text alignment.
+            style (fpdf.fonts.FontFace): optional text style.
+            img: optional. Either a string representing a file path to an image,
+                an URL to an image, an io.BytesIO, or a instance of `PIL.Image.Image`.
+            img_fill_width (bool): optional, defaults to False. Indicates to render the image
+                using the full width of the current table column.
+            colspan (int): optional number of columns this cell should span.
+        &#34;&#34;&#34;
+        if text and img:
+            raise NotImplementedError(
+                # pylint: disable=implicit-str-concat
+                &#34;fpdf2 currently does not support inserting text with an image in the same table cell.&#34;
+                &#34;Pull Requests are welcome to implement this 😊&#34;
+            )
+        if not style:
+            # We capture the current font settings:
+            font_face = self._fpdf.font_face()
+            if font_face != self.style:
+                style = font_face
+        cell = Cell(text, align, style, img, img_fill_width, colspan)
+        self.cells.append(cell)
+        return cell
+
+
+@dataclass(frozen=True)
+class Cell:
+    &#34;Internal representation of a table cell&#34;
+    __slots__ = (  # RAM usage optimization
+        &#34;text&#34;,
+        &#34;align&#34;,
+        &#34;style&#34;,
+        &#34;img&#34;,
+        &#34;img_fill_width&#34;,
+        &#34;colspan&#34;,
+    )
+    text: str
+    align: Optional[Union[str, Align]]
+    style: Optional[FontFace]
+    img: Optional[str]
+    img_fill_width: bool
+    colspan: int
+
+    def write(self, text, align=None):
+        raise NotImplementedError(&#34;Not implemented yet&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.table.Cell"><code class="flex name class">
+<span>class <span class="ident">Cell</span></span>
+<span>(</span><span>text: str, align: Union[str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a>, ForwardRef(None)], style: Optional[<a title="fpdf.fonts.FontFace" href="fonts.html#fpdf.fonts.FontFace">FontFace</a>], img: Optional[str], img_fill_width: bool, colspan: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Internal representation of a table cell</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L375-L394" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class Cell:
+    &#34;Internal representation of a table cell&#34;
+    __slots__ = (  # RAM usage optimization
+        &#34;text&#34;,
+        &#34;align&#34;,
+        &#34;style&#34;,
+        &#34;img&#34;,
+        &#34;img_fill_width&#34;,
+        &#34;colspan&#34;,
+    )
+    text: str
+    align: Optional[Union[str, Align]]
+    style: Optional[FontFace]
+    img: Optional[str]
+    img_fill_width: bool
+    colspan: int
+
+    def write(self, text, align=None):
+        raise NotImplementedError(&#34;Not implemented yet&#34;)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.table.Cell.align"><code class="name">var <span class="ident">align</span> : Union[str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a>, ForwardRef(None)]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.table.Cell.colspan"><code class="name">var <span class="ident">colspan</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.table.Cell.img"><code class="name">var <span class="ident">img</span> : Optional[str]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.table.Cell.img_fill_width"><code class="name">var <span class="ident">img_fill_width</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.table.Cell.style"><code class="name">var <span class="ident">style</span> : Optional[<a title="fpdf.fonts.FontFace" href="fonts.html#fpdf.fonts.FontFace">FontFace</a>]</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.table.Cell.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.table.Cell.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self, text, align=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L393-L394" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def write(self, text, align=None):
+    raise NotImplementedError(&#34;Not implemented yet&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.table.Row"><code class="flex name class">
+<span>class <span class="ident">Row</span></span>
+<span>(</span><span>fpdf)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Object that <code><a title="fpdf.table.Table.row" href="#fpdf.table.Table.row">Table.row()</a></code> yields, used to build a row in a table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L330-L372" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Row:
+    &#34;Object that `Table.row()` yields, used to build a row in a table&#34;
+
+    def __init__(self, fpdf):
+        self._fpdf = fpdf
+        self.cells = []
+        self.style = fpdf.font_face()
+
+    @property
+    def cols_count(self):
+        return sum(cell.colspan for cell in self.cells)
+
+    def cell(
+        self, text=&#34;&#34;, align=None, style=None, img=None, img_fill_width=False, colspan=1
+    ):
+        &#34;&#34;&#34;
+        Adds a cell to the row.
+
+        Args:
+            text (str): string content, can contain several lines.
+                In that case, the row height will grow proportionally.
+            align (str, fpdf.enums.Align): optional text alignment.
+            style (fpdf.fonts.FontFace): optional text style.
+            img: optional. Either a string representing a file path to an image,
+                an URL to an image, an io.BytesIO, or a instance of `PIL.Image.Image`.
+            img_fill_width (bool): optional, defaults to False. Indicates to render the image
+                using the full width of the current table column.
+            colspan (int): optional number of columns this cell should span.
+        &#34;&#34;&#34;
+        if text and img:
+            raise NotImplementedError(
+                # pylint: disable=implicit-str-concat
+                &#34;fpdf2 currently does not support inserting text with an image in the same table cell.&#34;
+                &#34;Pull Requests are welcome to implement this 😊&#34;
+            )
+        if not style:
+            # We capture the current font settings:
+            font_face = self._fpdf.font_face()
+            if font_face != self.style:
+                style = font_face
+        cell = Cell(text, align, style, img, img_fill_width, colspan)
+        self.cells.append(cell)
+        return cell</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.table.Row.cols_count"><code class="name">var <span class="ident">cols_count</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L338-L340" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@property
+def cols_count(self):
+    return sum(cell.colspan for cell in self.cells)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.table.Row.cell"><code class="name flex">
+<span>def <span class="ident">cell</span></span>(<span>self, text='', align=None, style=None, img=None, img_fill_width=False, colspan=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a cell to the row.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>string content, can contain several lines.
+In that case, the row height will grow proportionally.</dd>
+<dt><strong><code>align</code></strong> :&ensp;<code>str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a></code></dt>
+<dd>optional text alignment.</dd>
+<dt><strong><code>style</code></strong> :&ensp;<code><a title="fpdf.fonts.FontFace" href="fonts.html#fpdf.fonts.FontFace">FontFace</a></code></dt>
+<dd>optional text style.</dd>
+<dt><strong><code>img</code></strong></dt>
+<dd>optional. Either a string representing a file path to an image,
+an URL to an image, an io.BytesIO, or a instance of <code>PIL.Image.Image</code>.</dd>
+<dt><strong><code>img_fill_width</code></strong> :&ensp;<code>bool</code></dt>
+<dd>optional, defaults to False. Indicates to render the image
+using the full width of the current table column.</dd>
+<dt><strong><code>colspan</code></strong> :&ensp;<code>int</code></dt>
+<dd>optional number of columns this cell should span.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L342-L372" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def cell(
+    self, text=&#34;&#34;, align=None, style=None, img=None, img_fill_width=False, colspan=1
+):
+    &#34;&#34;&#34;
+    Adds a cell to the row.
+
+    Args:
+        text (str): string content, can contain several lines.
+            In that case, the row height will grow proportionally.
+        align (str, fpdf.enums.Align): optional text alignment.
+        style (fpdf.fonts.FontFace): optional text style.
+        img: optional. Either a string representing a file path to an image,
+            an URL to an image, an io.BytesIO, or a instance of `PIL.Image.Image`.
+        img_fill_width (bool): optional, defaults to False. Indicates to render the image
+            using the full width of the current table column.
+        colspan (int): optional number of columns this cell should span.
+    &#34;&#34;&#34;
+    if text and img:
+        raise NotImplementedError(
+            # pylint: disable=implicit-str-concat
+            &#34;fpdf2 currently does not support inserting text with an image in the same table cell.&#34;
+            &#34;Pull Requests are welcome to implement this 😊&#34;
+        )
+    if not style:
+        # We capture the current font settings:
+        font_face = self._fpdf.font_face()
+        if font_face != self.style:
+            style = font_face
+    cell = Cell(text, align, style, img, img_fill_width, colspan)
+    self.cells.append(cell)
+    return cell</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.table.RowLayoutInfo"><code class="flex name class">
+<span>class <span class="ident">RowLayoutInfo</span></span>
+<span>(</span><span>height: float, triggers_page_jump: bool)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>RowLayoutInfo(height: float, triggers_page_jump: bool)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L14-L17" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class RowLayoutInfo:
+    height: float
+    triggers_page_jump: bool</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.table.RowLayoutInfo.height"><code class="name">var <span class="ident">height</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.table.RowLayoutInfo.triggers_page_jump"><code class="name">var <span class="ident">triggers_page_jump</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.table.Table"><code class="flex name class">
+<span>class <span class="ident">Table</span></span>
+<span>(</span><span>fpdf, rows=(), *, align='CENTER', borders_layout=TableBordersLayout.ALL, cell_fill_color=None, cell_fill_mode=TableCellFillMode.NONE, col_widths=None, first_row_as_headings=True, gutter_height=0, gutter_width=0, headings_style=FontFace(family=None, emphasis=&lt;TextEmphasis.B: 1&gt;, size_pt=None, color=None, fill_color=None), line_height=None, markdown=False, text_align='JUSTIFY', width=None, wrapmode=WrapMode.WORD)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Object that <code><a title="fpdf.FPDF.table" href="index.html#fpdf.FPDF.table">FPDF.table()</a></code> yields, used to build a table in the document.
+Detailed usage documentation: <a href="https://pyfpdf.github.io/fpdf2/Tables.html">https://pyfpdf.github.io/fpdf2/Tables.html</a></p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fpdf</code></strong> :&ensp;<code><a title="fpdf.FPDF" href="index.html#fpdf.FPDF">FPDF</a></code></dt>
+<dd>FPDF current instance</dd>
+<dt><strong><code>rows</code></strong></dt>
+<dd>optional. Sequence of rows (iterable) of str to initiate the table cells with text content</dd>
+<dt><strong><code>align</code></strong> :&ensp;<code>str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a></code></dt>
+<dd>optional, default to CENTER. Sets the table horizontal position relative to the page,
+when it's not using the full page width</dd>
+<dt><strong><code>borders_layout</code></strong> :&ensp;<code>str, <a title="fpdf.enums.TableBordersLayout" href="enums.html#fpdf.enums.TableBordersLayout">TableBordersLayout</a></code></dt>
+<dd>optional, default to ALL. Control what cell borders are drawn</dd>
+<dt><strong><code>cell_fill_color</code></strong> :&ensp;<code>float, tuple, <a title="fpdf.drawing.DeviceGray" href="drawing.html#fpdf.drawing.DeviceGray">DeviceGray</a>, <a title="fpdf.drawing.DeviceRGB" href="drawing.html#fpdf.drawing.DeviceRGB">DeviceRGB</a></code></dt>
+<dd>optional.
+Defines the cells background color</dd>
+<dt><strong><code>cell_fill_mode</code></strong> :&ensp;<code>str, <a title="fpdf.enums.TableCellFillMode" href="enums.html#fpdf.enums.TableCellFillMode">TableCellFillMode</a></code></dt>
+<dd>optional. Defines which cells are filled with color in the background</dd>
+<dt><strong><code>col_widths</code></strong> :&ensp;<code>float, tuple</code></dt>
+<dd>optional. Sets column width. Can be a single number or a sequence of numbers</dd>
+<dt><strong><code>first_row_as_headings</code></strong> :&ensp;<code>bool</code></dt>
+<dd>optional, default to True. If False, the first row of the table
+is not styled differently from the others</dd>
+<dt><strong><code>gutter_height</code></strong> :&ensp;<code>float</code></dt>
+<dd>optional vertical space between rows</dd>
+<dt><strong><code>gutter_width</code></strong> :&ensp;<code>float</code></dt>
+<dd>optional horizontal space between columns</dd>
+<dt><strong><code>headings_style</code></strong> :&ensp;<code><a title="fpdf.fonts.FontFace" href="fonts.html#fpdf.fonts.FontFace">FontFace</a></code></dt>
+<dd>optional, default to bold.
+Defines the visual style of the top headings row: size, color, emphasis&hellip;</dd>
+<dt><strong><code>line_height</code></strong> :&ensp;<code>number</code></dt>
+<dd>optional. Defines how much vertical space a line of text will occupy</dd>
+<dt><strong><code>markdown</code></strong> :&ensp;<code>bool</code></dt>
+<dd>optional, default to False. Enable markdown interpretation of cells textual content</dd>
+<dt><strong><code>text_align</code></strong> :&ensp;<code>str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a></code></dt>
+<dd>optional, default to JUSTIFY. Control text alignment inside cells.</dd>
+<dt><strong><code>width</code></strong> :&ensp;<code>number</code></dt>
+<dd>optional. Sets the table width</dd>
+<dt><strong><code>wrapmode</code></strong> :&ensp;<code><a title="fpdf.enums.WrapMode" href="enums.html#fpdf.enums.WrapMode">WrapMode</a></code></dt>
+<dd>"WORD" for word based line wrapping (default),
+"CHAR" for character based line wrapping.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L20-L327" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Table:
+    &#34;&#34;&#34;
+    Object that `fpdf.FPDF.table()` yields, used to build a table in the document.
+    Detailed usage documentation: https://pyfpdf.github.io/fpdf2/Tables.html
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        fpdf,
+        rows=(),
+        *,
+        align=&#34;CENTER&#34;,
+        borders_layout=TableBordersLayout.ALL,
+        cell_fill_color=None,
+        cell_fill_mode=TableCellFillMode.NONE,
+        col_widths=None,
+        first_row_as_headings=True,
+        gutter_height=0,
+        gutter_width=0,
+        headings_style=DEFAULT_HEADINGS_STYLE,
+        line_height=None,
+        markdown=False,
+        text_align=&#34;JUSTIFY&#34;,
+        width=None,
+        wrapmode=WrapMode.WORD,
+    ):
+        &#34;&#34;&#34;
+        Args:
+            fpdf (fpdf.FPDF): FPDF current instance
+            rows: optional. Sequence of rows (iterable) of str to initiate the table cells with text content
+            align (str, fpdf.enums.Align): optional, default to CENTER. Sets the table horizontal position relative to the page,
+                when it&#39;s not using the full page width
+            borders_layout (str, fpdf.enums.TableBordersLayout): optional, default to ALL. Control what cell borders are drawn
+            cell_fill_color (float, tuple, fpdf.drawing.DeviceGray, fpdf.drawing.DeviceRGB): optional.
+                Defines the cells background color
+            cell_fill_mode (str, fpdf.enums.TableCellFillMode): optional. Defines which cells are filled with color in the background
+            col_widths (float, tuple): optional. Sets column width. Can be a single number or a sequence of numbers
+            first_row_as_headings (bool): optional, default to True. If False, the first row of the table
+                is not styled differently from the others
+            gutter_height (float): optional vertical space between rows
+            gutter_width (float): optional horizontal space between columns
+            headings_style (fpdf.fonts.FontFace): optional, default to bold.
+                Defines the visual style of the top headings row: size, color, emphasis...
+            line_height (number): optional. Defines how much vertical space a line of text will occupy
+            markdown (bool): optional, default to False. Enable markdown interpretation of cells textual content
+            text_align (str, fpdf.enums.Align): optional, default to JUSTIFY. Control text alignment inside cells.
+            width (number): optional. Sets the table width
+            wrapmode (fpdf.enums.WrapMode): &#34;WORD&#34; for word based line wrapping (default),
+                &#34;CHAR&#34; for character based line wrapping.
+        &#34;&#34;&#34;
+        self._fpdf = fpdf
+        self._align = align
+        self._borders_layout = TableBordersLayout.coerce(borders_layout)
+        self._cell_fill_color = cell_fill_color
+        self._cell_fill_mode = TableCellFillMode.coerce(cell_fill_mode)
+        self._col_widths = col_widths
+        self._first_row_as_headings = first_row_as_headings
+        self._gutter_height = gutter_height
+        self._gutter_width = gutter_width
+        self._headings_style = headings_style
+        self._line_height = 2 * fpdf.font_size if line_height is None else line_height
+        self._markdown = markdown
+        self._text_align = text_align
+        self._width = fpdf.epw if width is None else width
+        self._wrapmode = wrapmode
+        self.rows = []
+        for row in rows:
+            self.row(row)
+
+    def row(self, cells=()):
+        &#34;Adds a row to the table. Yields a `Row` object.&#34;
+        row = Row(self._fpdf)
+        self.rows.append(row)
+        for cell in cells:
+            row.cell(cell)
+        return row
+
+    def render(self):
+        &#34;This is an internal method called by `fpdf.FPDF.table()` once the table is finished&#34;
+        # Starting with some sanity checks:
+        if self._width &gt; self._fpdf.epw:
+            raise ValueError(
+                f&#34;Invalid value provided width={self._width}: effective page width is {self._fpdf.epw}&#34;
+            )
+        table_align = Align.coerce(self._align)
+        if table_align == Align.J:
+            raise ValueError(
+                &#34;JUSTIFY is an invalid value for FPDF.table() &#39;align&#39; parameter&#34;
+            )
+        if self._first_row_as_headings:
+            if not self._headings_style:
+                raise ValueError(
+                    &#34;headings_style must be provided to FPDF.table() if first_row_as_headings=True&#34;
+                )
+            emphasis = self._headings_style.emphasis
+            if emphasis is not None:
+                family = self._headings_style.family or self._fpdf.font_family
+                font_key = family + emphasis.style
+                if (
+                    font_key not in self._fpdf.core_fonts
+                    and font_key not in self._fpdf.fonts
+                ):
+                    # Raising a more explicit error than the one from set_font():
+                    raise FPDFException(
+                        f&#34;Using font emphasis &#39;{emphasis.style}&#39; in table headings require the corresponding font style to be added using add_font()&#34;
+                    )
+        # Defining table global horizontal position:
+        prev_l_margin = self._fpdf.l_margin
+        if table_align == Align.C:
+            self._fpdf.l_margin = (self._fpdf.w - self._width) / 2
+            self._fpdf.x = self._fpdf.l_margin
+        elif table_align == Align.R:
+            self._fpdf.l_margin = self._fpdf.w - self._fpdf.r_margin - self._width
+            self._fpdf.x = self._fpdf.l_margin
+        elif self._fpdf.x != self._fpdf.l_margin:
+            self._fpdf.l_margin = self._fpdf.x
+        # Starting the actual rows &amp; cells rendering:
+        for i in range(len(self.rows)):
+            row_layout_info = self._get_row_layout_info(i)
+            if row_layout_info.triggers_page_jump:
+                # pylint: disable=protected-access
+                self._fpdf._perform_page_break()
+                if self._first_row_as_headings:  # repeat headings on top:
+                    self._render_table_row(0)
+            elif i and self._gutter_height:
+                self._fpdf.y += self._gutter_height
+            self._render_table_row(i, row_layout_info)
+        # Restoring altered FPDF settings:
+        self._fpdf.l_margin = prev_l_margin
+        self._fpdf.x = self._fpdf.l_margin
+
+    def get_cell_border(self, i, j):
+        &#34;&#34;&#34;
+        Defines which cell borders should be drawn.
+        Returns a string containing some or all of the letters L/R/T/B,
+        to be passed to `fpdf.FPDF.multi_cell()`.
+        Can be overriden to customize this logic
+        &#34;&#34;&#34;
+        if self._borders_layout == TableBordersLayout.ALL:
+            return 1
+        if self._borders_layout == TableBordersLayout.NONE:
+            return 0
+        columns_count = max(row.cols_count for row in self.rows)
+        rows_count = len(self.rows)
+        border = list(&#34;LRTB&#34;)
+        if self._borders_layout == TableBordersLayout.INTERNAL:
+            if i == 0 and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i == rows_count - 1 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+            if j == 0 and &#34;L&#34; in border:
+                border.remove(&#34;L&#34;)
+            if j == columns_count - 1 and &#34;R&#34; in border:
+                border.remove(&#34;R&#34;)
+        if self._borders_layout == TableBordersLayout.MINIMAL:
+            if (i != 1 or rows_count == 1) and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i != 0 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+            if j == 0 and &#34;L&#34; in border:
+                border.remove(&#34;L&#34;)
+            if j == columns_count - 1 and &#34;R&#34; in border:
+                border.remove(&#34;R&#34;)
+        if self._borders_layout == TableBordersLayout.NO_HORIZONTAL_LINES:
+            if i not in (0, 1) and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i not in (0, rows_count - 1) and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+        if self._borders_layout == TableBordersLayout.HORIZONTAL_LINES:
+            if rows_count == 1:
+                return 0
+            border = list(&#34;TB&#34;)
+            if i == 0 and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i == rows_count - 1 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+        if self._borders_layout == TableBordersLayout.SINGLE_TOP_LINE:
+            if rows_count == 1:
+                return 0
+            border = list(&#34;TB&#34;)
+            if i != 1 and &#34;T&#34; in border:
+                border.remove(&#34;T&#34;)
+            if i != 0 and &#34;B&#34; in border:
+                border.remove(&#34;B&#34;)
+        return &#34;&#34;.join(border)
+
+    def _render_table_row(self, i, row_layout_info=None, fill=False, **kwargs):
+        if not row_layout_info:
+            row_layout_info = self._get_row_layout_info(i)
+        row = self.rows[i]
+        j = 0
+        while j &lt; len(row.cells):
+            self._render_table_cell(
+                i,
+                j,
+                row_height=row_layout_info.height,
+                fill=fill,
+                **kwargs,
+            )
+            j += row.cells[j].colspan
+        self._fpdf.ln(row_layout_info.height)
+
+    def _render_table_cell(
+        self,
+        i,
+        j,
+        row_height,
+        fill=False,
+        **kwargs,
+    ):
+        row = self.rows[i]
+        cell = row.cells[j]
+        col_width = self._get_col_width(i, j, cell.colspan)
+        if j and self._gutter_width:
+            self._fpdf.x += self._gutter_width
+        img_height = 0
+        if cell.img:
+            x, y = self._fpdf.x, self._fpdf.y
+            img_height = self._fpdf.image(
+                cell.img,
+                w=col_width,
+                h=0 if cell.img_fill_width else row_height,
+                keep_aspect_ratio=True,
+            ).rendered_height
+            self._fpdf.set_xy(x, y)
+        text_align = cell.align or self._text_align
+        if not isinstance(text_align, (Align, str)):
+            text_align = text_align[j]
+        if i == 0 and self._first_row_as_headings:
+            style = self._headings_style
+        else:
+            style = cell.style or row.style
+        if style and style.fill_color:
+            fill = True
+        elif (
+            not fill
+            and self._cell_fill_color
+            and self._cell_fill_mode != TableCellFillMode.NONE
+        ):
+            if self._cell_fill_mode == TableCellFillMode.ALL:
+                fill = True
+            elif self._cell_fill_mode == TableCellFillMode.ROWS:
+                fill = bool(i % 2)
+            elif self._cell_fill_mode == TableCellFillMode.COLUMNS:
+                fill = bool(j % 2)
+        if fill and self._cell_fill_color and not (style and style.fill_color):
+            style = (
+                style.replace(fill_color=self._cell_fill_color)
+                if style
+                else FontFace(fill_color=self._cell_fill_color)
+            )
+        with self._fpdf.use_font_face(style):
+            page_break, cell_height = self._fpdf.multi_cell(
+                w=col_width,
+                h=row_height,
+                txt=cell.text,
+                max_line_height=self._line_height,
+                border=self.get_cell_border(i, j),
+                align=text_align,
+                new_x=&#34;RIGHT&#34;,
+                new_y=&#34;TOP&#34;,
+                fill=fill,
+                markdown=self._markdown,
+                output=MethodReturnValue.PAGE_BREAK | MethodReturnValue.HEIGHT,
+                wrapmode=self._wrapmode,
+                **kwargs,
+            )
+        return page_break, max(img_height, cell_height)
+
+    def _get_col_width(self, i, j, colspan=1):
+        cols_count = self.rows[i].cols_count
+        width = self._width - (cols_count - 1) * self._gutter_width
+        if not self._col_widths:
+            return colspan * (width / cols_count)
+        if isinstance(self._col_widths, Number):
+            return colspan * self._col_widths
+        if j &gt;= len(self._col_widths):
+            raise ValueError(
+                f&#34;Invalid .col_widths specified: missing width for table() column {j + 1} on row {i + 1}&#34;
+            )
+        col_width = 0
+        for k in range(j, j + colspan):
+            col_ratio = self._col_widths[k] / sum(self._col_widths)
+            col_width += col_ratio * width
+        return col_width
+
+    def _get_row_layout_info(self, i):
+        &#34;&#34;&#34;
+        Uses FPDF.offset_rendering() to detect a potential page jump
+        and compute the cells heights.
+        &#34;&#34;&#34;
+        row = self.rows[i]
+        heights_per_cell = []
+        any_page_break = False
+        # pylint: disable=protected-access
+        with self._fpdf._disable_writing():
+            for j in range(len(row.cells)):
+                page_break, height = self._render_table_cell(
+                    i,
+                    j,
+                    row_height=self._line_height,
+                )
+                any_page_break = any_page_break or page_break
+                heights_per_cell.append(height)
+        row_height = (
+            max(height for height in heights_per_cell) if heights_per_cell else 0
+        )
+        return RowLayoutInfo(row_height, any_page_break)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.table.Table.get_cell_border"><code class="name flex">
+<span>def <span class="ident">get_cell_border</span></span>(<span>self, i, j)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines which cell borders should be drawn.
+Returns a string containing some or all of the letters L/R/T/B,
+to be passed to <code><a title="fpdf.FPDF.multi_cell" href="index.html#fpdf.FPDF.multi_cell">FPDF.multi_cell()</a></code>.
+Can be overriden to customize this logic</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L151-L204" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get_cell_border(self, i, j):
+    &#34;&#34;&#34;
+    Defines which cell borders should be drawn.
+    Returns a string containing some or all of the letters L/R/T/B,
+    to be passed to `fpdf.FPDF.multi_cell()`.
+    Can be overriden to customize this logic
+    &#34;&#34;&#34;
+    if self._borders_layout == TableBordersLayout.ALL:
+        return 1
+    if self._borders_layout == TableBordersLayout.NONE:
+        return 0
+    columns_count = max(row.cols_count for row in self.rows)
+    rows_count = len(self.rows)
+    border = list(&#34;LRTB&#34;)
+    if self._borders_layout == TableBordersLayout.INTERNAL:
+        if i == 0 and &#34;T&#34; in border:
+            border.remove(&#34;T&#34;)
+        if i == rows_count - 1 and &#34;B&#34; in border:
+            border.remove(&#34;B&#34;)
+        if j == 0 and &#34;L&#34; in border:
+            border.remove(&#34;L&#34;)
+        if j == columns_count - 1 and &#34;R&#34; in border:
+            border.remove(&#34;R&#34;)
+    if self._borders_layout == TableBordersLayout.MINIMAL:
+        if (i != 1 or rows_count == 1) and &#34;T&#34; in border:
+            border.remove(&#34;T&#34;)
+        if i != 0 and &#34;B&#34; in border:
+            border.remove(&#34;B&#34;)
+        if j == 0 and &#34;L&#34; in border:
+            border.remove(&#34;L&#34;)
+        if j == columns_count - 1 and &#34;R&#34; in border:
+            border.remove(&#34;R&#34;)
+    if self._borders_layout == TableBordersLayout.NO_HORIZONTAL_LINES:
+        if i not in (0, 1) and &#34;T&#34; in border:
+            border.remove(&#34;T&#34;)
+        if i not in (0, rows_count - 1) and &#34;B&#34; in border:
+            border.remove(&#34;B&#34;)
+    if self._borders_layout == TableBordersLayout.HORIZONTAL_LINES:
+        if rows_count == 1:
+            return 0
+        border = list(&#34;TB&#34;)
+        if i == 0 and &#34;T&#34; in border:
+            border.remove(&#34;T&#34;)
+        if i == rows_count - 1 and &#34;B&#34; in border:
+            border.remove(&#34;B&#34;)
+    if self._borders_layout == TableBordersLayout.SINGLE_TOP_LINE:
+        if rows_count == 1:
+            return 0
+        border = list(&#34;TB&#34;)
+        if i != 1 and &#34;T&#34; in border:
+            border.remove(&#34;T&#34;)
+        if i != 0 and &#34;B&#34; in border:
+            border.remove(&#34;B&#34;)
+    return &#34;&#34;.join(border)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.table.Table.render"><code class="name flex">
+<span>def <span class="ident">render</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is an internal method called by <code><a title="fpdf.FPDF.table" href="index.html#fpdf.FPDF.table">FPDF.table()</a></code> once the table is finished</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L97-L149" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def render(self):
+    &#34;This is an internal method called by `fpdf.FPDF.table()` once the table is finished&#34;
+    # Starting with some sanity checks:
+    if self._width &gt; self._fpdf.epw:
+        raise ValueError(
+            f&#34;Invalid value provided width={self._width}: effective page width is {self._fpdf.epw}&#34;
+        )
+    table_align = Align.coerce(self._align)
+    if table_align == Align.J:
+        raise ValueError(
+            &#34;JUSTIFY is an invalid value for FPDF.table() &#39;align&#39; parameter&#34;
+        )
+    if self._first_row_as_headings:
+        if not self._headings_style:
+            raise ValueError(
+                &#34;headings_style must be provided to FPDF.table() if first_row_as_headings=True&#34;
+            )
+        emphasis = self._headings_style.emphasis
+        if emphasis is not None:
+            family = self._headings_style.family or self._fpdf.font_family
+            font_key = family + emphasis.style
+            if (
+                font_key not in self._fpdf.core_fonts
+                and font_key not in self._fpdf.fonts
+            ):
+                # Raising a more explicit error than the one from set_font():
+                raise FPDFException(
+                    f&#34;Using font emphasis &#39;{emphasis.style}&#39; in table headings require the corresponding font style to be added using add_font()&#34;
+                )
+    # Defining table global horizontal position:
+    prev_l_margin = self._fpdf.l_margin
+    if table_align == Align.C:
+        self._fpdf.l_margin = (self._fpdf.w - self._width) / 2
+        self._fpdf.x = self._fpdf.l_margin
+    elif table_align == Align.R:
+        self._fpdf.l_margin = self._fpdf.w - self._fpdf.r_margin - self._width
+        self._fpdf.x = self._fpdf.l_margin
+    elif self._fpdf.x != self._fpdf.l_margin:
+        self._fpdf.l_margin = self._fpdf.x
+    # Starting the actual rows &amp; cells rendering:
+    for i in range(len(self.rows)):
+        row_layout_info = self._get_row_layout_info(i)
+        if row_layout_info.triggers_page_jump:
+            # pylint: disable=protected-access
+            self._fpdf._perform_page_break()
+            if self._first_row_as_headings:  # repeat headings on top:
+                self._render_table_row(0)
+        elif i and self._gutter_height:
+            self._fpdf.y += self._gutter_height
+        self._render_table_row(i, row_layout_info)
+    # Restoring altered FPDF settings:
+    self._fpdf.l_margin = prev_l_margin
+    self._fpdf.x = self._fpdf.l_margin</code></pre>
+</details>
+</dd>
+<dt id="fpdf.table.Table.row"><code class="name flex">
+<span>def <span class="ident">row</span></span>(<span>self, cells=())</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a row to the table. Yields a <code><a title="fpdf.table.Row" href="#fpdf.table.Row">Row</a></code> object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/6779a1f45d5ff2ac565becdc4f836df7e706ea44/fpdf/table.py#L89-L95" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def row(self, cells=()):
+    &#34;Adds a row to the table. Yields a `Row` object.&#34;
+    row = Row(self._fpdf)
+    self.rows.append(row)
+    for cell in cells:
+        row.cell(cell)
+    return row</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.table.Cell" href="#fpdf.table.Cell">Cell</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.table.Cell.align" href="#fpdf.table.Cell.align">align</a></code></li>
+<li><code><a title="fpdf.table.Cell.colspan" href="#fpdf.table.Cell.colspan">colspan</a></code></li>
+<li><code><a title="fpdf.table.Cell.img" href="#fpdf.table.Cell.img">img</a></code></li>
+<li><code><a title="fpdf.table.Cell.img_fill_width" href="#fpdf.table.Cell.img_fill_width">img_fill_width</a></code></li>
+<li><code><a title="fpdf.table.Cell.style" href="#fpdf.table.Cell.style">style</a></code></li>
+<li><code><a title="fpdf.table.Cell.text" href="#fpdf.table.Cell.text">text</a></code></li>
+<li><code><a title="fpdf.table.Cell.write" href="#fpdf.table.Cell.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.table.Row" href="#fpdf.table.Row">Row</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.table.Row.cell" href="#fpdf.table.Row.cell">cell</a></code></li>
+<li><code><a title="fpdf.table.Row.cols_count" href="#fpdf.table.Row.cols_count">cols_count</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.table.RowLayoutInfo" href="#fpdf.table.RowLayoutInfo">RowLayoutInfo</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.table.RowLayoutInfo.height" href="#fpdf.table.RowLayoutInfo.height">height</a></code></li>
+<li><code><a title="fpdf.table.RowLayoutInfo.triggers_page_jump" href="#fpdf.table.RowLayoutInfo.triggers_page_jump">triggers_page_jump</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.table.Table" href="#fpdf.table.Table">Table</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.table.Table.get_cell_border" href="#fpdf.table.Table.get_cell_border">get_cell_border</a></code></li>
+<li><code><a title="fpdf.table.Table.render" href="#fpdf.table.Table.render">render</a></code></li>
+<li><code><a title="fpdf.table.Table.row" href="#fpdf.table.Table.row">row</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
