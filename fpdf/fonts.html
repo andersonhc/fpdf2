@@ -28,17 +28,23 @@ Includes the definition of the character widths of all PDF standard fonts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/fonts.py#L1-L2641" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L1-L2830" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Font-related classes &amp; constants.
 Includes the definition of the character widths of all PDF standard fonts.
 &#34;&#34;&#34;
+import re
+
+from collections import defaultdict
 from dataclasses import dataclass, replace
-from typing import Optional, Union
+from typing import List, Optional, Union
+
+from fontTools import ttLib
 
 from .drawing import DeviceGray, DeviceRGB
-from .enums import TextEmphasis
+from .enums import FontDescriptorFlags, TextEmphasis
+from .syntax import Name, PDFObject
 
 
 @dataclass
@@ -73,6 +79,189 @@ class FontFace:
 
     replace = replace
 
+
+class CoreFont:
+    __slots__ = (&#34;i&#34;, &#34;type&#34;, &#34;name&#34;, &#34;up&#34;, &#34;ut&#34;, &#34;cw&#34;, &#34;fontkey&#34;, &#34;emphasis&#34;)
+
+    def __init__(self, fpdf, fontkey, style):
+        self.i = len(fpdf.fonts) + 1
+        self.type = &#34;core&#34;
+        self.name = CORE_FONTS[fontkey]
+        self.up = -100
+        self.ut = 50
+        self.cw = CORE_FONTS_CHARWIDTHS[fontkey]
+        self.fontkey = fontkey
+        self.emphasis = TextEmphasis.coerce(style)
+
+
+class TTFFont:
+    __slots__ = (
+        &#34;i&#34;,
+        &#34;type&#34;,
+        &#34;name&#34;,
+        &#34;desc&#34;,
+        &#34;up&#34;,
+        &#34;ut&#34;,
+        &#34;cw&#34;,
+        &#34;ttffile&#34;,
+        &#34;fontkey&#34;,
+        &#34;emphasis&#34;,
+        &#34;subset&#34;,
+        &#34;cmap&#34;,
+    )
+
+    def __init__(self, fpdf, font_file_path, fontkey, style):
+        self.i = len(fpdf.fonts) + 1
+        self.type = &#34;TTF&#34;
+        self.ttffile = font_file_path
+        self.fontkey = fontkey
+
+        font = ttLib.TTFont(self.ttffile, fontNumber=0, lazy=True)
+
+        scale = 1000 / font[&#34;head&#34;].unitsPerEm
+        default_width = round(scale * font[&#34;hmtx&#34;].metrics[&#34;.notdef&#34;][0])
+
+        try:
+            cap_height = font[&#34;OS/2&#34;].sCapHeight
+        except AttributeError:
+            cap_height = font[&#34;hhea&#34;].ascent
+
+        # entry for the PDF font descriptor specifying various characteristics of the font
+        flags = FontDescriptorFlags.SYMBOLIC
+        if font[&#34;post&#34;].isFixedPitch:
+            flags |= FontDescriptorFlags.FIXED_PITCH
+        if font[&#34;post&#34;].italicAngle != 0:
+            flags |= FontDescriptorFlags.ITALIC
+        if font[&#34;OS/2&#34;].usWeightClass &gt;= 600:
+            flags |= FontDescriptorFlags.FORCE_BOLD
+
+        self.desc = PDFFontDescriptor(
+            ascent=round(font[&#34;hhea&#34;].ascent * scale),
+            descent=round(font[&#34;hhea&#34;].descent * scale),
+            cap_height=round(cap_height * scale),
+            flags=flags,
+            font_b_box=(
+                f&#34;[{font[&#39;head&#39;].xMin * scale:.0f} {font[&#39;head&#39;].yMin * scale:.0f}&#34;
+                f&#34; {font[&#39;head&#39;].xMax * scale:.0f} {font[&#39;head&#39;].yMax * scale:.0f}]&#34;
+            ),
+            italic_angle=int(font[&#34;post&#34;].italicAngle),
+            stem_v=round(50 + int(pow((font[&#34;OS/2&#34;].usWeightClass / 65), 2))),
+            missing_width=default_width,
+        )
+
+        # a map unicode_char -&gt; char_width
+        self.cw = defaultdict(lambda: default_width)
+        self.cmap = tuple(font.getBestCmap().keys())
+        for char in self.cmap:
+            # take glyph associated to char
+            glyph = font.getBestCmap()[char]
+
+            # take width associated to glyph
+            w = font[&#34;hmtx&#34;].metrics[glyph][0]
+
+            # probably this check could be deleted
+            if w == 65535:
+                w = 0
+
+            self.cw[char] = round(scale * w + 0.001)  # ROUND_HALF_UP
+
+        # include numbers in the subset! (if alias present)
+        # ensure that alias is mapped 1-by-1 additionally (must be replaceable)
+        sbarr = &#34;\x00 &#34;
+        if fpdf.str_alias_nb_pages:
+            sbarr += &#34;0123456789&#34;
+            sbarr += fpdf.str_alias_nb_pages
+
+        self.name = re.sub(&#34;[ ()]&#34;, &#34;&#34;, font[&#34;name&#34;].getBestFullName())
+        self.up = round(font[&#34;post&#34;].underlinePosition * scale)
+        self.ut = round(font[&#34;post&#34;].underlineThickness * scale)
+        self.emphasis = TextEmphasis.coerce(style)
+        self.subset = SubsetMap([ord(char) for char in sbarr])
+
+
+class PDFFontDescriptor(PDFObject):
+    def __init__(
+        self,
+        ascent,
+        descent,
+        cap_height,
+        flags,
+        font_b_box,
+        italic_angle,
+        stem_v,
+        missing_width,
+    ):
+        super().__init__()
+        self.type = Name(&#34;FontDescriptor&#34;)
+        self.ascent = ascent
+        self.descent = descent
+        self.cap_height = cap_height
+        self.flags = flags
+        self.font_b_box = font_b_box
+        self.italic_angle = italic_angle
+        self.stem_v = stem_v
+        self.missing_width = missing_width
+        self.font_name = None
+
+
+class SubsetMap:
+    &#34;&#34;&#34;Holds a mapping of used characters and their position in the font&#39;s subset
+
+    Characters that must be mapped on their actual unicode must be part of the
+    `identities` list during object instanciation. These non-negative values should
+    only appear once in the list. `pick()` can be used to get the characters
+    corresponding position in the subset. If it&#39;s not yet part of the object, a new
+    position is acquired automatically. This implementation always tries to return
+    the lowest possible representation.
+    &#34;&#34;&#34;
+
+    def __init__(self, identities: List[int]):
+        super().__init__()
+        self._next = 0
+
+        # sort list to ease deletion once _next
+        # becomes higher than first reservation
+        self._reserved = sorted(identities)
+
+        # int(x) to ensure values are integers
+        self._map = {x: int(x) for x in self._reserved}
+
+    def __len__(self):
+        return len(self._map)
+
+    def pick(self, unicode: int):
+        if not unicode in self._map:
+            while self._next in self._reserved:
+                self._next += 1
+                if self._next &gt; self._reserved[0]:
+                    del self._reserved[0]
+
+            self._map[unicode] = self._next
+            self._next += 1
+
+        return self._map.get(unicode)
+
+    def dict(self):
+        return self._map.copy()
+
+
+# Standard fonts
+CORE_FONTS = {
+    &#34;courier&#34;: &#34;Courier&#34;,
+    &#34;courierB&#34;: &#34;Courier-Bold&#34;,
+    &#34;courierI&#34;: &#34;Courier-Oblique&#34;,
+    &#34;courierBI&#34;: &#34;Courier-BoldOblique&#34;,
+    &#34;helvetica&#34;: &#34;Helvetica&#34;,
+    &#34;helveticaB&#34;: &#34;Helvetica-Bold&#34;,
+    &#34;helveticaI&#34;: &#34;Helvetica-Oblique&#34;,
+    &#34;helveticaBI&#34;: &#34;Helvetica-BoldOblique&#34;,
+    &#34;times&#34;: &#34;Times-Roman&#34;,
+    &#34;timesB&#34;: &#34;Times-Bold&#34;,
+    &#34;timesI&#34;: &#34;Times-Italic&#34;,
+    &#34;timesBI&#34;: &#34;Times-BoldItalic&#34;,
+    &#34;symbol&#34;: &#34;Symbol&#34;,
+    &#34;zapfdingbats&#34;: &#34;ZapfDingbats&#34;,
+}
 
 COURIER_FONT = {chr(i): 600 for i in range(256)}
 CORE_FONTS_CHARWIDTHS = {
@@ -2682,6 +2871,66 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="fpdf.fonts.CoreFont"><code class="flex name class">
+<span>class <span class="ident">CoreFont</span></span>
+<span>(</span><span>fpdf, fontkey, style)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L51-L62" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class CoreFont:
+    __slots__ = (&#34;i&#34;, &#34;type&#34;, &#34;name&#34;, &#34;up&#34;, &#34;ut&#34;, &#34;cw&#34;, &#34;fontkey&#34;, &#34;emphasis&#34;)
+
+    def __init__(self, fpdf, fontkey, style):
+        self.i = len(fpdf.fonts) + 1
+        self.type = &#34;core&#34;
+        self.name = CORE_FONTS[fontkey]
+        self.up = -100
+        self.ut = 50
+        self.cw = CORE_FONTS_CHARWIDTHS[fontkey]
+        self.fontkey = fontkey
+        self.emphasis = TextEmphasis.coerce(style)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.fonts.CoreFont.cw"><code class="name">var <span class="ident">cw</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.emphasis"><code class="name">var <span class="ident">emphasis</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.fontkey"><code class="name">var <span class="ident">fontkey</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.i"><code class="name">var <span class="ident">i</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.up"><code class="name">var <span class="ident">up</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.CoreFont.ut"><code class="name">var <span class="ident">ut</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+</dd>
 <dt id="fpdf.fonts.FontFace"><code class="flex name class">
 <span>class <span class="ident">FontFace</span></span>
 <span>(</span><span>family=None, emphasis=None, size_pt=None, color=None, fill_color=None)</span>
@@ -2692,7 +2941,7 @@ This is a subset of <code><a title="fpdf.graphics_state.GraphicsStateMixin" href
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/fonts.py#L12-L42" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L18-L48" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass
 class FontFace:
@@ -2826,6 +3075,302 @@ assert c1.x == 3 and c1.y == 2</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="fpdf.fonts.PDFFontDescriptor"><code class="flex name class">
+<span>class <span class="ident">PDFFontDescriptor</span></span>
+<span>(</span><span>ascent, descent, cap_height, flags, font_b_box, italic_angle, stem_v, missing_width)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main features of this class:
+* delay ID assignement
+* implement serializing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L150-L172" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class PDFFontDescriptor(PDFObject):
+    def __init__(
+        self,
+        ascent,
+        descent,
+        cap_height,
+        flags,
+        font_b_box,
+        italic_angle,
+        stem_v,
+        missing_width,
+    ):
+        super().__init__()
+        self.type = Name(&#34;FontDescriptor&#34;)
+        self.ascent = ascent
+        self.descent = descent
+        self.cap_height = cap_height
+        self.flags = flags
+        self.font_b_box = font_b_box
+        self.italic_angle = italic_angle
+        self.stem_v = stem_v
+        self.missing_width = missing_width
+        self.font_name = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fpdf.syntax.PDFObject" href="syntax.html#fpdf.syntax.PDFObject">PDFObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fpdf.syntax.PDFObject.content_stream" href="syntax.html#fpdf.syntax.PDFObject.content_stream">content_stream</a></code></li>
+<li><code><a title="fpdf.syntax.PDFObject.serialize" href="syntax.html#fpdf.syntax.PDFObject.serialize">serialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fpdf.fonts.SubsetMap"><code class="flex name class">
+<span>class <span class="ident">SubsetMap</span></span>
+<span>(</span><span>identities: List[int])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Holds a mapping of used characters and their position in the font's subset</p>
+<p>Characters that must be mapped on their actual unicode must be part of the
+<code>identities</code> list during object instanciation. These non-negative values should
+only appear once in the list. <code>pick()</code> can be used to get the characters
+corresponding position in the subset. If it's not yet part of the object, a new
+position is acquired automatically. This implementation always tries to return
+the lowest possible representation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L175-L213" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class SubsetMap:
+    &#34;&#34;&#34;Holds a mapping of used characters and their position in the font&#39;s subset
+
+    Characters that must be mapped on their actual unicode must be part of the
+    `identities` list during object instanciation. These non-negative values should
+    only appear once in the list. `pick()` can be used to get the characters
+    corresponding position in the subset. If it&#39;s not yet part of the object, a new
+    position is acquired automatically. This implementation always tries to return
+    the lowest possible representation.
+    &#34;&#34;&#34;
+
+    def __init__(self, identities: List[int]):
+        super().__init__()
+        self._next = 0
+
+        # sort list to ease deletion once _next
+        # becomes higher than first reservation
+        self._reserved = sorted(identities)
+
+        # int(x) to ensure values are integers
+        self._map = {x: int(x) for x in self._reserved}
+
+    def __len__(self):
+        return len(self._map)
+
+    def pick(self, unicode: int):
+        if not unicode in self._map:
+            while self._next in self._reserved:
+                self._next += 1
+                if self._next &gt; self._reserved[0]:
+                    del self._reserved[0]
+
+            self._map[unicode] = self._next
+            self._next += 1
+
+        return self._map.get(unicode)
+
+    def dict(self):
+        return self._map.copy()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.fonts.SubsetMap.dict"><code class="name flex">
+<span>def <span class="ident">dict</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L212-L213" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dict(self):
+    return self._map.copy()</code></pre>
+</details>
+</dd>
+<dt id="fpdf.fonts.SubsetMap.pick"><code class="name flex">
+<span>def <span class="ident">pick</span></span>(<span>self, unicode: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L200-L210" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pick(self, unicode: int):
+    if not unicode in self._map:
+        while self._next in self._reserved:
+            self._next += 1
+            if self._next &gt; self._reserved[0]:
+                del self._reserved[0]
+
+        self._map[unicode] = self._next
+        self._next += 1
+
+    return self._map.get(unicode)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fpdf.fonts.TTFFont"><code class="flex name class">
+<span>class <span class="ident">TTFFont</span></span>
+<span>(</span><span>fpdf, font_file_path, fontkey, style)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/fonts.py#L65-L147" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class TTFFont:
+    __slots__ = (
+        &#34;i&#34;,
+        &#34;type&#34;,
+        &#34;name&#34;,
+        &#34;desc&#34;,
+        &#34;up&#34;,
+        &#34;ut&#34;,
+        &#34;cw&#34;,
+        &#34;ttffile&#34;,
+        &#34;fontkey&#34;,
+        &#34;emphasis&#34;,
+        &#34;subset&#34;,
+        &#34;cmap&#34;,
+    )
+
+    def __init__(self, fpdf, font_file_path, fontkey, style):
+        self.i = len(fpdf.fonts) + 1
+        self.type = &#34;TTF&#34;
+        self.ttffile = font_file_path
+        self.fontkey = fontkey
+
+        font = ttLib.TTFont(self.ttffile, fontNumber=0, lazy=True)
+
+        scale = 1000 / font[&#34;head&#34;].unitsPerEm
+        default_width = round(scale * font[&#34;hmtx&#34;].metrics[&#34;.notdef&#34;][0])
+
+        try:
+            cap_height = font[&#34;OS/2&#34;].sCapHeight
+        except AttributeError:
+            cap_height = font[&#34;hhea&#34;].ascent
+
+        # entry for the PDF font descriptor specifying various characteristics of the font
+        flags = FontDescriptorFlags.SYMBOLIC
+        if font[&#34;post&#34;].isFixedPitch:
+            flags |= FontDescriptorFlags.FIXED_PITCH
+        if font[&#34;post&#34;].italicAngle != 0:
+            flags |= FontDescriptorFlags.ITALIC
+        if font[&#34;OS/2&#34;].usWeightClass &gt;= 600:
+            flags |= FontDescriptorFlags.FORCE_BOLD
+
+        self.desc = PDFFontDescriptor(
+            ascent=round(font[&#34;hhea&#34;].ascent * scale),
+            descent=round(font[&#34;hhea&#34;].descent * scale),
+            cap_height=round(cap_height * scale),
+            flags=flags,
+            font_b_box=(
+                f&#34;[{font[&#39;head&#39;].xMin * scale:.0f} {font[&#39;head&#39;].yMin * scale:.0f}&#34;
+                f&#34; {font[&#39;head&#39;].xMax * scale:.0f} {font[&#39;head&#39;].yMax * scale:.0f}]&#34;
+            ),
+            italic_angle=int(font[&#34;post&#34;].italicAngle),
+            stem_v=round(50 + int(pow((font[&#34;OS/2&#34;].usWeightClass / 65), 2))),
+            missing_width=default_width,
+        )
+
+        # a map unicode_char -&gt; char_width
+        self.cw = defaultdict(lambda: default_width)
+        self.cmap = tuple(font.getBestCmap().keys())
+        for char in self.cmap:
+            # take glyph associated to char
+            glyph = font.getBestCmap()[char]
+
+            # take width associated to glyph
+            w = font[&#34;hmtx&#34;].metrics[glyph][0]
+
+            # probably this check could be deleted
+            if w == 65535:
+                w = 0
+
+            self.cw[char] = round(scale * w + 0.001)  # ROUND_HALF_UP
+
+        # include numbers in the subset! (if alias present)
+        # ensure that alias is mapped 1-by-1 additionally (must be replaceable)
+        sbarr = &#34;\x00 &#34;
+        if fpdf.str_alias_nb_pages:
+            sbarr += &#34;0123456789&#34;
+            sbarr += fpdf.str_alias_nb_pages
+
+        self.name = re.sub(&#34;[ ()]&#34;, &#34;&#34;, font[&#34;name&#34;].getBestFullName())
+        self.up = round(font[&#34;post&#34;].underlinePosition * scale)
+        self.ut = round(font[&#34;post&#34;].underlineThickness * scale)
+        self.emphasis = TextEmphasis.coerce(style)
+        self.subset = SubsetMap([ord(char) for char in sbarr])</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.fonts.TTFFont.cmap"><code class="name">var <span class="ident">cmap</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.cw"><code class="name">var <span class="ident">cw</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.desc"><code class="name">var <span class="ident">desc</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.emphasis"><code class="name">var <span class="ident">emphasis</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.fontkey"><code class="name">var <span class="ident">fontkey</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.i"><code class="name">var <span class="ident">i</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.subset"><code class="name">var <span class="ident">subset</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.ttffile"><code class="name">var <span class="ident">ttffile</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.up"><code class="name">var <span class="ident">up</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.fonts.TTFFont.ut"><code class="name">var <span class="ident">ut</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -2843,6 +3388,19 @@ assert c1.x == 3 and c1.y == 2</p></div>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="fpdf.fonts.CoreFont" href="#fpdf.fonts.CoreFont">CoreFont</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.fonts.CoreFont.cw" href="#fpdf.fonts.CoreFont.cw">cw</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.emphasis" href="#fpdf.fonts.CoreFont.emphasis">emphasis</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.fontkey" href="#fpdf.fonts.CoreFont.fontkey">fontkey</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.i" href="#fpdf.fonts.CoreFont.i">i</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.name" href="#fpdf.fonts.CoreFont.name">name</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.type" href="#fpdf.fonts.CoreFont.type">type</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.up" href="#fpdf.fonts.CoreFont.up">up</a></code></li>
+<li><code><a title="fpdf.fonts.CoreFont.ut" href="#fpdf.fonts.CoreFont.ut">ut</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="fpdf.fonts.FontFace" href="#fpdf.fonts.FontFace">FontFace</a></code></h4>
 <ul class="two-column">
 <li><code><a title="fpdf.fonts.FontFace.color" href="#fpdf.fonts.FontFace.color">color</a></code></li>
@@ -2851,6 +3409,33 @@ assert c1.x == 3 and c1.y == 2</p></div>
 <li><code><a title="fpdf.fonts.FontFace.fill_color" href="#fpdf.fonts.FontFace.fill_color">fill_color</a></code></li>
 <li><code><a title="fpdf.fonts.FontFace.replace" href="#fpdf.fonts.FontFace.replace">replace</a></code></li>
 <li><code><a title="fpdf.fonts.FontFace.size_pt" href="#fpdf.fonts.FontFace.size_pt">size_pt</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.fonts.PDFFontDescriptor" href="#fpdf.fonts.PDFFontDescriptor">PDFFontDescriptor</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fpdf.fonts.SubsetMap" href="#fpdf.fonts.SubsetMap">SubsetMap</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.fonts.SubsetMap.dict" href="#fpdf.fonts.SubsetMap.dict">dict</a></code></li>
+<li><code><a title="fpdf.fonts.SubsetMap.pick" href="#fpdf.fonts.SubsetMap.pick">pick</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fpdf.fonts.TTFFont" href="#fpdf.fonts.TTFFont">TTFFont</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fpdf.fonts.TTFFont.cmap" href="#fpdf.fonts.TTFFont.cmap">cmap</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.cw" href="#fpdf.fonts.TTFFont.cw">cw</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.desc" href="#fpdf.fonts.TTFFont.desc">desc</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.emphasis" href="#fpdf.fonts.TTFFont.emphasis">emphasis</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.fontkey" href="#fpdf.fonts.TTFFont.fontkey">fontkey</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.i" href="#fpdf.fonts.TTFFont.i">i</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.name" href="#fpdf.fonts.TTFFont.name">name</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.subset" href="#fpdf.fonts.TTFFont.subset">subset</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.ttffile" href="#fpdf.fonts.TTFFont.ttffile">ttffile</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.type" href="#fpdf.fonts.TTFFont.type">type</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.up" href="#fpdf.fonts.TTFFont.up">up</a></code></li>
+<li><code><a title="fpdf.fonts.TTFFont.ut" href="#fpdf.fonts.TTFFont.ut">ut</a></code></li>
 </ul>
 </li>
 </ul>

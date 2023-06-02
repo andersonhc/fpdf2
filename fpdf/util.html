@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L1-L194" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L1-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import gc, os, warnings
 from numbers import Number
@@ -238,7 +238,7 @@ def get_pillow_allocated_memory() -&gt; str:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L10-L15" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L10-L15" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def buffer_subst(buffer, placeholder, value):
     buffer_size = len(buffer)
@@ -264,7 +264,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L60-L80" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L60-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convert_unit(
     to_convert: Union[float, int, Iterable[Union[float, int, Iterable]]],
@@ -297,7 +297,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L18-L32" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L18-L32" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def escape_parens(s):
     &#34;&#34;&#34;Add a backslash character before , ( and )&#34;&#34;&#34;
@@ -324,7 +324,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L169-L179" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L169-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_gc_managed_objs_total_size() -&gt; str:
     &#34;From experiments, not very reliable&#34;
@@ -347,7 +347,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L92-L102" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L92-L102" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_mem_usage(prefix) -&gt; str:
     _collected_count = gc.collect()
@@ -370,7 +370,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L188-L194" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L188-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_pillow_allocated_memory() -&gt; str:
     # pylint: disable=c-extension-no-member,import-outside-toplevel
@@ -389,7 +389,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L127-L145" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L127-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_heap_and_stack_sizes() -&gt; Tuple[str]:
     heap_size_in_mib, stack_size_in_mib = &#34;&lt;unavailable&gt;&#34;, &#34;&lt;unavailable&gt;&#34;
@@ -420,7 +420,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L105-L109" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L105-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_rss() -&gt; str:
     rss_as_mib = get_process_rss_as_mib()
@@ -437,7 +437,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L112-L124" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L112-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_rss_as_mib() -&gt; Union[Number, None]:
     &#34;Inspired by psutil source code&#34;
@@ -463,7 +463,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L148-L166" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L148-L166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_pymalloc_allocated_over_total_size() -&gt; Tuple[str]:
     &#34;&#34;&#34;
@@ -506,7 +506,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L35-L57" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L35-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_scale_factor(unit: Union[str, Number]) -&gt; float:
     &#34;&#34;&#34;
@@ -541,7 +541,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L182-L185" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L182-L185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_tracemalloc_traced_memory() -&gt; str:
     &#34;Requires python -X tracemalloc&#34;
@@ -557,7 +557,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/567a4bda0f9da9cbf2f7fcccdb2b583d34a0ca6c/fpdf/util.py#L88-L89" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/05b3e234d5905dd13685e9fdf68348e370cb1a95/fpdf/util.py#L88-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def print_mem_usage(prefix):
     print(get_mem_usage(prefix))</code></pre>
