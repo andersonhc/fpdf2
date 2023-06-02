@@ -12,7 +12,7 @@
 <span class=n>area</span> <span class=o>=</span> <span class=n>RectXObj</span><span class=p>(</span><span class=n>reader</span><span class=o>.</span><span class=n>pages</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span>
 
 <span class=k>def</span> <span class=nf>new_content</span><span class=p>():</span>
-    <span class=n>fpdf</span> <span class=o>=</span> <span class=n>FPDF</span><span class=p>(</span><span class=nb>format</span><span class=o>=</span><span class=p>(</span><span class=n>area</span><span class=o>.</span><span class=n>w</span><span class=p>,</span> <span class=n>area</span><span class=o>.</span><span class=n>h</span><span class=p>))</span>
+    <span class=n>fpdf</span> <span class=o>=</span> <span class=n>FPDF</span><span class=p>(</span><span class=nb>format</span><span class=o>=</span><span class=p>(</span><span class=n>area</span><span class=o>.</span><span class=n>w</span><span class=p>,</span> <span class=n>area</span><span class=o>.</span><span class=n>h</span><span class=p>),</span> <span class=n>unit</span><span class=o>=</span><span class=s2>&quot;pt&quot;</span><span class=p>)</span>
     <span class=n>fpdf</span><span class=o>.</span><span class=n>add_page</span><span class=p>()</span>
     <span class=n>fpdf</span><span class=o>.</span><span class=n>set_font</span><span class=p>(</span><span class=s2>&quot;helvetica&quot;</span><span class=p>,</span> <span class=n>size</span><span class=o>=</span><span class=mi>36</span><span class=p>)</span>
     <span class=n>fpdf</span><span class=o>.</span><span class=n>text</span><span class=p>(</span><span class=mi>50</span><span class=p>,</span> <span class=mi>50</span><span class=p>,</span> <span class=s2>&quot;Hello!&quot;</span><span class=p>)</span>
@@ -36,7 +36,7 @@
 <span class=n>area</span> <span class=o>=</span> <span class=n>RectXObj</span><span class=p>(</span><span class=n>reader</span><span class=o>.</span><span class=n>pages</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span>
 
 <span class=k>def</span> <span class=nf>new_page</span><span class=p>():</span>
-    <span class=n>fpdf</span> <span class=o>=</span> <span class=n>FPDF</span><span class=p>(</span><span class=nb>format</span><span class=o>=</span><span class=p>(</span><span class=n>area</span><span class=o>.</span><span class=n>w</span><span class=p>,</span> <span class=n>area</span><span class=o>.</span><span class=n>h</span><span class=p>))</span>
+    <span class=n>fpdf</span> <span class=o>=</span> <span class=n>FPDF</span><span class=p>(</span><span class=nb>format</span><span class=o>=</span><span class=p>(</span><span class=n>area</span><span class=o>.</span><span class=n>w</span><span class=p>,</span> <span class=n>area</span><span class=o>.</span><span class=n>h</span><span class=p>),</span> <span class=n>unit</span><span class=o>=</span><span class=s2>&quot;pt&quot;</span><span class=p>)</span>
     <span class=n>fpdf</span><span class=o>.</span><span class=n>add_page</span><span class=p>()</span>
     <span class=n>fpdf</span><span class=o>.</span><span class=n>set_font</span><span class=p>(</span><span class=s2>&quot;helvetica&quot;</span><span class=p>,</span> <span class=n>size</span><span class=o>=</span><span class=mi>36</span><span class=p>)</span>
     <span class=n>fpdf</span><span class=o>.</span><span class=n>text</span><span class=p>(</span><span class=mi>50</span><span class=p>,</span> <span class=mi>50</span><span class=p>,</span> <span class=s2>&quot;Hello!&quot;</span><span class=p>)</span>
