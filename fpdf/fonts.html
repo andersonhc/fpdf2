@@ -28,7 +28,7 @@ Includes the definition of the character widths of all PDF standard fonts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L1-L2830" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L1-L2830" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Font-related classes &amp; constants.
@@ -2880,7 +2880,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L51-L62" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L51-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoreFont:
     __slots__ = (&#34;i&#34;, &#34;type&#34;, &#34;name&#34;, &#34;up&#34;, &#34;ut&#34;, &#34;cw&#34;, &#34;fontkey&#34;, &#34;emphasis&#34;)
@@ -2941,7 +2941,7 @@ This is a subset of <code><a title="fpdf.graphics_state.GraphicsStateMixin" href
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L18-L48" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L18-L48" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass
 class FontFace:
@@ -3086,7 +3086,7 @@ assert c1.x == 3 and c1.y == 2</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L150-L172" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L150-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontDescriptor(PDFObject):
     def __init__(
@@ -3141,7 +3141,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L175-L213" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L175-L213" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SubsetMap:
     &#34;&#34;&#34;Holds a mapping of used characters and their position in the font&#39;s subset
@@ -3193,7 +3193,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L212-L213" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L212-L213" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dict(self):
     return self._map.copy()</code></pre>
@@ -3207,7 +3207,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L200-L210" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L200-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pick(self, unicode: int):
     if not unicode in self._map:
@@ -3233,7 +3233,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/8e5f50263d22a1e87ddb57b6656a08ad5145f82f/fpdf/fonts.py#L65-L147" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/fonts.py#L65-L147" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TTFFont:
     __slots__ = (
