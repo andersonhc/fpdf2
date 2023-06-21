@@ -30,7 +30,7 @@ They may change at any time without prior warning or any deprecation period.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L1-L475" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L1-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Routines for organizing lines and larger blocks of text, with manual and
@@ -40,10 +40,12 @@ The contents of this file are internal to fpdf, and not part of the public API.
 They may change at any time without prior warning or any deprecation period.
 &#34;&#34;&#34;
 
-from typing import NamedTuple, Any, Union, Sequence
+from typing import NamedTuple, Any, Optional, Union, Sequence
 
 from .enums import CharVPos, WrapMode
 from .errors import FPDFException
+from .fonts import CoreFont, TTFFont
+from .util import escape_parens
 
 SOFT_HYPHEN = &#34;\u00ad&#34;
 HYPHEN = &#34;\u002d&#34;
@@ -61,7 +63,7 @@ class Fragment:
         characters: Union[list, str],
         graphics_state: dict,
         k: float,
-        url: str = None,
+        link: Optional[Union[int, str]] = None,
     ):
         if isinstance(characters, str):
             self.characters = list(characters)
@@ -69,7 +71,7 @@ class Fragment:
             self.characters = characters
         self.graphics_state = graphics_state
         self.k = k
-        self.url = url
+        self.link = link
 
     def __repr__(self):
         gstate = self.graphics_state.copy()
@@ -77,11 +79,11 @@ class Fragment:
             del gstate[&#34;current_font&#34;]  # TMI
         return (
             f&#34;Fragment(characters={self.characters},&#34;
-            f&#34; graphics_state={gstate}, k={self.k}, url={self.url})&#34;
+            f&#34; graphics_state={gstate}, k={self.k}, link={self.link})&#34;
         )
 
     @property
-    def font(self):
+    def font(self) -&gt; Union[CoreFont, TTFFont]:
         return self.graphics_state[&#34;current_font&#34;]
 
     @font.setter
@@ -170,6 +172,10 @@ class Fragment:
         return lift * self.graphics_state[&#34;font_size_pt&#34;]
 
     @property
+    def _text_shaping(self):
+        return self.graphics_state[&#34;_text_shaping&#34;]
+
+    @property
     def string(self):
         return &#34;&#34;.join(self.characters)
 
@@ -206,22 +212,20 @@ class Fragment:
 
         if chars is None:
             chars = self.characters[start:end]
-        if self.is_ttf_font:
-            w = sum(self.font.cw[ord(c)] for c in chars)
-        else:
-            w = sum(self.font.cw[c] for c in chars)
+        (char_len, w) = self.font.get_text_width(
+            chars, self.font_size_pt, self._text_shaping
+        )
         char_spacing = self.char_spacing
         if self.font_stretching != 100:
             w *= self.font_stretching * 0.01
             char_spacing *= self.font_stretching * 0.01
-        w *= self.font_size_pt * 0.001
         if self.char_spacing != 0:
             # initial_cs must be False if the fragment is located at the
             # beginning of a text object, because the first char won&#39;t get spaced.
             if initial_cs:
-                w += char_spacing * len(chars)
+                w += char_spacing * char_len
             else:
-                w += char_spacing * (len(chars) - 1)
+                w += char_spacing * (char_len - 1)
         return w / self.k
 
     def get_character_width(self, character: str, print_sh=False, initial_cs=True):
@@ -232,6 +236,110 @@ class Fragment:
             # HYPHEN is inserted instead of SOFT_HYPHEN
             character = HYPHEN
         return self.get_width(chars=character, initial_cs=initial_cs)
+
+    def render_pdf_text(self, frag_ws, current_ws, word_spacing, adjust_x, adjust_y, h):
+        if self.is_ttf_font:
+            if self._text_shaping:
+                return self.render_with_text_shaping(
+                    adjust_x, adjust_y, h, word_spacing
+                )
+            return self.render_pdf_text_ttf(frag_ws, word_spacing)
+        return self.render_pdf_text_core(frag_ws, current_ws)
+
+    def render_pdf_text_ttf(self, frag_ws, word_spacing):
+        ret = &#34;&#34;
+        mapped_text = &#34;&#34;
+        for char in self.string:
+            mapped_char = self.font.subset.pick(ord(char))
+            if mapped_char:
+                mapped_text += chr(mapped_char)
+        if word_spacing:
+            # do this once in advance
+            u_space = escape_parens(&#34; &#34;.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))
+
+            # According to the PDF reference, word spacing shall be applied to every
+            # occurrence of the single-byte character code 32 in a string when using
+            # a simple font or a composite font that defines code 32 as a single-byte code.
+            # It shall not apply to occurrences of the byte value 32 in multiple-byte codes.
+            # FPDF uses 2 bytes per character (UTF-16-BE encoding) so the &#34;Tw&#34; operator doesn&#39;t work
+            # As a workaround, we do word spacing using an adjustment before each space.
+            # Determine the index of the space character (&#34; &#34;) in the current
+            # subset and split words whenever this mapping code is found
+            #
+            words = mapped_text.split(chr(self.font.subset.pick(ord(&#34; &#34;))))
+            words_strl = []
+            for word_i, word in enumerate(words):
+                # pylint: disable=redefined-loop-name
+                word = escape_parens(word.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))
+                if word_i == 0:
+                    words_strl.append(f&#34;({word})&#34;)
+                else:
+                    adj = -(frag_ws * self.k) * 1000 / self.font_size_pt
+                    words_strl.append(f&#34;{adj:.3f}({u_space}{word})&#34;)
+            escaped_text = &#34; &#34;.join(words_strl)
+            ret += f&#34;[{escaped_text}] TJ&#34;
+        else:
+            escaped_text = escape_parens(
+                mapped_text.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;)
+            )
+            ret += f&#34;({escaped_text}) Tj&#34;
+        return ret
+
+    def render_with_text_shaping(self, pos_x, pos_y, h, word_spacing):
+        ret = &#34;&#34;
+        text = &#34;&#34;
+        space_mapped_code = self.font.subset.pick(ord(&#34; &#34;))
+
+        def adjust_pos(pos):
+            return (
+                pos
+                * self.font.scale
+                * self.font_size_pt
+                * (self.font_stretching / 100)
+                / 1000
+                / self.k
+            )
+
+        char_spacing = self.char_spacing * (self.font_stretching / 100) / self.k
+        for ti in self.font.shape_text(self.string, self.font_size_pt):
+            if ti[&#34;mapped_char&#34;] is None:  # Missing glyph
+                continue
+            char = chr(ti[&#34;mapped_char&#34;]).encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;)
+            if ti[&#34;x_offset&#34;] != 0 or ti[&#34;y_offset&#34;] != 0:
+                if text:
+                    ret += f&#34;({text}) Tj &#34;
+                    text = &#34;&#34;
+                offsetx = pos_x + adjust_pos(ti[&#34;x_offset&#34;])
+                offsety = pos_y - adjust_pos(ti[&#34;y_offset&#34;])
+                ret += (
+                    f&#34;1 0 0 1 {(offsetx) * self.k:.2f} {(h - offsety) * self.k:.2f} Tm &#34;
+                )
+            text += char
+            pos_x += adjust_pos(ti[&#34;x_advance&#34;]) + char_spacing
+            pos_y += adjust_pos(ti[&#34;y_advance&#34;])
+            if word_spacing and ti[&#34;mapped_char&#34;] == space_mapped_code:
+                pos_x += word_spacing
+
+            # if only moving &#34;x&#34; we don&#39;t need to move the text matrix
+            if ti[&#34;force_positioning&#34;] or (
+                word_spacing and ti[&#34;mapped_char&#34;] == space_mapped_code
+            ):
+                if text:
+                    ret += f&#34;({text}) Tj &#34;
+                    text = &#34;&#34;
+                ret += f&#34;1 0 0 1 {(pos_x) * self.k:.2f} {(h - pos_y) * self.k:.2f} Tm &#34;
+
+        if text:
+            ret += f&#34;({text}) Tj&#34;
+        return ret
+
+    def render_pdf_text_core(self, frag_ws, current_ws):
+        ret = &#34;&#34;
+        if frag_ws != current_ws:
+            ret += f&#34;{frag_ws * self.k:.3f} Tw &#34;
+        escaped_text = escape_parens(self.string)
+        ret += f&#34;({escaped_text}) Tj&#34;
+        return ret
 
 
 class TextLine(NamedTuple):
@@ -493,7 +601,7 @@ class MultiLineBreak:
                 current_fragment.k,
                 self.fragment_index,
                 self.character_index,
-                current_fragment.url,
+                current_fragment.link,
             )
 
             self.character_index += 1
@@ -530,7 +638,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L233-L377" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L341-L485" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CurrentLine:
     def __init__(self, print_sh: bool = False):
@@ -688,7 +796,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L260-L310" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L368-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_character(
     self,
@@ -751,7 +859,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L352-L377" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L460-L485" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def automatic_break(self, justify: bool):
     assert self.automatic_break_possible()
@@ -789,7 +897,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L349-L350" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L457-L458" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def automatic_break_possible(self):
     return self.hyphen_break_hint is not None or self.space_break_hint is not None</code></pre>
@@ -803,7 +911,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L340-L347" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L448-L455" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def manual_break(self, justify: bool = False, trailing_nl: bool = False):
     return TextLine(
@@ -823,7 +931,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L312-L326" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L420-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def trim_trailing_spaces(self):
     if not self.fragments:
@@ -846,14 +954,14 @@ normally, instead of triggering a line break. Default: False</p></div>
 </dd>
 <dt id="fpdf.line_break.Fragment"><code class="flex name class">
 <span>class <span class="ident">Fragment</span></span>
-<span>(</span><span>characters: Union[list, str], graphics_state: dict, k: float, url: str = None)</span>
+<span>(</span><span>characters: Union[list, str], graphics_state: dict, k: float, link: Union[str, int, ForwardRef(None)] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A fragment of text with font/size/style and other associated information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L20-L200" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L22-L308" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragment:
     &#34;&#34;&#34;
@@ -865,7 +973,7 @@ normally, instead of triggering a line break. Default: False</p></div>
         characters: Union[list, str],
         graphics_state: dict,
         k: float,
-        url: str = None,
+        link: Optional[Union[int, str]] = None,
     ):
         if isinstance(characters, str):
             self.characters = list(characters)
@@ -873,7 +981,7 @@ normally, instead of triggering a line break. Default: False</p></div>
             self.characters = characters
         self.graphics_state = graphics_state
         self.k = k
-        self.url = url
+        self.link = link
 
     def __repr__(self):
         gstate = self.graphics_state.copy()
@@ -881,11 +989,11 @@ normally, instead of triggering a line break. Default: False</p></div>
             del gstate[&#34;current_font&#34;]  # TMI
         return (
             f&#34;Fragment(characters={self.characters},&#34;
-            f&#34; graphics_state={gstate}, k={self.k}, url={self.url})&#34;
+            f&#34; graphics_state={gstate}, k={self.k}, link={self.link})&#34;
         )
 
     @property
-    def font(self):
+    def font(self) -&gt; Union[CoreFont, TTFFont]:
         return self.graphics_state[&#34;current_font&#34;]
 
     @font.setter
@@ -974,6 +1082,10 @@ normally, instead of triggering a line break. Default: False</p></div>
         return lift * self.graphics_state[&#34;font_size_pt&#34;]
 
     @property
+    def _text_shaping(self):
+        return self.graphics_state[&#34;_text_shaping&#34;]
+
+    @property
     def string(self):
         return &#34;&#34;.join(self.characters)
 
@@ -1010,22 +1122,20 @@ normally, instead of triggering a line break. Default: False</p></div>
 
         if chars is None:
             chars = self.characters[start:end]
-        if self.is_ttf_font:
-            w = sum(self.font.cw[ord(c)] for c in chars)
-        else:
-            w = sum(self.font.cw[c] for c in chars)
+        (char_len, w) = self.font.get_text_width(
+            chars, self.font_size_pt, self._text_shaping
+        )
         char_spacing = self.char_spacing
         if self.font_stretching != 100:
             w *= self.font_stretching * 0.01
             char_spacing *= self.font_stretching * 0.01
-        w *= self.font_size_pt * 0.001
         if self.char_spacing != 0:
             # initial_cs must be False if the fragment is located at the
             # beginning of a text object, because the first char won&#39;t get spaced.
             if initial_cs:
-                w += char_spacing * len(chars)
+                w += char_spacing * char_len
             else:
-                w += char_spacing * (len(chars) - 1)
+                w += char_spacing * (char_len - 1)
         return w / self.k
 
     def get_character_width(self, character: str, print_sh=False, initial_cs=True):
@@ -1035,7 +1145,111 @@ normally, instead of triggering a line break. Default: False</p></div>
         if character == SOFT_HYPHEN and not print_sh:
             # HYPHEN is inserted instead of SOFT_HYPHEN
             character = HYPHEN
-        return self.get_width(chars=character, initial_cs=initial_cs)</code></pre>
+        return self.get_width(chars=character, initial_cs=initial_cs)
+
+    def render_pdf_text(self, frag_ws, current_ws, word_spacing, adjust_x, adjust_y, h):
+        if self.is_ttf_font:
+            if self._text_shaping:
+                return self.render_with_text_shaping(
+                    adjust_x, adjust_y, h, word_spacing
+                )
+            return self.render_pdf_text_ttf(frag_ws, word_spacing)
+        return self.render_pdf_text_core(frag_ws, current_ws)
+
+    def render_pdf_text_ttf(self, frag_ws, word_spacing):
+        ret = &#34;&#34;
+        mapped_text = &#34;&#34;
+        for char in self.string:
+            mapped_char = self.font.subset.pick(ord(char))
+            if mapped_char:
+                mapped_text += chr(mapped_char)
+        if word_spacing:
+            # do this once in advance
+            u_space = escape_parens(&#34; &#34;.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))
+
+            # According to the PDF reference, word spacing shall be applied to every
+            # occurrence of the single-byte character code 32 in a string when using
+            # a simple font or a composite font that defines code 32 as a single-byte code.
+            # It shall not apply to occurrences of the byte value 32 in multiple-byte codes.
+            # FPDF uses 2 bytes per character (UTF-16-BE encoding) so the &#34;Tw&#34; operator doesn&#39;t work
+            # As a workaround, we do word spacing using an adjustment before each space.
+            # Determine the index of the space character (&#34; &#34;) in the current
+            # subset and split words whenever this mapping code is found
+            #
+            words = mapped_text.split(chr(self.font.subset.pick(ord(&#34; &#34;))))
+            words_strl = []
+            for word_i, word in enumerate(words):
+                # pylint: disable=redefined-loop-name
+                word = escape_parens(word.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))
+                if word_i == 0:
+                    words_strl.append(f&#34;({word})&#34;)
+                else:
+                    adj = -(frag_ws * self.k) * 1000 / self.font_size_pt
+                    words_strl.append(f&#34;{adj:.3f}({u_space}{word})&#34;)
+            escaped_text = &#34; &#34;.join(words_strl)
+            ret += f&#34;[{escaped_text}] TJ&#34;
+        else:
+            escaped_text = escape_parens(
+                mapped_text.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;)
+            )
+            ret += f&#34;({escaped_text}) Tj&#34;
+        return ret
+
+    def render_with_text_shaping(self, pos_x, pos_y, h, word_spacing):
+        ret = &#34;&#34;
+        text = &#34;&#34;
+        space_mapped_code = self.font.subset.pick(ord(&#34; &#34;))
+
+        def adjust_pos(pos):
+            return (
+                pos
+                * self.font.scale
+                * self.font_size_pt
+                * (self.font_stretching / 100)
+                / 1000
+                / self.k
+            )
+
+        char_spacing = self.char_spacing * (self.font_stretching / 100) / self.k
+        for ti in self.font.shape_text(self.string, self.font_size_pt):
+            if ti[&#34;mapped_char&#34;] is None:  # Missing glyph
+                continue
+            char = chr(ti[&#34;mapped_char&#34;]).encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;)
+            if ti[&#34;x_offset&#34;] != 0 or ti[&#34;y_offset&#34;] != 0:
+                if text:
+                    ret += f&#34;({text}) Tj &#34;
+                    text = &#34;&#34;
+                offsetx = pos_x + adjust_pos(ti[&#34;x_offset&#34;])
+                offsety = pos_y - adjust_pos(ti[&#34;y_offset&#34;])
+                ret += (
+                    f&#34;1 0 0 1 {(offsetx) * self.k:.2f} {(h - offsety) * self.k:.2f} Tm &#34;
+                )
+            text += char
+            pos_x += adjust_pos(ti[&#34;x_advance&#34;]) + char_spacing
+            pos_y += adjust_pos(ti[&#34;y_advance&#34;])
+            if word_spacing and ti[&#34;mapped_char&#34;] == space_mapped_code:
+                pos_x += word_spacing
+
+            # if only moving &#34;x&#34; we don&#39;t need to move the text matrix
+            if ti[&#34;force_positioning&#34;] or (
+                word_spacing and ti[&#34;mapped_char&#34;] == space_mapped_code
+            ):
+                if text:
+                    ret += f&#34;({text}) Tj &#34;
+                    text = &#34;&#34;
+                ret += f&#34;1 0 0 1 {(pos_x) * self.k:.2f} {(h - pos_y) * self.k:.2f} Tm &#34;
+
+        if text:
+            ret += f&#34;({text}) Tj&#34;
+        return ret
+
+    def render_pdf_text_core(self, frag_ws, current_ws):
+        ret = &#34;&#34;
+        if frag_ws != current_ws:
+            ret += f&#34;{frag_ws * self.k:.3f} Tw &#34;
+        escaped_text = escape_parens(self.string)
+        ret += f&#34;({escaped_text}) Tj&#34;
+        return ret</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -1045,7 +1259,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L91-L93" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L93-L95" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def char_spacing(self):
@@ -1058,7 +1272,7 @@ def char_spacing(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L119-L121" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L121-L123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def char_vpos(self):
@@ -1071,7 +1285,7 @@ def char_vpos(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L103-L105" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L105-L107" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def draw_color(self):
@@ -1084,23 +1298,23 @@ def draw_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L107-L109" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L109-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def fill_color(self):
     return self.graphics_state[&#34;fill_color&#34;]</code></pre>
 </details>
 </dd>
-<dt id="fpdf.line_break.Fragment.font"><code class="name">var <span class="ident">font</span></code></dt>
+<dt id="fpdf.line_break.Fragment.font"><code class="name">var <span class="ident">font</span> : Union[<a title="fpdf.fonts.CoreFont" href="fonts.html#fpdf.fonts.CoreFont">CoreFont</a>, <a title="fpdf.fonts.TTFFont" href="fonts.html#fpdf.fonts.TTFFont">TTFFont</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L49-L51" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L51-L53" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
-def font(self):
+def font(self) -&gt; Union[CoreFont, TTFFont]:
     return self.graphics_state[&#34;current_font&#34;]</code></pre>
 </details>
 </dd>
@@ -1110,7 +1324,7 @@ def font(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L65-L67" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L67-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_family(self):
@@ -1123,7 +1337,7 @@ def font_family(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L83-L85" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L85-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_size(self):
@@ -1136,7 +1350,7 @@ def font_size(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L69-L81" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L71-L83" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_size_pt(self):
@@ -1159,7 +1373,7 @@ def font_size_pt(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L87-L89" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L89-L91" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_stretching(self):
@@ -1172,7 +1386,7 @@ def font_stretching(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L61-L63" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L63-L65" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_style(self):
@@ -1185,7 +1399,7 @@ def font_style(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L57-L59" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L59-L61" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def is_ttf_font(self):
@@ -1198,7 +1412,7 @@ def is_ttf_font(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L123-L136" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L125-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def lift(self):
@@ -1222,7 +1436,7 @@ def lift(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L115-L117" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L117-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def line_width(self):
@@ -1235,7 +1449,7 @@ def line_width(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L138-L140" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L144-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def string(self):
@@ -1248,7 +1462,7 @@ def string(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L111-L113" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L113-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def text_color(self):
@@ -1261,7 +1475,7 @@ def text_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L95-L97" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L97-L99" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def text_mode(self):
@@ -1274,7 +1488,7 @@ def text_mode(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L99-L101" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L101-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def underline(self):
@@ -1292,7 +1506,7 @@ def underline(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L193-L200" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L197-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_character_width(self, character: str, print_sh=False, initial_cs=True):
     &#34;&#34;&#34;
@@ -1323,7 +1537,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L155-L191" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L161-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_width(
     self,
@@ -1345,23 +1559,169 @@ precedence over the start/end arguments.</dd>
 
     if chars is None:
         chars = self.characters[start:end]
-    if self.is_ttf_font:
-        w = sum(self.font.cw[ord(c)] for c in chars)
-    else:
-        w = sum(self.font.cw[c] for c in chars)
+    (char_len, w) = self.font.get_text_width(
+        chars, self.font_size_pt, self._text_shaping
+    )
     char_spacing = self.char_spacing
     if self.font_stretching != 100:
         w *= self.font_stretching * 0.01
         char_spacing *= self.font_stretching * 0.01
-    w *= self.font_size_pt * 0.001
     if self.char_spacing != 0:
         # initial_cs must be False if the fragment is located at the
         # beginning of a text object, because the first char won&#39;t get spaced.
         if initial_cs:
-            w += char_spacing * len(chars)
+            w += char_spacing * char_len
         else:
-            w += char_spacing * (len(chars) - 1)
+            w += char_spacing * (char_len - 1)
     return w / self.k</code></pre>
+</details>
+</dd>
+<dt id="fpdf.line_break.Fragment.render_pdf_text"><code class="name flex">
+<span>def <span class="ident">render_pdf_text</span></span>(<span>self, frag_ws, current_ws, word_spacing, adjust_x, adjust_y, h)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L206-L213" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def render_pdf_text(self, frag_ws, current_ws, word_spacing, adjust_x, adjust_y, h):
+    if self.is_ttf_font:
+        if self._text_shaping:
+            return self.render_with_text_shaping(
+                adjust_x, adjust_y, h, word_spacing
+            )
+        return self.render_pdf_text_ttf(frag_ws, word_spacing)
+    return self.render_pdf_text_core(frag_ws, current_ws)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.line_break.Fragment.render_pdf_text_core"><code class="name flex">
+<span>def <span class="ident">render_pdf_text_core</span></span>(<span>self, frag_ws, current_ws)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L302-L308" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def render_pdf_text_core(self, frag_ws, current_ws):
+    ret = &#34;&#34;
+    if frag_ws != current_ws:
+        ret += f&#34;{frag_ws * self.k:.3f} Tw &#34;
+    escaped_text = escape_parens(self.string)
+    ret += f&#34;({escaped_text}) Tj&#34;
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="fpdf.line_break.Fragment.render_pdf_text_ttf"><code class="name flex">
+<span>def <span class="ident">render_pdf_text_ttf</span></span>(<span>self, frag_ws, word_spacing)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L215-L252" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def render_pdf_text_ttf(self, frag_ws, word_spacing):
+    ret = &#34;&#34;
+    mapped_text = &#34;&#34;
+    for char in self.string:
+        mapped_char = self.font.subset.pick(ord(char))
+        if mapped_char:
+            mapped_text += chr(mapped_char)
+    if word_spacing:
+        # do this once in advance
+        u_space = escape_parens(&#34; &#34;.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))
+
+        # According to the PDF reference, word spacing shall be applied to every
+        # occurrence of the single-byte character code 32 in a string when using
+        # a simple font or a composite font that defines code 32 as a single-byte code.
+        # It shall not apply to occurrences of the byte value 32 in multiple-byte codes.
+        # FPDF uses 2 bytes per character (UTF-16-BE encoding) so the &#34;Tw&#34; operator doesn&#39;t work
+        # As a workaround, we do word spacing using an adjustment before each space.
+        # Determine the index of the space character (&#34; &#34;) in the current
+        # subset and split words whenever this mapping code is found
+        #
+        words = mapped_text.split(chr(self.font.subset.pick(ord(&#34; &#34;))))
+        words_strl = []
+        for word_i, word in enumerate(words):
+            # pylint: disable=redefined-loop-name
+            word = escape_parens(word.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))
+            if word_i == 0:
+                words_strl.append(f&#34;({word})&#34;)
+            else:
+                adj = -(frag_ws * self.k) * 1000 / self.font_size_pt
+                words_strl.append(f&#34;{adj:.3f}({u_space}{word})&#34;)
+        escaped_text = &#34; &#34;.join(words_strl)
+        ret += f&#34;[{escaped_text}] TJ&#34;
+    else:
+        escaped_text = escape_parens(
+            mapped_text.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;)
+        )
+        ret += f&#34;({escaped_text}) Tj&#34;
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="fpdf.line_break.Fragment.render_with_text_shaping"><code class="name flex">
+<span>def <span class="ident">render_with_text_shaping</span></span>(<span>self, pos_x, pos_y, h, word_spacing)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L254-L300" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def render_with_text_shaping(self, pos_x, pos_y, h, word_spacing):
+    ret = &#34;&#34;
+    text = &#34;&#34;
+    space_mapped_code = self.font.subset.pick(ord(&#34; &#34;))
+
+    def adjust_pos(pos):
+        return (
+            pos
+            * self.font.scale
+            * self.font_size_pt
+            * (self.font_stretching / 100)
+            / 1000
+            / self.k
+        )
+
+    char_spacing = self.char_spacing * (self.font_stretching / 100) / self.k
+    for ti in self.font.shape_text(self.string, self.font_size_pt):
+        if ti[&#34;mapped_char&#34;] is None:  # Missing glyph
+            continue
+        char = chr(ti[&#34;mapped_char&#34;]).encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;)
+        if ti[&#34;x_offset&#34;] != 0 or ti[&#34;y_offset&#34;] != 0:
+            if text:
+                ret += f&#34;({text}) Tj &#34;
+                text = &#34;&#34;
+            offsetx = pos_x + adjust_pos(ti[&#34;x_offset&#34;])
+            offsety = pos_y - adjust_pos(ti[&#34;y_offset&#34;])
+            ret += (
+                f&#34;1 0 0 1 {(offsetx) * self.k:.2f} {(h - offsety) * self.k:.2f} Tm &#34;
+            )
+        text += char
+        pos_x += adjust_pos(ti[&#34;x_advance&#34;]) + char_spacing
+        pos_y += adjust_pos(ti[&#34;y_advance&#34;])
+        if word_spacing and ti[&#34;mapped_char&#34;] == space_mapped_code:
+            pos_x += word_spacing
+
+        # if only moving &#34;x&#34; we don&#39;t need to move the text matrix
+        if ti[&#34;force_positioning&#34;] or (
+            word_spacing and ti[&#34;mapped_char&#34;] == space_mapped_code
+        ):
+            if text:
+                ret += f&#34;({text}) Tj &#34;
+                text = &#34;&#34;
+            ret += f&#34;1 0 0 1 {(pos_x) * self.k:.2f} {(h - pos_y) * self.k:.2f} Tm &#34;
+
+    if text:
+        ret += f&#34;({text}) Tj&#34;
+    return ret</code></pre>
 </details>
 </dd>
 <dt id="fpdf.line_break.Fragment.trim"><code class="name flex">
@@ -1372,7 +1732,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L142-L143" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L148-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def trim(self, index: int):
     self.characters = self.characters[:index]</code></pre>
@@ -1389,7 +1749,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L220-L230" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L328-L338" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HyphenHint(NamedTuple):
     original_fragment_index: int
@@ -1460,7 +1820,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L380-L475" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L488-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MultiLineBreak:
     def __init__(
@@ -1544,7 +1904,7 @@ precedence over the start/end arguments.</dd>
                 current_fragment.k,
                 self.fragment_index,
                 self.character_index,
-                current_fragment.url,
+                current_fragment.link,
             )
 
             self.character_index += 1
@@ -1569,7 +1929,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L397-L475" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L505-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_line_of_given_width(self, maximum_width: float, wordsplit: bool = True):
     first_char = True  # &#34;Tw&#34; ignores the first character in a text object.
@@ -1636,7 +1996,7 @@ precedence over the start/end arguments.</dd>
             current_fragment.k,
             self.fragment_index,
             self.character_index,
-            current_fragment.url,
+            current_fragment.link,
         )
 
         self.character_index += 1
@@ -1663,7 +2023,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L211-L217" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L319-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SpaceHint(NamedTuple):
     original_fragment_index: int
@@ -1714,7 +2074,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/line_break.py#L203-L208" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/line_break.py#L311-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextLine(NamedTuple):
     fragments: tuple
@@ -1779,7 +2139,7 @@ precedence over the start/end arguments.</dd>
 </li>
 <li>
 <h4><code><a title="fpdf.line_break.Fragment" href="#fpdf.line_break.Fragment">Fragment</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="fpdf.line_break.Fragment.char_spacing" href="#fpdf.line_break.Fragment.char_spacing">char_spacing</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.char_vpos" href="#fpdf.line_break.Fragment.char_vpos">char_vpos</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.draw_color" href="#fpdf.line_break.Fragment.draw_color">draw_color</a></code></li>
@@ -1795,6 +2155,10 @@ precedence over the start/end arguments.</dd>
 <li><code><a title="fpdf.line_break.Fragment.is_ttf_font" href="#fpdf.line_break.Fragment.is_ttf_font">is_ttf_font</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.lift" href="#fpdf.line_break.Fragment.lift">lift</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.line_width" href="#fpdf.line_break.Fragment.line_width">line_width</a></code></li>
+<li><code><a title="fpdf.line_break.Fragment.render_pdf_text" href="#fpdf.line_break.Fragment.render_pdf_text">render_pdf_text</a></code></li>
+<li><code><a title="fpdf.line_break.Fragment.render_pdf_text_core" href="#fpdf.line_break.Fragment.render_pdf_text_core">render_pdf_text_core</a></code></li>
+<li><code><a title="fpdf.line_break.Fragment.render_pdf_text_ttf" href="#fpdf.line_break.Fragment.render_pdf_text_ttf">render_pdf_text_ttf</a></code></li>
+<li><code><a title="fpdf.line_break.Fragment.render_with_text_shaping" href="#fpdf.line_break.Fragment.render_with_text_shaping">render_with_text_shaping</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.string" href="#fpdf.line_break.Fragment.string">string</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.text_color" href="#fpdf.line_break.Fragment.text_color">text_color</a></code></li>
 <li><code><a title="fpdf.line_break.Fragment.text_mode" href="#fpdf.line_break.Fragment.text_mode">text_mode</a></code></li>

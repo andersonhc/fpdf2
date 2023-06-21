@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L1-L1042" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L1-L1016" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python"># pylint: disable=protected-access
 import logging
@@ -51,7 +51,6 @@ from .syntax import create_dictionary_string as pdf_dict
 from .syntax import create_list_string as pdf_list
 from .syntax import iobj_ref as pdf_ref
 
-from fontTools import ttLib
 from fontTools import subset as ftsubset
 
 try:
@@ -566,35 +565,14 @@ class OutputProducer:
             elif font.type == &#34;TTF&#34;:
                 fontname = f&#34;MPDFAA+{font.name}&#34;
 
-                # unicode_char -&gt; new_code_char map for chars embedded in the PDF
-                uni_to_new_code_char = font.subset.dict()
-
-                # why we delete 0-element?
-                del uni_to_new_code_char[0]
-
-                # ---- FONTTOOLS SUBSETTER ----
-                # recalcTimestamp=False means that it doesn&#39;t modify the &#34;modified&#34; timestamp in head table
-                # if we leave recalcTimestamp=True the tests will break every time
-                fonttools_font = ttLib.TTFont(
-                    file=font.ttffile, recalcTimestamp=False, fontNumber=0, lazy=True
-                )
-
                 # 1. get all glyphs in PDF
-                cmap = fonttools_font[&#34;cmap&#34;].getBestCmap()
-                glyph_names = [
-                    cmap[unicode] for unicode in uni_to_new_code_char if unicode in cmap
-                ]
+                glyph_names = font.subset.get_all_glyph_names()
 
-                missing_glyphs = [
-                    chr(unicode)
-                    for unicode in uni_to_new_code_char
-                    if unicode not in cmap
-                ]
-                if len(missing_glyphs) &gt; 0:
+                if len(font.missing_glyphs) &gt; 0:
                     LOGGER.warning(
                         &#34;Font %s is missing the following glyphs: %s&#34;,
                         fontname,
-                        &#34;, &#34;.join(missing_glyphs),
+                        &#34;, &#34;.join(chr(x) for x in font.missing_glyphs),
                     )
 
                 # 2. make a subset
@@ -614,7 +592,7 @@ class OutputProducer:
                 ]
                 subsetter = ftsubset.Subsetter(options)
                 subsetter.populate(glyphs=glyph_names)
-                subsetter.subset(fonttools_font)
+                subsetter.subset(font.ttfont)
 
                 # 3. make codeToGlyph
                 # is a map Character_ID -&gt; Glyph_ID
@@ -622,18 +600,16 @@ class OutputProducer:
                 # this basically takes the old code of the character
                 # take the glyph associated with it
                 # and then associate to the new code the glyph associated with the old code
-                code_to_glyph = {}
-                for code, new_code_mapped in uni_to_new_code_char.items():
-                    # notdef is associated if no glyph was associated to the old code
-                    # it&#39;s not necessary to do this, it seems to be done by default
-                    glyph_name = cmap.get(code, &#34;.notdef&#34;)
-                    code_to_glyph[new_code_mapped] = fonttools_font.getGlyphID(
-                        glyph_name
-                    )
+                # code_to_glyph = {}
+
+                code_to_glyph = {
+                    font.subset._map[glyph]: font.ttfont.getGlyphID(glyph.glyph_name)
+                    for glyph in font.subset._map.keys()
+                }
 
                 # 4. return the ttfile
                 output = BytesIO()
-                fonttools_font.save(output)
+                font.ttfont.save(output)
 
                 output.seek(0)
                 ttfontstream = output.read()
@@ -652,7 +628,7 @@ class OutputProducer:
                     subtype=&#34;CIDFontType2&#34;,
                     base_font=fontname,
                     d_w=font.desc.missing_width,
-                    w=_tt_font_widths(font, max(uni_to_new_code_char)),
+                    w=_tt_font_widths(font),
                 )
                 self._add_pdf_obj(cid_font_obj, &#34;fonts&#34;)
                 composite_font_obj.descendant_fonts = PDFArray([cid_font_obj])
@@ -662,17 +638,19 @@ class OutputProducer:
                 # character that each used 16-bit code belongs to. It
                 # allows searching the file and copying text from it.
                 bfChar = []
-                uni_to_new_code_char = font.subset.dict()
-                for code, code_mapped in uni_to_new_code_char.items():
-                    if code &gt; 0xFFFF:
+
+                def format_code(unicode):
+                    if unicode &gt; 0xFFFF:
                         # Calculate surrogate pair
-                        code_high = 0xD800 | (code - 0x10000) &gt;&gt; 10
-                        code_low = 0xDC00 | (code &amp; 0x3FF)
-                        bfChar.append(
-                            f&#34;&lt;{code_mapped:04X}&gt; &lt;{code_high:04X}{code_low:04X}&gt;\n&#34;
-                        )
-                    else:
-                        bfChar.append(f&#34;&lt;{code_mapped:04X}&gt; &lt;{code:04X}&gt;\n&#34;)
+                        code_high = 0xD800 | (glyph.unicode[0] - 0x10000) &gt;&gt; 10
+                        code_low = 0xDC00 | (glyph.unicode[0] &amp; 0x3FF)
+                        return f&#34;&lt;{code_high:04X}{code_low:04X}&gt;&#34;
+                    return f&#34;{unicode:04X}&#34;
+
+                for glyph, code_mapped in font.subset._map.items():
+                    bfChar.append(
+                        f&#39;&lt;{code_mapped:04X}&gt; &lt;{&#34; &#34;.join(format_code(code) for code in glyph.unicode)}&gt;\n&#39;
+                    )
 
                 to_unicode_obj = PDFContentStream(
                     &#34;/CIDInit /ProcSet findresource begin\n&#34;
@@ -985,48 +963,44 @@ class OutputProducer:
             LOGGER.debug(&#34;- %s: %s&#34;, label, _sizeof_fmt(section_size))
 
 
-def _tt_font_widths(font, maxUni):
+def _tt_font_widths(font):
     rangeid = 0
     range_ = {}
     range_interval = {}
     prevcid = -2
     prevwidth = -1
     interval = False
-    startcid = 1
-    cwlen = maxUni + 1
 
-    # for each character
-    subset = font.subset.dict()
-    for cid in range(startcid, cwlen):
-        char_width = font.cw[cid]
-        cid_mapped = subset.get(cid)
-        if cid_mapped is None:
-            continue
+    # Glyphs sorted by mapped character id
+    glyphs = dict(sorted(font.subset._map.items(), key=lambda item: item[1]))
+
+    for glyph in glyphs:
+        cid_mapped = glyphs[glyph]
         if cid_mapped == (prevcid + 1):
-            if char_width == prevwidth:
-                if char_width == range_[rangeid][0]:
-                    range_.setdefault(rangeid, []).append(char_width)
+            if glyph.glyph_width == prevwidth:
+                if glyph.glyph_width == range_[rangeid][0]:
+                    range_.setdefault(rangeid, []).append(glyph.glyph_width)
                 else:
                     range_[rangeid].pop()
                     # new range
                     rangeid = prevcid
-                    range_[rangeid] = [prevwidth, char_width]
+                    range_[rangeid] = [prevwidth, glyph.glyph_width]
                 interval = True
                 range_interval[rangeid] = True
             else:
                 if interval:
                     # new range
                     rangeid = cid_mapped
-                    range_[rangeid] = [char_width]
+                    range_[rangeid] = [glyph.glyph_width]
                 else:
-                    range_[rangeid].append(char_width)
+                    range_[rangeid].append(glyph.glyph_width)
                 interval = False
         else:
             rangeid = cid_mapped
-            range_[rangeid] = [char_width]
+            range_[rangeid] = [glyph.glyph_width]
             interval = False
         prevcid = cid_mapped
-        prevwidth = char_width
+        prevwidth = glyph.glyph_width
     prevk = -1
     nextk = -1
     prevint = False
@@ -1089,7 +1063,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L102-L113" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L101-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AcroForm:
     def __init__(self, fields, sig_flags):
@@ -1114,7 +1088,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L107-L113" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L106-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(
@@ -1137,7 +1111,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L73-L78" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L72-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CIDSystemInfo(PDFObject):
     def __init__(self):
@@ -1168,7 +1142,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L43-L45" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L42-L44" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ContentWithoutID:
     def serialize(self, _security_handler=None):
@@ -1190,7 +1164,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L44-L45" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L43-L44" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     pass</code></pre>
@@ -1207,7 +1181,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L331-L956" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L330-L934" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OutputProducer:
     &#34;Generates the final bytearray representing the PDF document, based on a FPDF instance.&#34;
@@ -1418,35 +1392,14 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
             elif font.type == &#34;TTF&#34;:
                 fontname = f&#34;MPDFAA+{font.name}&#34;
 
-                # unicode_char -&gt; new_code_char map for chars embedded in the PDF
-                uni_to_new_code_char = font.subset.dict()
-
-                # why we delete 0-element?
-                del uni_to_new_code_char[0]
-
-                # ---- FONTTOOLS SUBSETTER ----
-                # recalcTimestamp=False means that it doesn&#39;t modify the &#34;modified&#34; timestamp in head table
-                # if we leave recalcTimestamp=True the tests will break every time
-                fonttools_font = ttLib.TTFont(
-                    file=font.ttffile, recalcTimestamp=False, fontNumber=0, lazy=True
-                )
-
                 # 1. get all glyphs in PDF
-                cmap = fonttools_font[&#34;cmap&#34;].getBestCmap()
-                glyph_names = [
-                    cmap[unicode] for unicode in uni_to_new_code_char if unicode in cmap
-                ]
+                glyph_names = font.subset.get_all_glyph_names()
 
-                missing_glyphs = [
-                    chr(unicode)
-                    for unicode in uni_to_new_code_char
-                    if unicode not in cmap
-                ]
-                if len(missing_glyphs) &gt; 0:
+                if len(font.missing_glyphs) &gt; 0:
                     LOGGER.warning(
                         &#34;Font %s is missing the following glyphs: %s&#34;,
                         fontname,
-                        &#34;, &#34;.join(missing_glyphs),
+                        &#34;, &#34;.join(chr(x) for x in font.missing_glyphs),
                     )
 
                 # 2. make a subset
@@ -1466,7 +1419,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 ]
                 subsetter = ftsubset.Subsetter(options)
                 subsetter.populate(glyphs=glyph_names)
-                subsetter.subset(fonttools_font)
+                subsetter.subset(font.ttfont)
 
                 # 3. make codeToGlyph
                 # is a map Character_ID -&gt; Glyph_ID
@@ -1474,18 +1427,16 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 # this basically takes the old code of the character
                 # take the glyph associated with it
                 # and then associate to the new code the glyph associated with the old code
-                code_to_glyph = {}
-                for code, new_code_mapped in uni_to_new_code_char.items():
-                    # notdef is associated if no glyph was associated to the old code
-                    # it&#39;s not necessary to do this, it seems to be done by default
-                    glyph_name = cmap.get(code, &#34;.notdef&#34;)
-                    code_to_glyph[new_code_mapped] = fonttools_font.getGlyphID(
-                        glyph_name
-                    )
+                # code_to_glyph = {}
+
+                code_to_glyph = {
+                    font.subset._map[glyph]: font.ttfont.getGlyphID(glyph.glyph_name)
+                    for glyph in font.subset._map.keys()
+                }
 
                 # 4. return the ttfile
                 output = BytesIO()
-                fonttools_font.save(output)
+                font.ttfont.save(output)
 
                 output.seek(0)
                 ttfontstream = output.read()
@@ -1504,7 +1455,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                     subtype=&#34;CIDFontType2&#34;,
                     base_font=fontname,
                     d_w=font.desc.missing_width,
-                    w=_tt_font_widths(font, max(uni_to_new_code_char)),
+                    w=_tt_font_widths(font),
                 )
                 self._add_pdf_obj(cid_font_obj, &#34;fonts&#34;)
                 composite_font_obj.descendant_fonts = PDFArray([cid_font_obj])
@@ -1514,17 +1465,19 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 # character that each used 16-bit code belongs to. It
                 # allows searching the file and copying text from it.
                 bfChar = []
-                uni_to_new_code_char = font.subset.dict()
-                for code, code_mapped in uni_to_new_code_char.items():
-                    if code &gt; 0xFFFF:
+
+                def format_code(unicode):
+                    if unicode &gt; 0xFFFF:
                         # Calculate surrogate pair
-                        code_high = 0xD800 | (code - 0x10000) &gt;&gt; 10
-                        code_low = 0xDC00 | (code &amp; 0x3FF)
-                        bfChar.append(
-                            f&#34;&lt;{code_mapped:04X}&gt; &lt;{code_high:04X}{code_low:04X}&gt;\n&#34;
-                        )
-                    else:
-                        bfChar.append(f&#34;&lt;{code_mapped:04X}&gt; &lt;{code:04X}&gt;\n&#34;)
+                        code_high = 0xD800 | (glyph.unicode[0] - 0x10000) &gt;&gt; 10
+                        code_low = 0xDC00 | (glyph.unicode[0] &amp; 0x3FF)
+                        return f&#34;&lt;{code_high:04X}{code_low:04X}&gt;&#34;
+                    return f&#34;{unicode:04X}&#34;
+
+                for glyph, code_mapped in font.subset._map.items():
+                    bfChar.append(
+                        f&#39;&lt;{code_mapped:04X}&gt; &lt;{&#34; &#34;.join(format_code(code) for code in glyph.unicode)}&gt;\n&#39;
+                    )
 
                 to_unicode_obj = PDFContentStream(
                     &#34;/CIDInit /ProcSet findresource begin\n&#34;
@@ -1852,7 +1805,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L345-L460" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L344-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bufferize(self):
     &#34;&#34;&#34;
@@ -1985,7 +1938,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L116-L133" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L115-L132" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFCatalog(PDFObject):
     def __init__(
@@ -2031,7 +1984,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L281-L288" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L280-L287" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFExtGState(PDFObject):
     def __init__(self, dict_as_str):
@@ -2067,7 +2020,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L57-L70" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L56-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFont(PDFObject):
     def __init__(self, subtype, base_font, encoding=None, d_w=None, w=None):
@@ -2109,7 +2062,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L145-L148" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L144-L147" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontStream(PDFContentStream):
     def __init__(self, contents):
@@ -2140,7 +2093,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L48-L54" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L47-L53" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFHeader(ContentWithoutID):
     def __init__(self, pdf_version):
@@ -2164,7 +2117,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L53-L54" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L52-L53" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     return f&#34;%PDF-{self.pdf_version}&#34;</code></pre>
@@ -2183,7 +2136,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L200-L218" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L199-L217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFICCPObject(PDFContentStream):
     __slots__ = (  # RAM usage optimization
@@ -2250,7 +2203,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L81-L99" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L80-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFInfo(PDFObject):
     def __init__(
@@ -2297,7 +2250,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L221-L269" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L220-L268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFPage(PDFObject):
     __slots__ = (  # RAM usage optimization
@@ -2406,7 +2359,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L263-L265" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L262-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dimensions(self):
     &#34;Return a pair (width, height) in the unit specified to FPDF constructor&#34;
@@ -2421,7 +2374,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L260-L261" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L259-L260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def index(self):
     return self._index</code></pre>
@@ -2435,7 +2388,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L267-L269" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L266-L268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_dimensions(self, width_pt, height_pt):
     &#34;Accepts a pair (width, height) in the unit specified to FPDF constructor&#34;
@@ -2464,7 +2417,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L272-L278" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L271-L277" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFPagesRoot(PDFObject):
     def __init__(self, count, media_box):
@@ -2499,7 +2452,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L136-L142" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L135-L141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFResources(PDFObject):
     def __init__(self, proc_set, font, x_object, ext_g_state):
@@ -2534,7 +2487,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L158-L197" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L157-L196" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXObject(PDFContentStream):
     __slots__ = (  # RAM usage optimization
@@ -2650,7 +2603,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L151-L155" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L150-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXmpMetadata(PDFContentStream):
     def __init__(self, contents):
@@ -2682,7 +2635,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L291-L328" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L290-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXrefAndTrailer(ContentWithoutID):
     def __init__(self, output_builder):
@@ -2737,7 +2690,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/7154186be22747b87d6ac8e366ec83b1e9bacb2f/fpdf/output.py#L300-L328" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/output.py#L299-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     builder = self.output_builder
