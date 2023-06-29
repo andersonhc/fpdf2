@@ -28,7 +28,7 @@ Includes the definition of the character widths of all PDF standard fonts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L1-L3017" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L1-L3050" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Font-related classes &amp; constants.
@@ -36,6 +36,7 @@ Includes the definition of the character widths of all PDF standard fonts.
 &#34;&#34;&#34;
 import re
 
+from bisect import bisect_left
 from collections import defaultdict
 from dataclasses import dataclass, replace
 from typing import List, Optional, Tuple, Union
@@ -215,13 +216,20 @@ class TTFFont:
         self.emphasis = TextEmphasis.coerce(style)
         self.subset = SubsetMap(self, [ord(char) for char in sbarr])
 
-    def get_text_width(self, text, font_size_pt, text_shaping):
-        if text_shaping:
-            return self.shaped_text_width(text, font_size_pt)
+    def get_text_width(self, text, font_size_pt, text_shaping_parms):
+        if text_shaping_parms:
+            return self.shaped_text_width(text, font_size_pt, text_shaping_parms)
         return (len(text), sum(self.cw[ord(c)] for c in text) * font_size_pt * 0.001)
 
-    def shaped_text_width(self, text, font_size_pt):
-        _, glyph_positions = self.perform_harfbuzz_shaping(text, font_size_pt)
+    def shaped_text_width(self, text, font_size_pt, text_shaping_parms):
+        &#34;&#34;&#34;
+        When texts are shaped, the length of a string is not always the sum of all individual character widths
+        This method will invoke harfbuzz to perform the text shaping and return the sum of &#34;x_advance&#34;
+        and &#34;x_offset&#34; for each glyph. This method works for &#34;left to right&#34; or &#34;right to left&#34; texts.
+        &#34;&#34;&#34;
+        _, glyph_positions = self.perform_harfbuzz_shaping(
+            text, font_size_pt, text_shaping_parms
+        )
         text_width = 0
         for pos in glyph_positions:
             text_width += (
@@ -233,14 +241,27 @@ class TTFFont:
 
     # Disabling this check - looks like cython confuses pylint:
     # pylint: disable=no-member
-    def perform_harfbuzz_shaping(self, text, font_size_pt):
+    def perform_harfbuzz_shaping(self, text, font_size_pt, text_shaping_parms):
+        &#34;&#34;&#34;
+        This method invokes Harfbuzz to performing text shaping of the input string
+        &#34;&#34;&#34;
         if not hasattr(self, &#34;hbfont&#34;):
             self.hbfont = hb.Font(hb.Face(hb.Blob.from_file_path(self.ttffile)))
         self.hbfont.ptem = font_size_pt
         buf = hb.Buffer()
+        buf.cluster_level = 1
         buf.add_str(&#34;&#34;.join(text))
-        buf.guess_segment_properties()
-        features = {}  # {&#34;kern&#34;: True, &#34;liga&#34;: True}
+        features = text_shaping_parms[&#34;features&#34;]
+        if (
+            text_shaping_parms[&#34;direction&#34;]
+            or text_shaping_parms[&#34;script&#34;]
+            or text_shaping_parms[&#34;language&#34;]
+        ):
+            buf.direction = text_shaping_parms[&#34;direction&#34;]
+            buf.script = text_shaping_parms[&#34;script&#34;]
+            buf.language = text_shaping_parms[&#34;language&#34;]
+        else:
+            buf.guess_segment_properties()
         hb.shape(self.hbfont, buf, features)
         return buf.glyph_infos, buf.glyph_positions
 
@@ -253,42 +274,54 @@ class TTFFont:
             txt_mapped += chr(self.subset.pick(uni))
         return f&#39;({escape_parens(txt_mapped.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))}) Tj&#39;
 
-    def shape_text(self, text, font_size_pt):
+    def shape_text(self, text, font_size_pt, text_shaping_parms):
+        &#34;&#34;&#34;
+        This method will invoke harfbuzz for text shaping, include the mapping code
+        of the glyphs on the subset and map input characters to the cluster codes
+        &#34;&#34;&#34;
         if len(text) == 0:
             return zip([], [])
-        glyph_infos, glyph_positions = self.perform_harfbuzz_shaping(text, font_size_pt)
+        glyph_infos, glyph_positions = self.perform_harfbuzz_shaping(
+            text, font_size_pt, text_shaping_parms
+        )
         text_info = []
-        # TO DO : find cluster gaps
+
+        # Find cluster gaps
         # Ex: text = &#34;ABCD&#34;
         # glyph infos has cluster: 0, 2, 3 - it means A and B are together on the first glyph
         # (ligature or substitution) - the glyph should have both unicodes and it should be translated
         # properly on the CID to GID mapping
         #
-        # TO DO : mapping in reverse order for right-to-left shaping
+        def get_cluster_from_text_index(cluster_list, index):
+            pos = bisect_left(cluster_list, index)
+            if pos == 0:
+                return cluster_list[0]
+            if pos == len(cluster_list) or cluster_list[pos] != index:
+                return cluster_list[pos - 1]
+            return cluster_list[pos]
+
+        cluster_list = list(sorted(int(gi.cluster) for gi in glyph_infos))
+        cluster_mapping = {}
+        for i in range(len(text)):
+            cl = get_cluster_from_text_index(cluster_list, i)
+            if cl in cluster_mapping:
+                cluster_mapping[cl].append(i)
+            else:
+                cluster_mapping[cl] = [i]
+
         for cluster_seq, gi in enumerate(glyph_infos):
             unicode = []
-            if (
-                cluster_seq + 1 &lt; len(glyph_infos)
-                and glyph_infos[cluster_seq + 1].cluster &gt; gi.cluster + 1
-            ):
-                for i in range(gi.cluster, glyph_infos[cluster_seq + 1].cluster):
-                    unicode.append(ord(text[i]))
-            else:
-                unicode.append(ord(text[gi.cluster]))
-            if cluster_seq == len(glyph_infos) - 1:  # last character on the glyph map
-                if gi.cluster &lt; len(
-                    text
-                ):  # but there&#39;s extra characters on input (ligatures on the last char)
-                    for i in range(gi.cluster + 1, len(text)):
-                        unicode.append(ord(text[i]))
+            if gi.cluster in cluster_mapping:
+                unicode = [ord(text[i]) for i in cluster_mapping[gi.cluster]]
+                cluster_mapping.pop(gi.cluster)
+
             gname = self.ttfont.getGlyphName(gi.codepoint)
             gwidth = round(self.scale * self.ttfont[&#34;hmtx&#34;].metrics[gname][0])
             glyph = self.subset.get_glyph(
                 glyph=gi.codepoint,
-                unicode=(unicode),
+                unicode=tuple(unicode),
                 glyph_name=gname,
-                glyph_width=gwidth
-                # self.scale * glyph_positions[cluster_seq].x_advance + 0.001
+                glyph_width=gwidth,
             )
             force_positioning = False
             if (
@@ -3067,7 +3100,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L57-L76" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L58-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoreFont:
     __slots__ = (&#34;i&#34;, &#34;type&#34;, &#34;name&#34;, &#34;up&#34;, &#34;ut&#34;, &#34;cw&#34;, &#34;fontkey&#34;, &#34;emphasis&#34;)
@@ -3135,7 +3168,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L75-L76" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L76-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encode_text(self, text):
     return f&#34;({escape_parens(text)}) Tj&#34;</code></pre>
@@ -3149,7 +3182,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L70-L71" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L71-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_text_width(self, text, font_size_pt, _):
     return (len(text), sum(self.cw[c] for c in text) * font_size_pt * 0.001)</code></pre>
@@ -3167,7 +3200,7 @@ This is a subset of <code><a title="fpdf.graphics_state.GraphicsStateMixin" href
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L24-L54" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L25-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass
 class FontFace:
@@ -3312,7 +3345,7 @@ can map a sequence of unicode characters to a single glyph</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L307-L319" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L340-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass(order=True, frozen=True)
 class Glyph:
@@ -3359,7 +3392,7 @@ class Glyph:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L282-L304" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L315-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontDescriptor(PDFObject):
     def __init__(
@@ -3414,7 +3447,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L322-L400" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L355-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SubsetMap:
     &#34;&#34;&#34;Holds a mapping of used characters and their position in the font&#39;s subset
@@ -3506,7 +3539,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L368-L369" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L401-L402" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dict(self):
     return self._map.copy()</code></pre>
@@ -3520,7 +3553,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L399-L400" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L432-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_all_glyph_names(self):
     return [glyph.glyph_name for glyph in self._map]</code></pre>
@@ -3534,7 +3567,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L371-L385" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L404-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_glyph(
     self, glyph=None, unicode=None, glyph_name=None, glyph_width=None
@@ -3561,7 +3594,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L387-L391" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L420-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_glyph_by_id(self, cid) -&gt; Glyph:
     for glyph in self._map:
@@ -3578,7 +3611,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L393-L397" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L426-L430" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_glyph_by_unicode(self, cid) -&gt; Glyph:
     for glyph in self._map:
@@ -3595,7 +3628,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L352-L356" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L385-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pick(self, unicode: int):
     glyph = self.get_glyph(unicode=unicode)
@@ -3612,7 +3645,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L358-L366" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L391-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pick_glyph(self, glyph):
     if (glyph) and (glyph not in self._map):
@@ -3636,7 +3669,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L79-L279" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L80-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TTFFont:
     __slots__ = (
@@ -3745,13 +3778,20 @@ the lowest possible representation.</p></div>
         self.emphasis = TextEmphasis.coerce(style)
         self.subset = SubsetMap(self, [ord(char) for char in sbarr])
 
-    def get_text_width(self, text, font_size_pt, text_shaping):
-        if text_shaping:
-            return self.shaped_text_width(text, font_size_pt)
+    def get_text_width(self, text, font_size_pt, text_shaping_parms):
+        if text_shaping_parms:
+            return self.shaped_text_width(text, font_size_pt, text_shaping_parms)
         return (len(text), sum(self.cw[ord(c)] for c in text) * font_size_pt * 0.001)
 
-    def shaped_text_width(self, text, font_size_pt):
-        _, glyph_positions = self.perform_harfbuzz_shaping(text, font_size_pt)
+    def shaped_text_width(self, text, font_size_pt, text_shaping_parms):
+        &#34;&#34;&#34;
+        When texts are shaped, the length of a string is not always the sum of all individual character widths
+        This method will invoke harfbuzz to perform the text shaping and return the sum of &#34;x_advance&#34;
+        and &#34;x_offset&#34; for each glyph. This method works for &#34;left to right&#34; or &#34;right to left&#34; texts.
+        &#34;&#34;&#34;
+        _, glyph_positions = self.perform_harfbuzz_shaping(
+            text, font_size_pt, text_shaping_parms
+        )
         text_width = 0
         for pos in glyph_positions:
             text_width += (
@@ -3763,14 +3803,27 @@ the lowest possible representation.</p></div>
 
     # Disabling this check - looks like cython confuses pylint:
     # pylint: disable=no-member
-    def perform_harfbuzz_shaping(self, text, font_size_pt):
+    def perform_harfbuzz_shaping(self, text, font_size_pt, text_shaping_parms):
+        &#34;&#34;&#34;
+        This method invokes Harfbuzz to performing text shaping of the input string
+        &#34;&#34;&#34;
         if not hasattr(self, &#34;hbfont&#34;):
             self.hbfont = hb.Font(hb.Face(hb.Blob.from_file_path(self.ttffile)))
         self.hbfont.ptem = font_size_pt
         buf = hb.Buffer()
+        buf.cluster_level = 1
         buf.add_str(&#34;&#34;.join(text))
-        buf.guess_segment_properties()
-        features = {}  # {&#34;kern&#34;: True, &#34;liga&#34;: True}
+        features = text_shaping_parms[&#34;features&#34;]
+        if (
+            text_shaping_parms[&#34;direction&#34;]
+            or text_shaping_parms[&#34;script&#34;]
+            or text_shaping_parms[&#34;language&#34;]
+        ):
+            buf.direction = text_shaping_parms[&#34;direction&#34;]
+            buf.script = text_shaping_parms[&#34;script&#34;]
+            buf.language = text_shaping_parms[&#34;language&#34;]
+        else:
+            buf.guess_segment_properties()
         hb.shape(self.hbfont, buf, features)
         return buf.glyph_infos, buf.glyph_positions
 
@@ -3783,42 +3836,54 @@ the lowest possible representation.</p></div>
             txt_mapped += chr(self.subset.pick(uni))
         return f&#39;({escape_parens(txt_mapped.encode(&#34;utf-16-be&#34;).decode(&#34;latin-1&#34;))}) Tj&#39;
 
-    def shape_text(self, text, font_size_pt):
+    def shape_text(self, text, font_size_pt, text_shaping_parms):
+        &#34;&#34;&#34;
+        This method will invoke harfbuzz for text shaping, include the mapping code
+        of the glyphs on the subset and map input characters to the cluster codes
+        &#34;&#34;&#34;
         if len(text) == 0:
             return zip([], [])
-        glyph_infos, glyph_positions = self.perform_harfbuzz_shaping(text, font_size_pt)
+        glyph_infos, glyph_positions = self.perform_harfbuzz_shaping(
+            text, font_size_pt, text_shaping_parms
+        )
         text_info = []
-        # TO DO : find cluster gaps
+
+        # Find cluster gaps
         # Ex: text = &#34;ABCD&#34;
         # glyph infos has cluster: 0, 2, 3 - it means A and B are together on the first glyph
         # (ligature or substitution) - the glyph should have both unicodes and it should be translated
         # properly on the CID to GID mapping
         #
-        # TO DO : mapping in reverse order for right-to-left shaping
+        def get_cluster_from_text_index(cluster_list, index):
+            pos = bisect_left(cluster_list, index)
+            if pos == 0:
+                return cluster_list[0]
+            if pos == len(cluster_list) or cluster_list[pos] != index:
+                return cluster_list[pos - 1]
+            return cluster_list[pos]
+
+        cluster_list = list(sorted(int(gi.cluster) for gi in glyph_infos))
+        cluster_mapping = {}
+        for i in range(len(text)):
+            cl = get_cluster_from_text_index(cluster_list, i)
+            if cl in cluster_mapping:
+                cluster_mapping[cl].append(i)
+            else:
+                cluster_mapping[cl] = [i]
+
         for cluster_seq, gi in enumerate(glyph_infos):
             unicode = []
-            if (
-                cluster_seq + 1 &lt; len(glyph_infos)
-                and glyph_infos[cluster_seq + 1].cluster &gt; gi.cluster + 1
-            ):
-                for i in range(gi.cluster, glyph_infos[cluster_seq + 1].cluster):
-                    unicode.append(ord(text[i]))
-            else:
-                unicode.append(ord(text[gi.cluster]))
-            if cluster_seq == len(glyph_infos) - 1:  # last character on the glyph map
-                if gi.cluster &lt; len(
-                    text
-                ):  # but there&#39;s extra characters on input (ligatures on the last char)
-                    for i in range(gi.cluster + 1, len(text)):
-                        unicode.append(ord(text[i]))
+            if gi.cluster in cluster_mapping:
+                unicode = [ord(text[i]) for i in cluster_mapping[gi.cluster]]
+                cluster_mapping.pop(gi.cluster)
+
             gname = self.ttfont.getGlyphName(gi.codepoint)
             gwidth = round(self.scale * self.ttfont[&#34;hmtx&#34;].metrics[gname][0])
             glyph = self.subset.get_glyph(
                 glyph=gi.codepoint,
-                unicode=(unicode),
+                unicode=tuple(unicode),
                 glyph_name=gname,
-                glyph_width=gwidth
-                # self.scale * glyph_positions[cluster_seq].x_advance + 0.001
+                glyph_width=gwidth,
             )
             force_positioning = False
             if (
@@ -3921,7 +3986,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L215-L222" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L236-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encode_text(self, text):
     txt_mapped = &#34;&#34;
@@ -3934,89 +3999,115 @@ the lowest possible representation.</p></div>
 </details>
 </dd>
 <dt id="fpdf.fonts.TTFFont.get_text_width"><code class="name flex">
-<span>def <span class="ident">get_text_width</span></span>(<span>self, text, font_size_pt, text_shaping)</span>
+<span>def <span class="ident">get_text_width</span></span>(<span>self, text, font_size_pt, text_shaping_parms)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L186-L189" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L187-L190" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def get_text_width(self, text, font_size_pt, text_shaping):
-    if text_shaping:
-        return self.shaped_text_width(text, font_size_pt)
+<pre><code class="python">def get_text_width(self, text, font_size_pt, text_shaping_parms):
+    if text_shaping_parms:
+        return self.shaped_text_width(text, font_size_pt, text_shaping_parms)
     return (len(text), sum(self.cw[ord(c)] for c in text) * font_size_pt * 0.001)</code></pre>
 </details>
 </dd>
 <dt id="fpdf.fonts.TTFFont.perform_harfbuzz_shaping"><code class="name flex">
-<span>def <span class="ident">perform_harfbuzz_shaping</span></span>(<span>self, text, font_size_pt)</span>
+<span>def <span class="ident">perform_harfbuzz_shaping</span></span>(<span>self, text, font_size_pt, text_shaping_parms)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method invokes Harfbuzz to performing text shaping of the input string</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L204-L213" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L212-L234" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def perform_harfbuzz_shaping(self, text, font_size_pt):
+<pre><code class="python">def perform_harfbuzz_shaping(self, text, font_size_pt, text_shaping_parms):
+    &#34;&#34;&#34;
+    This method invokes Harfbuzz to performing text shaping of the input string
+    &#34;&#34;&#34;
     if not hasattr(self, &#34;hbfont&#34;):
         self.hbfont = hb.Font(hb.Face(hb.Blob.from_file_path(self.ttffile)))
     self.hbfont.ptem = font_size_pt
     buf = hb.Buffer()
+    buf.cluster_level = 1
     buf.add_str(&#34;&#34;.join(text))
-    buf.guess_segment_properties()
-    features = {}  # {&#34;kern&#34;: True, &#34;liga&#34;: True}
+    features = text_shaping_parms[&#34;features&#34;]
+    if (
+        text_shaping_parms[&#34;direction&#34;]
+        or text_shaping_parms[&#34;script&#34;]
+        or text_shaping_parms[&#34;language&#34;]
+    ):
+        buf.direction = text_shaping_parms[&#34;direction&#34;]
+        buf.script = text_shaping_parms[&#34;script&#34;]
+        buf.language = text_shaping_parms[&#34;language&#34;]
+    else:
+        buf.guess_segment_properties()
     hb.shape(self.hbfont, buf, features)
     return buf.glyph_infos, buf.glyph_positions</code></pre>
 </details>
 </dd>
 <dt id="fpdf.fonts.TTFFont.shape_text"><code class="name flex">
-<span>def <span class="ident">shape_text</span></span>(<span>self, text, font_size_pt)</span>
+<span>def <span class="ident">shape_text</span></span>(<span>self, text, font_size_pt, text_shaping_parms)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method will invoke harfbuzz for text shaping, include the mapping code
+of the glyphs on the subset and map input characters to the cluster codes</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L224-L279" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L245-L312" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def shape_text(self, text, font_size_pt):
+<pre><code class="python">def shape_text(self, text, font_size_pt, text_shaping_parms):
+    &#34;&#34;&#34;
+    This method will invoke harfbuzz for text shaping, include the mapping code
+    of the glyphs on the subset and map input characters to the cluster codes
+    &#34;&#34;&#34;
     if len(text) == 0:
         return zip([], [])
-    glyph_infos, glyph_positions = self.perform_harfbuzz_shaping(text, font_size_pt)
+    glyph_infos, glyph_positions = self.perform_harfbuzz_shaping(
+        text, font_size_pt, text_shaping_parms
+    )
     text_info = []
-    # TO DO : find cluster gaps
+
+    # Find cluster gaps
     # Ex: text = &#34;ABCD&#34;
     # glyph infos has cluster: 0, 2, 3 - it means A and B are together on the first glyph
     # (ligature or substitution) - the glyph should have both unicodes and it should be translated
     # properly on the CID to GID mapping
     #
-    # TO DO : mapping in reverse order for right-to-left shaping
+    def get_cluster_from_text_index(cluster_list, index):
+        pos = bisect_left(cluster_list, index)
+        if pos == 0:
+            return cluster_list[0]
+        if pos == len(cluster_list) or cluster_list[pos] != index:
+            return cluster_list[pos - 1]
+        return cluster_list[pos]
+
+    cluster_list = list(sorted(int(gi.cluster) for gi in glyph_infos))
+    cluster_mapping = {}
+    for i in range(len(text)):
+        cl = get_cluster_from_text_index(cluster_list, i)
+        if cl in cluster_mapping:
+            cluster_mapping[cl].append(i)
+        else:
+            cluster_mapping[cl] = [i]
+
     for cluster_seq, gi in enumerate(glyph_infos):
         unicode = []
-        if (
-            cluster_seq + 1 &lt; len(glyph_infos)
-            and glyph_infos[cluster_seq + 1].cluster &gt; gi.cluster + 1
-        ):
-            for i in range(gi.cluster, glyph_infos[cluster_seq + 1].cluster):
-                unicode.append(ord(text[i]))
-        else:
-            unicode.append(ord(text[gi.cluster]))
-        if cluster_seq == len(glyph_infos) - 1:  # last character on the glyph map
-            if gi.cluster &lt; len(
-                text
-            ):  # but there&#39;s extra characters on input (ligatures on the last char)
-                for i in range(gi.cluster + 1, len(text)):
-                    unicode.append(ord(text[i]))
+        if gi.cluster in cluster_mapping:
+            unicode = [ord(text[i]) for i in cluster_mapping[gi.cluster]]
+            cluster_mapping.pop(gi.cluster)
+
         gname = self.ttfont.getGlyphName(gi.codepoint)
         gwidth = round(self.scale * self.ttfont[&#34;hmtx&#34;].metrics[gname][0])
         glyph = self.subset.get_glyph(
             glyph=gi.codepoint,
-            unicode=(unicode),
+            unicode=tuple(unicode),
             glyph_name=gname,
-            glyph_width=gwidth
-            # self.scale * glyph_positions[cluster_seq].x_advance + 0.001
+            glyph_width=gwidth,
         )
         force_positioning = False
         if (
@@ -4040,17 +4131,26 @@ the lowest possible representation.</p></div>
 </details>
 </dd>
 <dt id="fpdf.fonts.TTFFont.shaped_text_width"><code class="name flex">
-<span>def <span class="ident">shaped_text_width</span></span>(<span>self, text, font_size_pt)</span>
+<span>def <span class="ident">shaped_text_width</span></span>(<span>self, text, font_size_pt, text_shaping_parms)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>When texts are shaped, the length of a string is not always the sum of all individual character widths
+This method will invoke harfbuzz to perform the text shaping and return the sum of "x_advance"
+and "x_offset" for each glyph. This method works for "left to right" or "right to left" texts.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/a84dbbbe133e50c829a9801e82fb878c1ddc0691/fpdf/fonts.py#L191-L200" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/fonts.py#L192-L208" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def shaped_text_width(self, text, font_size_pt):
-    _, glyph_positions = self.perform_harfbuzz_shaping(text, font_size_pt)
+<pre><code class="python">def shaped_text_width(self, text, font_size_pt, text_shaping_parms):
+    &#34;&#34;&#34;
+    When texts are shaped, the length of a string is not always the sum of all individual character widths
+    This method will invoke harfbuzz to perform the text shaping and return the sum of &#34;x_advance&#34;
+    and &#34;x_offset&#34; for each glyph. This method works for &#34;left to right&#34; or &#34;right to left&#34; texts.
+    &#34;&#34;&#34;
+    _, glyph_positions = self.perform_harfbuzz_shaping(
+        text, font_size_pt, text_shaping_parms
+    )
     text_width = 0
     for pos in glyph_positions:
         text_width += (
