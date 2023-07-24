@@ -30,7 +30,7 @@ They may change at any time without prior warning or any deprecation period.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L1-L587" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L1-L572" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Routines for organizing lines and larger blocks of text, with manual and
@@ -74,12 +74,10 @@ class Fragment:
         self.link = link
 
     def __repr__(self):
-        gstate = self.graphics_state.copy()
-        if &#34;current_font&#34; in gstate:
-            del gstate[&#34;current_font&#34;]  # TMI
         return (
             f&#34;Fragment(characters={self.characters},&#34;
-            f&#34; graphics_state={gstate}, k={self.k}, link={self.link})&#34;
+            f&#34; graphics_state={self.graphics_state},&#34;
+            f&#34; k={self.k}, link={self.link})&#34;
         )
 
     @property
@@ -540,17 +538,13 @@ class MultiLineBreak:
         self.idx_last_forced_break = None
 
     # pylint: disable=too-many-return-statements
-    def get_line_of_given_width(self, maximum_width: float, wordsplit: bool = True):
+    def get_line_of_given_width(self, maximum_width: float):
         first_char = True  # &#34;Tw&#34; ignores the first character in a text object.
         idx_last_forced_break = self.idx_last_forced_break
         self.idx_last_forced_break = None
 
         if self.fragment_index == len(self.styled_text_fragments):
             return None
-
-        last_fragment_index = self.fragment_index
-        last_character_index = self.character_index
-        line_full = False
 
         current_line = CurrentLine(print_sh=self.print_sh)
         while self.fragment_index &lt; len(self.styled_text_fragments):
@@ -588,9 +582,6 @@ class MultiLineBreak:
                     ) = current_line.automatic_break(self.justify)
                     self.character_index += 1
                     return line
-                if not wordsplit:
-                    line_full = True
-                    break
                 if idx_last_forced_break == self.character_index:
                     raise FPDFException(
                         &#34;Not enough horizontal space to render a single character&#34;
@@ -610,12 +601,6 @@ class MultiLineBreak:
 
             self.character_index += 1
 
-        if line_full and not wordsplit:
-            # roll back and return empty line to trigger continuation
-            # on the next line.
-            self.fragment_index = last_fragment_index
-            self.character_index = last_character_index
-            return CurrentLine().manual_break(self.justify)
         if current_line.width:
             return current_line.manual_break()
         return None</code></pre>
@@ -642,7 +627,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L345-L489" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L343-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CurrentLine:
     def __init__(self, print_sh: bool = False):
@@ -800,7 +785,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L372-L422" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L370-L420" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_character(
     self,
@@ -863,7 +848,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L464-L489" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L462-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def automatic_break(self, justify: bool):
     assert self.automatic_break_possible()
@@ -901,7 +886,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L461-L462" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L459-L460" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def automatic_break_possible(self):
     return self.hyphen_break_hint is not None or self.space_break_hint is not None</code></pre>
@@ -915,7 +900,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L452-L459" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L450-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def manual_break(self, justify: bool = False, trailing_nl: bool = False):
     return TextLine(
@@ -935,7 +920,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L424-L438" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L422-L436" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def trim_trailing_spaces(self):
     if not self.fragments:
@@ -965,7 +950,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L22-L312" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L22-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragment:
     &#34;&#34;&#34;
@@ -988,12 +973,10 @@ normally, instead of triggering a line break. Default: False</p></div>
         self.link = link
 
     def __repr__(self):
-        gstate = self.graphics_state.copy()
-        if &#34;current_font&#34; in gstate:
-            del gstate[&#34;current_font&#34;]  # TMI
         return (
             f&#34;Fragment(characters={self.characters},&#34;
-            f&#34; graphics_state={gstate}, k={self.k}, link={self.link})&#34;
+            f&#34; graphics_state={self.graphics_state},&#34;
+            f&#34; k={self.k}, link={self.link})&#34;
         )
 
     @property
@@ -1267,7 +1250,7 @@ normally, instead of triggering a line break. Default: False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L93-L95" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L91-L93" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def char_spacing(self):
@@ -1280,7 +1263,7 @@ def char_spacing(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L121-L123" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L119-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def char_vpos(self):
@@ -1293,7 +1276,7 @@ def char_vpos(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L105-L107" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L103-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def draw_color(self):
@@ -1306,7 +1289,7 @@ def draw_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L109-L111" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L107-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def fill_color(self):
@@ -1319,7 +1302,7 @@ def fill_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L51-L53" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L49-L51" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font(self) -&gt; Union[CoreFont, TTFFont]:
@@ -1332,7 +1315,7 @@ def font(self) -&gt; Union[CoreFont, TTFFont]:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L67-L69" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L65-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_family(self):
@@ -1345,7 +1328,7 @@ def font_family(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L85-L87" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L83-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_size(self):
@@ -1358,7 +1341,7 @@ def font_size(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L71-L83" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L69-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_size_pt(self):
@@ -1381,7 +1364,7 @@ def font_size_pt(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L89-L91" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L87-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_stretching(self):
@@ -1394,7 +1377,7 @@ def font_stretching(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L63-L65" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L61-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def font_style(self):
@@ -1407,7 +1390,7 @@ def font_style(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L59-L61" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L57-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def is_ttf_font(self):
@@ -1420,7 +1403,7 @@ def is_ttf_font(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L125-L138" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L123-L136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def lift(self):
@@ -1444,7 +1427,7 @@ def lift(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L117-L119" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L115-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def line_width(self):
@@ -1457,7 +1440,7 @@ def line_width(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L144-L146" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L142-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def string(self):
@@ -1470,7 +1453,7 @@ def string(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L113-L115" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L111-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def text_color(self):
@@ -1483,7 +1466,7 @@ def text_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L97-L99" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L95-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def text_mode(self):
@@ -1496,7 +1479,7 @@ def text_mode(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L101-L103" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L99-L101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def underline(self):
@@ -1514,7 +1497,7 @@ def underline(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L197-L204" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L195-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_character_width(self, character: str, print_sh=False, initial_cs=True):
     &#34;&#34;&#34;
@@ -1545,7 +1528,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L161-L195" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L159-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_width(
     self,
@@ -1592,7 +1575,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L206-L213" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L204-L211" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_pdf_text(self, frag_ws, current_ws, word_spacing, adjust_x, adjust_y, h):
     if self.is_ttf_font:
@@ -1612,7 +1595,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L306-L312" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L304-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_pdf_text_core(self, frag_ws, current_ws):
     ret = &#34;&#34;
@@ -1631,7 +1614,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L215-L252" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L213-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_pdf_text_ttf(self, frag_ws, word_spacing):
     ret = &#34;&#34;
@@ -1681,7 +1664,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L254-L304" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L252-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_with_text_shaping(
     self, pos_x, pos_y, h, word_spacing, text_shaping_parms
@@ -1744,7 +1727,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L148-L149" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L146-L147" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def trim(self, index: int):
     self.characters = self.characters[:index]</code></pre>
@@ -1761,7 +1744,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L332-L342" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L330-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HyphenHint(NamedTuple):
     original_fragment_index: int
@@ -1832,7 +1815,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L492-L587" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L490-L572" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MultiLineBreak:
     def __init__(
@@ -1851,17 +1834,13 @@ precedence over the start/end arguments.</dd>
         self.idx_last_forced_break = None
 
     # pylint: disable=too-many-return-statements
-    def get_line_of_given_width(self, maximum_width: float, wordsplit: bool = True):
+    def get_line_of_given_width(self, maximum_width: float):
         first_char = True  # &#34;Tw&#34; ignores the first character in a text object.
         idx_last_forced_break = self.idx_last_forced_break
         self.idx_last_forced_break = None
 
         if self.fragment_index == len(self.styled_text_fragments):
             return None
-
-        last_fragment_index = self.fragment_index
-        last_character_index = self.character_index
-        line_full = False
 
         current_line = CurrentLine(print_sh=self.print_sh)
         while self.fragment_index &lt; len(self.styled_text_fragments):
@@ -1899,9 +1878,6 @@ precedence over the start/end arguments.</dd>
                     ) = current_line.automatic_break(self.justify)
                     self.character_index += 1
                     return line
-                if not wordsplit:
-                    line_full = True
-                    break
                 if idx_last_forced_break == self.character_index:
                     raise FPDFException(
                         &#34;Not enough horizontal space to render a single character&#34;
@@ -1921,12 +1897,6 @@ precedence over the start/end arguments.</dd>
 
             self.character_index += 1
 
-        if line_full and not wordsplit:
-            # roll back and return empty line to trigger continuation
-            # on the next line.
-            self.fragment_index = last_fragment_index
-            self.character_index = last_character_index
-            return CurrentLine().manual_break(self.justify)
         if current_line.width:
             return current_line.manual_break()
         return None</code></pre>
@@ -1934,26 +1904,22 @@ precedence over the start/end arguments.</dd>
 <h3>Methods</h3>
 <dl>
 <dt id="fpdf.line_break.MultiLineBreak.get_line_of_given_width"><code class="name flex">
-<span>def <span class="ident">get_line_of_given_width</span></span>(<span>self, maximum_width: float, wordsplit: bool = True)</span>
+<span>def <span class="ident">get_line_of_given_width</span></span>(<span>self, maximum_width: float)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L509-L587" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L507-L572" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def get_line_of_given_width(self, maximum_width: float, wordsplit: bool = True):
+<pre><code class="python">def get_line_of_given_width(self, maximum_width: float):
     first_char = True  # &#34;Tw&#34; ignores the first character in a text object.
     idx_last_forced_break = self.idx_last_forced_break
     self.idx_last_forced_break = None
 
     if self.fragment_index == len(self.styled_text_fragments):
         return None
-
-    last_fragment_index = self.fragment_index
-    last_character_index = self.character_index
-    line_full = False
 
     current_line = CurrentLine(print_sh=self.print_sh)
     while self.fragment_index &lt; len(self.styled_text_fragments):
@@ -1991,9 +1957,6 @@ precedence over the start/end arguments.</dd>
                 ) = current_line.automatic_break(self.justify)
                 self.character_index += 1
                 return line
-            if not wordsplit:
-                line_full = True
-                break
             if idx_last_forced_break == self.character_index:
                 raise FPDFException(
                     &#34;Not enough horizontal space to render a single character&#34;
@@ -2013,12 +1976,6 @@ precedence over the start/end arguments.</dd>
 
         self.character_index += 1
 
-    if line_full and not wordsplit:
-        # roll back and return empty line to trigger continuation
-        # on the next line.
-        self.fragment_index = last_fragment_index
-        self.character_index = last_character_index
-        return CurrentLine().manual_break(self.justify)
     if current_line.width:
         return current_line.manual_break()
     return None</code></pre>
@@ -2035,7 +1992,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L323-L329" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L321-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SpaceHint(NamedTuple):
     original_fragment_index: int
@@ -2086,7 +2043,7 @@ precedence over the start/end arguments.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/50d1b0336d19e746406cbcbf9318bca04eeadc0d/fpdf/line_break.py#L315-L320" class="git-link">Browse git</a>
+<a href="https://github.com/PyFPDF/fpdf2/blob/251732dd3157322c165abb74d244a044c3fb5f53/fpdf/line_break.py#L313-L318" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextLine(NamedTuple):
     fragments: tuple
