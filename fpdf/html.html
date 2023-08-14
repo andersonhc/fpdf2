@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L1-L730" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L1-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;HTML renderer&#34;
 
@@ -35,6 +35,7 @@ from html.parser import HTMLParser
 
 from .enums import TextEmphasis, XPos, YPos
 from .errors import FPDFException
+from .deprecation import get_stack_level
 from .fonts import FontFace
 from .table import Table, TableBordersLayout
 
@@ -296,9 +297,9 @@ class HTML2FPDF(HTMLParser):
             if not data:
                 return
             if &#34;inserted&#34; in self.td_th:
-                tag = self.td_th[&#34;tag&#34;]
+                td_th_tag = self.td_th[&#34;tag&#34;]
                 raise NotImplementedError(
-                    f&#34;Unsupported nested HTML tags inside &lt;{tag}&gt; element&#34;
+                    f&#34;Unsupported nested HTML tags inside &lt;{td_th_tag}&gt; element: &lt;{self._tags_stack[-1]}&gt;&#34;
                 )
                 # We could potentially support nested &lt;b&gt; / &lt;em&gt; / &lt;font&gt; tags
                 # by building a list of Fragment instances from the HTML cell content
@@ -371,9 +372,8 @@ class HTML2FPDF(HTMLParser):
                 if self.heading_level:
                     self.pdf.start_section(data, self.heading_level - 1, strict=False)
                 LOGGER.debug(
-                    &#34;write &#39;%s&#39; h=%d&#34;,
+                    f&#34;write: &#39;%s&#39; h={self.h:.2f}&#34;,
                     WHITESPACE.sub(whitespace_repl, data),
-                    self.h,
                 )
                 self.pdf.write(self.h, data)
             self.follows_fmt_tag = False
@@ -412,7 +412,10 @@ class HTML2FPDF(HTMLParser):
             self.font_stack.append((self.font_face, self.font_size, self.font_color))
             self.heading_level = int(tag[1:])
             hsize = self.heading_sizes[tag]
-            self.pdf.set_text_color(150, 0, 0)
+            color = (
+                color_as_decimal(attrs[&#34;color&#34;]) if &#34;color&#34; in attrs else (150, 0, 0)
+            )
+            self.pdf.set_text_color(*color)
             self.pdf.ln(self.h + self.heading_above * hsize)  # more space above heading
             self.set_font(size=hsize)
             if attrs:
@@ -673,8 +676,8 @@ class HTML2FPDF(HTMLParser):
         if size:
             self.font_size = size
             self.h = px2mm(size)
-            LOGGER.debug(&#34;H %s&#34;, self.h)
         style = &#34;&#34;.join(s for s in (&#34;b&#34;, &#34;i&#34;, &#34;u&#34;) if self.style.get(s)).upper()
+        LOGGER.debug(f&#34;set_font: %s style=%s h={self.h:.2f}&#34;, self.font_face, style)
         if (self.font_face, style) != (self.pdf.font_family, self.pdf.font_style):
             self.pdf.set_font(self.font_face, style, self.font_size)
         if self.font_size != self.pdf.font_size:
@@ -749,6 +752,11 @@ def whitespace_repl(matchobj):
 
 
 class HTMLMixin:
+    &#34;&#34;&#34;
+    [**DEPRECATED since v2.6.0**]
+    You can now directly use the `FPDF.write_html()` method
+    &#34;&#34;&#34;
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         warnings.warn(
@@ -756,7 +764,7 @@ class HTMLMixin:
             &#34;The HTMLMixin class is deprecated. &#34;
             &#34;Simply use the FPDF class as a replacement.&#34;,
             DeprecationWarning,
-            stacklevel=2,
+            stacklevel=get_stack_level(),
         )</code></pre>
 </details>
 </section>
@@ -775,7 +783,7 @@ class HTMLMixin:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L176-L192" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L177-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def color_as_decimal(color=&#34;#000000&#34;):
     if not color:
@@ -804,7 +812,7 @@ class HTMLMixin:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L694-L701" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L697-L704" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def leading_whitespace_repl(matchobj):
     trimmed_str = &#34;&#34;
@@ -824,7 +832,7 @@ class HTMLMixin:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L172-L173" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L173-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def px2mm(px):
     return px * 25.4 / 72</code></pre>
@@ -838,7 +846,7 @@ class HTMLMixin:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L704-L718" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L707-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def whitespace_repl(matchobj):
     trimmed_str = &#34;&#34;
@@ -895,7 +903,7 @@ to new image URLs</dd>
       <details class="source">
         <summary>
             <span>Expand source code</span>
-              <a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L195-L691" class="git-link">Browse git</a>
+              <a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L196-L694" class="git-link">Browse git</a>
         </summary>
         <pre><code class="python">class HTML2FPDF(HTMLParser):
     &#34;Render basic HTML to FPDF&#34;
@@ -971,9 +979,9 @@ to new image URLs</dd>
             if not data:
                 return
             if &#34;inserted&#34; in self.td_th:
-                tag = self.td_th[&#34;tag&#34;]
+                td_th_tag = self.td_th[&#34;tag&#34;]
                 raise NotImplementedError(
-                    f&#34;Unsupported nested HTML tags inside &lt;{tag}&gt; element&#34;
+                    f&#34;Unsupported nested HTML tags inside &lt;{td_th_tag}&gt; element: &lt;{self._tags_stack[-1]}&gt;&#34;
                 )
                 # We could potentially support nested &lt;b&gt; / &lt;em&gt; / &lt;font&gt; tags
                 # by building a list of Fragment instances from the HTML cell content
@@ -1046,9 +1054,8 @@ to new image URLs</dd>
                 if self.heading_level:
                     self.pdf.start_section(data, self.heading_level - 1, strict=False)
                 LOGGER.debug(
-                    &#34;write &#39;%s&#39; h=%d&#34;,
+                    f&#34;write: &#39;%s&#39; h={self.h:.2f}&#34;,
                     WHITESPACE.sub(whitespace_repl, data),
-                    self.h,
                 )
                 self.pdf.write(self.h, data)
             self.follows_fmt_tag = False
@@ -1087,7 +1094,10 @@ to new image URLs</dd>
             self.font_stack.append((self.font_face, self.font_size, self.font_color))
             self.heading_level = int(tag[1:])
             hsize = self.heading_sizes[tag]
-            self.pdf.set_text_color(150, 0, 0)
+            color = (
+                color_as_decimal(attrs[&#34;color&#34;]) if &#34;color&#34; in attrs else (150, 0, 0)
+            )
+            self.pdf.set_text_color(*color)
             self.pdf.ln(self.h + self.heading_above * hsize)  # more space above heading
             self.set_font(size=hsize)
             if attrs:
@@ -1348,8 +1358,8 @@ to new image URLs</dd>
         if size:
             self.font_size = size
             self.h = px2mm(size)
-            LOGGER.debug(&#34;H %s&#34;, self.h)
         style = &#34;&#34;.join(s for s in (&#34;b&#34;, &#34;i&#34;, &#34;u&#34;) if self.style.get(s)).upper()
+        LOGGER.debug(f&#34;set_font: %s style=%s h={self.h:.2f}&#34;, self.font_face, style)
         if (self.font_face, style) != (self.pdf.font_family, self.pdf.font_style):
             self.pdf.set_font(self.font_face, style, self.font_size)
         if self.font_size != self.pdf.font_size:
@@ -1417,7 +1427,7 @@ to new image URLs</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L690-L691" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L693-L694" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, message):
     raise RuntimeError(message)</code></pre>
@@ -1433,7 +1443,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L633-L638" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L636-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feed(self, data):
     super().feed(data)
@@ -1451,7 +1461,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L262-L349" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L263-L349" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_data(self, data):
     trailing_space_flag = TRAILING_SPACE.search(data)
@@ -1460,9 +1470,9 @@ as you want (may include '\n').</p></div>
         if not data:
             return
         if &#34;inserted&#34; in self.td_th:
-            tag = self.td_th[&#34;tag&#34;]
+            td_th_tag = self.td_th[&#34;tag&#34;]
             raise NotImplementedError(
-                f&#34;Unsupported nested HTML tags inside &lt;{tag}&gt; element&#34;
+                f&#34;Unsupported nested HTML tags inside &lt;{td_th_tag}&gt; element: &lt;{self._tags_stack[-1]}&gt;&#34;
             )
             # We could potentially support nested &lt;b&gt; / &lt;em&gt; / &lt;font&gt; tags
             # by building a list of Fragment instances from the HTML cell content
@@ -1535,9 +1545,8 @@ as you want (may include '\n').</p></div>
             if self.heading_level:
                 self.pdf.start_section(data, self.heading_level - 1, strict=False)
             LOGGER.debug(
-                &#34;write &#39;%s&#39; h=%d&#34;,
+                f&#34;write: &#39;%s&#39; h={self.h:.2f}&#34;,
                 WHITESPACE.sub(whitespace_repl, data),
-                self.h,
             )
             self.pdf.write(self.h, data)
         self.follows_fmt_tag = False</code></pre>
@@ -1551,7 +1560,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L543-L631" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L546-L634" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_endtag(self, tag):
     LOGGER.debug(&#34;ENDTAG %s&#34;, tag)
@@ -1652,7 +1661,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L351-L541" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L351-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_starttag(self, tag, attrs):
     attrs = dict(attrs)
@@ -1688,7 +1697,10 @@ as you want (may include '\n').</p></div>
         self.font_stack.append((self.font_face, self.font_size, self.font_color))
         self.heading_level = int(tag[1:])
         hsize = self.heading_sizes[tag]
-        self.pdf.set_text_color(150, 0, 0)
+        color = (
+            color_as_decimal(attrs[&#34;color&#34;]) if &#34;color&#34; in attrs else (150, 0, 0)
+        )
+        self.pdf.set_text_color(*color)
         self.pdf.ln(self.h + self.heading_above * hsize)  # more space above heading
         self.set_font(size=hsize)
         if attrs:
@@ -1855,7 +1867,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L664-L670" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L667-L673" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def put_link(self, txt):
     # Put a hyperlink
@@ -1874,7 +1886,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L673-L687" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L676-L690" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_toc(self, pdf, outline):
     &#34;This method can be overriden by subclasses to customize the Table of Contents style.&#34;
@@ -1901,7 +1913,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L640-L651" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L643-L654" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_font(self, face=None, size=None):
     if face:
@@ -1909,8 +1921,8 @@ as you want (may include '\n').</p></div>
     if size:
         self.font_size = size
         self.h = px2mm(size)
-        LOGGER.debug(&#34;H %s&#34;, self.h)
     style = &#34;&#34;.join(s for s in (&#34;b&#34;, &#34;i&#34;, &#34;u&#34;) if self.style.get(s)).upper()
+    LOGGER.debug(f&#34;set_font: %s style=%s h={self.h:.2f}&#34;, self.font_face, style)
     if (self.font_face, style) != (self.pdf.font_family, self.pdf.font_style):
         self.pdf.set_font(self.font_face, style, self.font_size)
     if self.font_size != self.pdf.font_size:
@@ -1925,7 +1937,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L653-L659" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L656-L662" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_style(self, tag=None, enable=False):
     # Modify style and select corresponding font
@@ -1944,7 +1956,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L661-L662" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L664-L665" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_text_color(self, r=None, g=0, b=0):
     self.pdf.set_text_color(r, g, b)</code></pre>
@@ -1957,13 +1969,19 @@ as you want (may include '\n').</p></div>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>[<strong>DEPRECATED since v2.6.0</strong>]
+You can now directly use the <code>FPDF.write_html()</code> method</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/html.py#L721-L730" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/html.py#L724-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HTMLMixin:
+    &#34;&#34;&#34;
+    [**DEPRECATED since v2.6.0**]
+    You can now directly use the `FPDF.write_html()` method
+    &#34;&#34;&#34;
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         warnings.warn(
@@ -1971,7 +1989,7 @@ as you want (may include '\n').</p></div>
             &#34;The HTMLMixin class is deprecated. &#34;
             &#34;Simply use the FPDF class as a replacement.&#34;,
             DeprecationWarning,
-            stacklevel=2,
+            stacklevel=get_stack_level(),
         )</code></pre>
 </details>
 </dd>

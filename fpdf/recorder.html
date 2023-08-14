@@ -25,11 +25,12 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/recorder.py#L1-L68" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/recorder.py#L1-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types, warnings
 from copy import deepcopy
 
+from .deprecation import get_stack_level
 from .errors import FPDFException
 
 
@@ -77,7 +78,8 @@ class FPDFRecorder:
                 result = func(*args, **kwargs)
                 if isinstance(result, types.GeneratorType):
                     warnings.warn(
-                        &#34;Detected usage of a context manager inside an unbreakable() section, which is not supported&#34;
+                        &#34;Detected usage of a context manager inside an unbreakable() section, which is not supported&#34;,
+                        stacklevel=get_stack_level(),
                     )
                 # The results of other methods can also be invalidated: .pages_count, page_no(), get_x() / get_y(), will_page_break()
             except Exception as error:
@@ -115,7 +117,7 @@ class CallRecorder:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/recorder.py#L61-L68" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/recorder.py#L63-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CallRecorder:
     def __init__(self, func, calls):
@@ -148,7 +150,7 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/recorder.py#L7-L58" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/recorder.py#L8-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFRecorder:
     &#34;&#34;&#34;
@@ -194,7 +196,8 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
                 result = func(*args, **kwargs)
                 if isinstance(result, types.GeneratorType):
                     warnings.warn(
-                        &#34;Detected usage of a context manager inside an unbreakable() section, which is not supported&#34;
+                        &#34;Detected usage of a context manager inside an unbreakable() section, which is not supported&#34;,
+                        stacklevel=get_stack_level(),
                     )
                 # The results of other methods can also be invalidated: .pages_count, page_no(), get_x() / get_y(), will_page_break()
             except Exception as error:
@@ -213,7 +216,7 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/recorder.py#L44-L58" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/recorder.py#L45-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replay(self):
     for call in self._calls:
@@ -222,7 +225,8 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
             result = func(*args, **kwargs)
             if isinstance(result, types.GeneratorType):
                 warnings.warn(
-                    &#34;Detected usage of a context manager inside an unbreakable() section, which is not supported&#34;
+                    &#34;Detected usage of a context manager inside an unbreakable() section, which is not supported&#34;,
+                    stacklevel=get_stack_level(),
                 )
             # The results of other methods can also be invalidated: .pages_count, page_no(), get_x() / get_y(), will_page_break()
         except Exception as error:
@@ -240,7 +244,7 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/recorder.py#L40-L42" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/recorder.py#L41-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rewind(self):
     self.pdf.__dict__ = self._initial

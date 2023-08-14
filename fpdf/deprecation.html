@@ -25,9 +25,12 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/deprecation.py#L1-L38" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/deprecation.py#L1-L62" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import warnings
+<pre><code class="python">import contextlib
+import inspect
+import os.path
+import warnings
 from types import ModuleType
 
 
@@ -48,7 +51,7 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
                 &#34; have been deprecated in favour of&#34;
                 &#34; FPDF(font_cache_dir=...)&#34;,
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=get_stack_level(),
             )
             return None
         return super().__getattribute__(name)
@@ -61,10 +64,31 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
                 &#34; have been deprecated in favour of&#34;
                 &#34; FPDF(font_cache_dir=...)&#34;,
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=get_stack_level(),
             )
             return
-        super().__setattr__(name, value)</code></pre>
+        super().__setattr__(name, value)
+
+
+def get_stack_level() -&gt; int:
+    &#34;&#34;&#34;Get the first place in the call stack that is not inside fpdf2&#34;&#34;&#34;
+
+    # pylint: disable=import-outside-toplevel
+    import fpdf  # pylint: disable=cyclic-import
+
+    pkg_dir = os.path.dirname(fpdf.__file__)
+    contextlib_dir = os.path.dirname(contextlib.__file__)
+
+    frame = inspect.currentframe()
+    n = 0
+    while frame is not None:
+        fname = inspect.getfile(frame)
+        if fname.startswith(pkg_dir) or fname.startswith(contextlib_dir):
+            frame = frame.f_back
+            n += 1
+        else:
+            break
+    return n</code></pre>
 </details>
 </section>
 <section>
@@ -72,6 +96,40 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fpdf.deprecation.get_stack_level"><code class="name flex">
+<span>def <span class="ident">get_stack_level</span></span>(<span>) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the first place in the call stack that is not inside fpdf2</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/deprecation.py#L44-L62" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get_stack_level() -&gt; int:
+    &#34;&#34;&#34;Get the first place in the call stack that is not inside fpdf2&#34;&#34;&#34;
+
+    # pylint: disable=import-outside-toplevel
+    import fpdf  # pylint: disable=cyclic-import
+
+    pkg_dir = os.path.dirname(fpdf.__file__)
+    contextlib_dir = os.path.dirname(contextlib.__file__)
+
+    frame = inspect.currentframe()
+    n = 0
+    while frame is not None:
+        fname = inspect.getfile(frame)
+        if fname.startswith(pkg_dir) or fname.startswith(contextlib_dir):
+            frame = frame.f_back
+            n += 1
+        else:
+            break
+    return n</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -86,7 +144,7 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/deprecation.py#L5-L38" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/deprecation.py#L8-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WarnOnDeprecatedModuleAttributes(ModuleType):
     def __call__(self):
@@ -105,7 +163,7 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
                 &#34; have been deprecated in favour of&#34;
                 &#34; FPDF(font_cache_dir=...)&#34;,
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=get_stack_level(),
             )
             return None
         return super().__getattribute__(name)
@@ -118,7 +176,7 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
                 &#34; have been deprecated in favour of&#34;
                 &#34; FPDF(font_cache_dir=...)&#34;,
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=get_stack_level(),
             )
             return
         super().__setattr__(name, value)</code></pre>
@@ -140,6 +198,11 @@ class WarnOnDeprecatedModuleAttributes(ModuleType):
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="fpdf" href="index.html">fpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fpdf.deprecation.get_stack_level" href="#fpdf.deprecation.get_stack_level">get_stack_level</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

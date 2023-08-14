@@ -25,21 +25,25 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L1-L315" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L1-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import hashlib
 import logging
 import math
+import stringprep
+import unicodedata
 from os import urandom
+from typing import Callable, Iterable, Type, Union
 
-from .enums import EncryptionMethod
-from .syntax import Name, PDFObject, PDFString
-from .syntax import create_dictionary_string as pdf_dict, build_obj_dict
+from .enums import AccessPermission, EncryptionMethod
+from .errors import FPDFException
+from .syntax import Name, PDFObject, PDFString, build_obj_dict
+from .syntax import create_dictionary_string as pdf_dict
 
 # try to use cryptography for AES encryption
 try:
     from cryptography.hazmat.primitives.ciphers import Cipher, modes
-    from cryptography.hazmat.primitives.ciphers.algorithms import AES128
+    from cryptography.hazmat.primitives.ciphers.algorithms import AES128, AES256
     from cryptography.hazmat.primitives.padding import PKCS7
 
     import_error = None
@@ -64,7 +68,7 @@ class ARC4:
 
     MOD = 256
 
-    def KSA(self, key):
+    def KSA(self, key: bytes) -&gt; list:
         key_length = len(key)
         S = list(range(self.MOD))
         j = 0
@@ -73,7 +77,7 @@ class ARC4:
             S[i], S[j] = S[j], S[i]
         return S
 
-    def PRGA(self, S):
+    def PRGA(self, S: list) -&gt; Iterable[int]:
         i = 0
         j = 0
         while True:
@@ -83,7 +87,7 @@ class ARC4:
             K = S[(S[i] + S[j]) % self.MOD]
             yield K
 
-    def encrypt(self, key, text):
+    def encrypt(self, key: bytes, text: Union[bytes, bytearray]) -&gt; list:
         keystream = self.PRGA(self.KSA(key))
         res = []
         for c in text:
@@ -94,13 +98,13 @@ class ARC4:
 class CryptFilter:
     &#34;&#34;&#34;Represents one crypt filter, listed under CF inside the encryption dictionary&#34;&#34;&#34;
 
-    def __init__(self, mode, length):
+    def __init__(self, mode: str, length: int) -&gt; None:
         super().__init__()
         self.type = Name(&#34;CryptFilter&#34;)
         self.c_f_m = Name(mode)
         self.length = int(length / 8)
 
-    def serialize(self):
+    def serialize(self) -&gt; str:
         obj_dict = build_obj_dict({key: getattr(self, key) for key in dir(self)})
         return pdf_dict(obj_dict)
 
@@ -112,14 +116,18 @@ class EncryptionDictionary(PDFObject):
     The PDF trailer must reference this object (/Encrypt)
     &#34;&#34;&#34;
 
-    def __init__(self, security_handler):
+    def __init__(self, security_handler: &#34;StandardSecurityHandler&#34;) -&gt; None:
         super().__init__()
         self.filter = Name(&#34;Standard&#34;)
         self.length = security_handler.key_length
-        self.r = security_handler.r
+        self.r = security_handler.revision
         self.o = f&#34;&lt;{security_handler.o.upper()}&gt;&#34;
         self.u = f&#34;&lt;{security_handler.u.upper()}&gt;&#34;
-        self.v = security_handler.v
+        if security_handler.revision == 6:
+            self.o_e = f&#34;&lt;{security_handler.oe.upper()}&gt;&#34;
+            self.u_e = f&#34;&lt;{security_handler.ue.upper()}&gt;&#34;
+            self.perms = f&#34;&lt;{security_handler.perms.upper()}&gt;&#34;
+        self.v = security_handler.version
         self.p = int32(security_handler.access_permission)
         if not security_handler.encrypt_metadata:
             self.encrypt_metadata = &#34;false&#34;
@@ -148,11 +156,11 @@ class StandardSecurityHandler:
     def __init__(
         self,
         fpdf,
-        owner_password,
-        user_password=None,
-        permission=None,
-        encryption_method=None,
-        encrypt_metadata=False,
+        owner_password: str,
+        user_password: Union[str, None] = None,
+        permission: AccessPermission = AccessPermission.all(),
+        encryption_method: EncryptionMethod = EncryptionMethod.RC4,
+        encrypt_metadata: bool = False,
     ):
         self.fpdf = fpdf
         self.access_permission = (
@@ -166,66 +174,87 @@ class StandardSecurityHandler:
         self.cf = None
         self.key_length = 128
 
+        if import_error and self.encryption_method in (
+            EncryptionMethod.AES_128,
+            EncryptionMethod.AES_256,
+        ):
+            raise EnvironmentError(
+                &#34;cryptography module not available&#34;
+                &#34; - Try: &#39;pip install cryptography&#39; or use RC4 encryption method&#34;
+                f&#34; - Import error was: {import_error}&#34;
+            )
         if self.encryption_method == EncryptionMethod.AES_128:
-            if import_error:
-                raise EnvironmentError(
-                    &#34;cryptography module not available&#34;
-                    &#34; - Try: &#39;pip install cryptography&#39; or use RC4 encryption method&#34;
-                    f&#34; - Import error was: {import_error}&#34;
-                )
-            self.v = 4
-            self.r = 4
+            self.version = 4
+            self.revision = 4
             fpdf._set_min_pdf_version(&#34;1.6&#34;)
             self.cf = CryptFilter(mode=&#34;AESV2&#34;, length=self.key_length)
+        elif self.encryption_method == EncryptionMethod.AES_256:
+            self.version = 5
+            self.revision = 6
+            fpdf._set_min_pdf_version(&#34;2.0&#34;)
+            self.key_length = 256
+            self.cf = CryptFilter(mode=&#34;AESV3&#34;, length=self.key_length)
         elif self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
-            self.v = 4
-            self.r = 4
+            self.version = 4
+            self.revision = 4
             fpdf._set_min_pdf_version(&#34;1.6&#34;)
             self.cf = CryptFilter(mode=&#34;V2&#34;, length=self.key_length)
         else:
-            self.v = 2
-            self.r = 3
+            self.version = 2
+            self.revision = 3
             fpdf._set_min_pdf_version(&#34;1.5&#34;)
             # not including crypt filter because it&#39;s only required on V=4
             # if needed, it would be CryptFilter(mode=V2)
 
         self.encrypt_metadata = encrypt_metadata
 
-    def generate_passwords(self, file_id):
-        &#34;&#34;&#34;Return the first hash of the PDF file id&#34;&#34;&#34;
+    def generate_passwords(self, file_id: str) -&gt; None:
+        &#34;&#34;&#34;File_id is the first hash of the PDF file id&#34;&#34;&#34;
         self.file_id = file_id
         self.info_id = file_id[1:33]
-        self.o = self.generate_owner_password()
-        self.k = self.generate_encryption_key()
-        self.u = self.generate_user_password()
+        if self.revision == 6:
+            self.k = self.get_random_bytes(32)
+            self.generate_user_password_rev6()
+            self.generate_owner_password_rev6()
+            self.generate_perms_rev6()
+        else:
+            self.o = self.generate_owner_password()
+            self.k = self.generate_encryption_key()
+            self.u = self.generate_user_password()
 
-    def get_encryption_obj(self):
+    def get_encryption_obj(self) -&gt; EncryptionDictionary:
         &#34;&#34;&#34;Return an encryption dictionary&#34;&#34;&#34;
         return EncryptionDictionary(self)
 
-    def encrypt(self, text, obj_id):
+    def encrypt(
+        self, text: Union[str, bytearray, bytes], obj_id: int
+    ) -&gt; Union[str, bytes]:
         &#34;&#34;&#34;Method invoked by PDFObject and PDFContentStream to encrypt strings and streams&#34;&#34;&#34;
+        LOGGER.debug(&#34;Encrypting %s&#34;, text)
         return (
             self.encrypt_stream(text, obj_id)
             if isinstance(text, (bytearray, bytes))
             else self.encrypt_string(text, obj_id)
         )
 
-    def encrypt_string(self, string, obj_id):
+    def encrypt_string(self, string: str, obj_id: int) -&gt; str:
         if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
-            return PDFString(string).serialize()
+            return PDFString(string, encrypt=False).serialize()
         LOGGER.debug(&#34;Encrypting string: %s&#34;, string)
         return f&#34;&lt;{bytes(self.encrypt_bytes(string.encode(&#39;latin-1&#39;), obj_id)).hex().upper()}&gt;&#34;
 
-    def encrypt_stream(self, stream, obj_id):
+    def encrypt_stream(self, stream: bytes, obj_id: int) -&gt; bytes:
         if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
             return stream
         return bytes(self.encrypt_bytes(stream, obj_id))
 
-    def is_aes_algorithm(self):
-        return self.encryption_method == EncryptionMethod.AES_128
+    def is_aes_algorithm(self) -&gt; bool:
+        return self.encryption_method in (
+            EncryptionMethod.AES_128,
+            EncryptionMethod.AES_256,
+        )
 
-    def encrypt_bytes(self, data, obj_id):
+    def encrypt_bytes(self, data: bytes, obj_id: int):
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 1: Encryption of data using the RC4 or AES algorithms
         Append object ID and generation ID to the key and encrypt the data
@@ -247,22 +276,114 @@ class StandardSecurityHandler:
             return self.encrypt_AES_cryptography(key, data)
         return ARC4().encrypt(key, data)
 
-    def encrypt_AES_cryptography(self, key, data):
-        iv = self.get_initialization_vector(16)
-        padder = PKCS7(self.key_length).padder()
+    def encrypt_AES_cryptography(self, key: bytes, data: bytes) -&gt; bytes:
+        &#34;&#34;&#34;Encrypts an array of bytes using AES algorithms (AES 128 or AES 256)&#34;&#34;&#34;
+        iv = bytearray(self.get_random_bytes(16))
+        padder = PKCS7(128).padder()
         padded_data = padder.update(data)
         padded_data += padder.finalize()
-        cipher = Cipher(AES128(key), modes.CBC(iv))
+        cipher = (
+            Cipher(AES128(key), modes.CBC(iv))
+            if self.encryption_method == EncryptionMethod.AES_128
+            else Cipher(AES256(self.k), modes.CBC(iv))
+        )
         encryptor = cipher.encryptor()
         data = encryptor.update(padded_data) + encryptor.finalize()
         iv.extend(data)
         return iv
 
     @classmethod
-    def get_initialization_vector(cls, size):
-        return bytearray(urandom(size))
+    def get_random_bytes(cls: Type[&#34;StandardSecurityHandler&#34;], size: int) -&gt; bytes:
+        &#34;&#34;&#34;
+        https://docs.python.org/3/library/os.html#os.urandom
+        os.urandom will use OS-specific sources to generate random bytes
+        suitable for cryptographic use
+        &#34;&#34;&#34;
+        return urandom(size)
 
-    def padded_password(self, password):
+    @classmethod
+    def prepare_string(cls: Type[&#34;StandardSecurityHandler&#34;], string: str) -&gt; bytes:
+        &#34;&#34;&#34;
+        PDF2.0 - ISO 32000-2:2020
+        All passwords for revision 6 shall be based on Unicode. Preprocessing of a user-provided password
+        consists first of normalizing its representation by applying the &#34;SASLPrep&#34; profile (Internet RFC 4013)
+        of the &#34;stringprep&#34; algorithm (Internet RFC 3454) to the supplied password using the Normalize and BiDi
+        options. Next, the password string shall be converted to UTF-8 encoding, and then truncated to the
+        first 127 bytes if the string is longer than 127 bytes
+
+        Python offers a stringprep module with the tables mapped in methods
+        &#34;&#34;&#34;
+
+        # Mapping
+        def char_map(char: str) -&gt; str:
+            if not char:
+                return &#34;&#34;
+            # Commonly mapped to nothing
+            if stringprep.in_table_b1(char):
+                return &#34;&#34;
+            # Map non-ascii space characters to space
+            if stringprep.in_table_c12(char):
+                return &#34;\u0020&#34;
+            return char
+
+        if len(string) &lt; 1:
+            return bytes()
+
+        prepared_string = &#34;&#34;.join(char_map(c) for c in string)
+
+        # Normalization - applies Unicode normalization form KC
+        prepared_string = unicodedata.ucd_3_2_0.normalize(&#34;NFKC&#34;, prepared_string)
+
+        # Prohibited output - RCF4013 2.3
+        def is_prohibited(char: str) -&gt; bool:
+            return (
+                stringprep.in_table_c12(char)  # Non-ASCII space characters
+                or stringprep.in_table_c21_c22(char)  # Control characters
+                or stringprep.in_table_c3(char)  # Private use
+                or stringprep.in_table_c4(char)  # Non-character code points
+                or stringprep.in_table_c5(char)  # Surrogate codes
+                or stringprep.in_table_c6(char)  # Inappropriate for plain text
+                or stringprep.in_table_c7(
+                    char
+                )  # Inappropriate for canonical representation
+                or stringprep.in_table_c8(
+                    char
+                )  # Change display properties or are deprecated
+                or stringprep.in_table_c9(char)  # Tagging characters
+            )
+
+        for char in prepared_string:
+            if is_prohibited(char):
+                raise FPDFException(
+                    f&#34;The password {string} contains prohibited characters&#34;
+                )
+
+        # Bidirectional characters
+        def has_character(string: str, fun: Callable) -&gt; bool:
+            return any(fun(char) for char in string)
+
+        if has_character(prepared_string, stringprep.in_table_d1):
+            # If a string contains any RandALCat character, the string MUST NOT contain any LCat character.
+            if has_character(prepared_string, stringprep.in_table_d2):
+                raise FPDFException(
+                    f&#34;The password {string} contains invalid bidirectional characters.&#34;
+                )
+            # If a string contains any RandALCat character, a RandALCat character MUST be the first character
+            # of the string, and a RandALCat character MUST be the last character of the string.
+            if not (
+                stringprep.in_table_d1(prepared_string[0])
+                and stringprep.in_table_d1(prepared_string[-1])
+            ):
+                raise FPDFException(
+                    f&#34;The password {string} contains invalid bidirectional characters.&#34;
+                )
+
+        if len(prepared_string) &gt; 127:
+            prepared_string = prepared_string[:127]
+
+        return prepared_string.encode(&#34;UTF-8&#34;)
+
+    def padded_password(self, password: str) -&gt; bytearray:
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 2: Computing an encryption key
         Step (a) - Add the default padding at the end of provided password to make it 32 bit long
@@ -273,7 +394,7 @@ class StandardSecurityHandler:
         p.extend(self.DEFAULT_PADDING[: (32 - len(p))])
         return p
 
-    def generate_owner_password(self):
+    def generate_owner_password(self) -&gt; str:
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 3: Computing the encryption dictionary&#39;s O (owner password) value
         The security handler is only using revision 3 or 4, so the legacy r2 version is not implemented here
@@ -287,10 +408,10 @@ class StandardSecurityHandler:
             new_key = []
             for k in rc4key:
                 new_key.append(k ^ i)
-            result = ARC4().encrypt(new_key, result)
+            result = ARC4().encrypt(bytes(new_key), result)
         return bytes(result).hex()
 
-    def generate_user_password(self):
+    def generate_user_password(self) -&gt; str:
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 5: Computing the encryption dictionary&#39;s U (user password) value
         The security handler is only using revision 3 or 4, so the legacy r2 version is not implemented here
@@ -298,19 +419,131 @@ class StandardSecurityHandler:
         m = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
         m.update(bytearray(self.DEFAULT_PADDING))
         m.update(bytes.fromhex(self.info_id))
-        result = m.digest()
+        result = bytearray(m.digest())
         key = self.k
         for i in range(20):
             new_key = []
             for k in key:
                 new_key.append(k ^ i)
-            result = ARC4().encrypt(new_key, result)
+            result = ARC4().encrypt(bytes(new_key), result)
         result.extend(
             (result[x] ^ self.DEFAULT_PADDING[x]) for x in range(16)
         )  # add 16 bytes of random padding
         return bytes(result).hex()
 
-    def generate_encryption_key(self):
+    @classmethod
+    def compute_hash(
+        cls: Type[&#34;StandardSecurityHandler&#34;],
+        input_password: bytes,
+        salt: bytes,
+        user_key: bytes = bytearray(),
+    ) -&gt; bytes:
+        &#34;&#34;&#34;
+        Algorithm 2B - section 7.6.4.3.4 of the ISO 32000-2:2020
+        Applied on Security handlers revision 6
+        &#34;&#34;&#34;
+        k = hashlib.sha256(input_password + salt + user_key).digest()
+        round_number = 0
+        while True:
+            round_number += 1
+            k1 = input_password + k + user_key
+            # Step (a + b)
+            cipher = Cipher(AES128(k[:16]), modes.CBC(k[16:32]))
+            encryptor = cipher.encryptor()
+            e = encryptor.update(k1 * 64) + encryptor.finalize()
+            # Step (c)
+            # remainder = int.from_bytes(e[:16], byteorder=&#34;big&#34;) % 3
+            remainder = sum(e[:16]) % 3
+            # Step (d)
+            if remainder == 0:
+                k = hashlib.sha256(e).digest()
+            elif remainder == 1:
+                k = hashlib.sha384(e).digest()
+            else:
+                k = hashlib.sha512(e).digest()
+            # Step (e)
+            if round_number &gt;= 64 and e[-1] &lt;= round_number - 32:
+                break
+
+        return k[:32]
+
+    def generate_user_password_rev6(self) -&gt; None:
+        &#34;&#34;&#34;
+        Generating the U (user password) and UE (user encryption)
+        for security handlers of revision 6
+        Algorithm 8 - Section 7.6.4.4.7 of the ISO 32000-2:2020
+        &#34;&#34;&#34;
+        user_password = self.prepare_string(self.user_password)
+        if not user_password:
+            user_password = bytearray()
+        user_validation_salt = self.get_random_bytes(8)
+        user_key_salt = self.get_random_bytes(8)
+        u = (
+            self.compute_hash(input_password=user_password, salt=user_validation_salt)
+            + user_validation_salt
+            + user_key_salt
+        )
+        self.u = u.hex()
+
+        key = self.compute_hash(input_password=user_password, salt=user_key_salt)
+        cipher = Cipher(AES256(key), modes.CBC(b&#34;\x00&#34; * 16))
+        encryptor = cipher.encryptor()
+        ue = encryptor.update(self.k) + encryptor.finalize()
+        self.ue = ue.hex()
+
+    def generate_owner_password_rev6(self) -&gt; None:
+        &#34;&#34;&#34;
+        Generating the O (owner password) and OE (owner encryption)
+        for security handlers of revision 6
+        Algorithm 9 - Section 7.6.4.4.8 of the ISO 32000-2:2020
+        &#34;&#34;&#34;
+        owner_password = self.prepare_string(self.owner_password)
+        if not owner_password:
+            raise FPDFException(f&#34;Invalid owner password {self.owner_password}&#34;)
+        owner_validation_salt = self.get_random_bytes(8)
+        owner_key_salt = self.get_random_bytes(8)
+        o = (
+            self.compute_hash(
+                input_password=owner_password,
+                salt=owner_validation_salt,
+                user_key=bytes.fromhex(self.u),
+            )
+            + owner_validation_salt
+            + owner_key_salt
+        )
+        self.o = o.hex()
+
+        key = self.compute_hash(
+            input_password=owner_password,
+            salt=owner_key_salt,
+            user_key=bytes.fromhex(self.u),
+        )
+
+        cipher = Cipher(AES256(key), modes.CBC(b&#34;\x00&#34; * 16))
+        encryptor = cipher.encryptor()
+        oe = encryptor.update(self.k) + encryptor.finalize()
+        self.oe = oe.hex()
+
+    def generate_perms_rev6(self) -&gt; None:
+        &#34;&#34;&#34;
+        7.6.4.4.9 Algorithm 10: Computing the encryption dictionary’s Perms (permissions) value
+        (Security handlers of revision 6) of the ISO 32000-2:2020
+        &#34;&#34;&#34;
+        perms64b = 0xFFFFFFFF00000000 | self.access_permission
+        encrypt_metadata = b&#34;T&#34; if self.encrypt_metadata else b&#34;F&#34;
+        perms_input = (
+            perms64b.to_bytes(8, byteorder=&#34;little&#34;, signed=False)
+            + encrypt_metadata
+            + b&#34;adb&#34;
+            + self.get_random_bytes(4)
+        )
+        # nosemgrep: python.cryptography.security.insecure-cipher-mode-ecb.insecure-cipher-mode-ecb
+        cipher = Cipher(AES256(self.k), modes.ECB())
+        encryptor = cipher.encryptor()
+        perms = encryptor.update(perms_input) + encryptor.finalize()
+        self.perms = perms.hex()
+
+    def generate_encryption_key(self) -&gt; bytes:
         &#34;&#34;&#34;
         PDF32000 reference
         Algorithm 2: Computing an encryption key
@@ -324,7 +557,7 @@ class StandardSecurityHandler:
             )
         )
         m.update(bytes.fromhex(self.info_id))
-        if self.encrypt_metadata is False and self.v == 4:
+        if self.encrypt_metadata is False and self.version == 4:
             m.update(bytes([0xFF, 0xFF, 0xFF, 0xFF]))
         result = m.digest()[: (math.ceil(self.key_length / 8))]
         for _ in range(50):
@@ -332,13 +565,13 @@ class StandardSecurityHandler:
         return result
 
 
-def md5(data):
+def md5(data: Union[bytes, bytearray]) -&gt; bytes:
     h = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
     h.update(data)
     return h.digest()
 
 
-def int32(n):
+def int32(n: int) -&gt; int:
     &#34;&#34;&#34;convert long to signed 32 bit integer&#34;&#34;&#34;
     n = n &amp; 0xFFFFFFFF
     return (n ^ 0x80000000) - 0x80000000</code></pre>
@@ -352,32 +585,32 @@ def int32(n):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="fpdf.encryption.int32"><code class="name flex">
-<span>def <span class="ident">int32</span></span>(<span>n)</span>
+<span>def <span class="ident">int32</span></span>(<span>n: int) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>convert long to signed 32 bit integer</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L312-L315" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L545-L548" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def int32(n):
+<pre><code class="python">def int32(n: int) -&gt; int:
     &#34;&#34;&#34;convert long to signed 32 bit integer&#34;&#34;&#34;
     n = n &amp; 0xFFFFFFFF
     return (n ^ 0x80000000) - 0x80000000</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.md5"><code class="name flex">
-<span>def <span class="ident">md5</span></span>(<span>data)</span>
+<span>def <span class="ident">md5</span></span>(<span>data: Union[bytes, bytearray]) ‑> bytes</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L306-L309" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L539-L542" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def md5(data):
+<pre><code class="python">def md5(data: Union[bytes, bytearray]) -&gt; bytes:
     h = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
     h.update(data)
     return h.digest()</code></pre>
@@ -402,7 +635,7 @@ encryption functions without additional dependencies</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L24-L62" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L28-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ARC4:
     &#34;&#34;&#34;
@@ -418,7 +651,7 @@ encryption functions without additional dependencies</p></div>
 
     MOD = 256
 
-    def KSA(self, key):
+    def KSA(self, key: bytes) -&gt; list:
         key_length = len(key)
         S = list(range(self.MOD))
         j = 0
@@ -427,7 +660,7 @@ encryption functions without additional dependencies</p></div>
             S[i], S[j] = S[j], S[i]
         return S
 
-    def PRGA(self, S):
+    def PRGA(self, S: list) -&gt; Iterable[int]:
         i = 0
         j = 0
         while True:
@@ -437,7 +670,7 @@ encryption functions without additional dependencies</p></div>
             K = S[(S[i] + S[j]) % self.MOD]
             yield K
 
-    def encrypt(self, key, text):
+    def encrypt(self, key: bytes, text: Union[bytes, bytearray]) -&gt; list:
         keystream = self.PRGA(self.KSA(key))
         res = []
         for c in text:
@@ -454,16 +687,16 @@ encryption functions without additional dependencies</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="fpdf.encryption.ARC4.KSA"><code class="name flex">
-<span>def <span class="ident">KSA</span></span>(<span>self, key)</span>
+<span>def <span class="ident">KSA</span></span>(<span>self, key: bytes) ‑> list</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L38-L45" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L42-L49" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def KSA(self, key):
+<pre><code class="python">def KSA(self, key: bytes) -&gt; list:
     key_length = len(key)
     S = list(range(self.MOD))
     j = 0
@@ -474,16 +707,16 @@ encryption functions without additional dependencies</p></div>
 </details>
 </dd>
 <dt id="fpdf.encryption.ARC4.PRGA"><code class="name flex">
-<span>def <span class="ident">PRGA</span></span>(<span>self, S)</span>
+<span>def <span class="ident">PRGA</span></span>(<span>self, S: list) ‑> Iterable[int]</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L47-L55" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L51-L59" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def PRGA(self, S):
+<pre><code class="python">def PRGA(self, S: list) -&gt; Iterable[int]:
     i = 0
     j = 0
     while True:
@@ -495,16 +728,16 @@ encryption functions without additional dependencies</p></div>
 </details>
 </dd>
 <dt id="fpdf.encryption.ARC4.encrypt"><code class="name flex">
-<span>def <span class="ident">encrypt</span></span>(<span>self, key, text)</span>
+<span>def <span class="ident">encrypt</span></span>(<span>self, key: bytes, text: Union[bytes, bytearray]) ‑> list</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L57-L62" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L61-L66" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def encrypt(self, key, text):
+<pre><code class="python">def encrypt(self, key: bytes, text: Union[bytes, bytearray]) -&gt; list:
     keystream = self.PRGA(self.KSA(key))
     res = []
     for c in text:
@@ -516,41 +749,41 @@ encryption functions without additional dependencies</p></div>
 </dd>
 <dt id="fpdf.encryption.CryptFilter"><code class="flex name class">
 <span>class <span class="ident">CryptFilter</span></span>
-<span>(</span><span>mode, length)</span>
+<span>(</span><span>mode: str, length: int)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents one crypt filter, listed under CF inside the encryption dictionary</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L65-L76" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L69-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CryptFilter:
     &#34;&#34;&#34;Represents one crypt filter, listed under CF inside the encryption dictionary&#34;&#34;&#34;
 
-    def __init__(self, mode, length):
+    def __init__(self, mode: str, length: int) -&gt; None:
         super().__init__()
         self.type = Name(&#34;CryptFilter&#34;)
         self.c_f_m = Name(mode)
         self.length = int(length / 8)
 
-    def serialize(self):
+    def serialize(self) -&gt; str:
         obj_dict = build_obj_dict({key: getattr(self, key) for key in dir(self)})
         return pdf_dict(obj_dict)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="fpdf.encryption.CryptFilter.serialize"><code class="name flex">
-<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+<span>def <span class="ident">serialize</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L74-L76" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L78-L80" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def serialize(self):
+<pre><code class="python">def serialize(self) -&gt; str:
     obj_dict = build_obj_dict({key: getattr(self, key) for key in dir(self)})
     return pdf_dict(obj_dict)</code></pre>
 </details>
@@ -559,7 +792,7 @@ encryption functions without additional dependencies</p></div>
 </dd>
 <dt id="fpdf.encryption.EncryptionDictionary"><code class="flex name class">
 <span>class <span class="ident">EncryptionDictionary</span></span>
-<span>(</span><span>security_handler)</span>
+<span>(</span><span>security_handler: <a title="fpdf.encryption.StandardSecurityHandler" href="#fpdf.encryption.StandardSecurityHandler">StandardSecurityHandler</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This class represents an encryption dictionary
@@ -568,7 +801,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L79-L104" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L83-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EncryptionDictionary(PDFObject):
     &#34;&#34;&#34;
@@ -577,14 +810,18 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
     The PDF trailer must reference this object (/Encrypt)
     &#34;&#34;&#34;
 
-    def __init__(self, security_handler):
+    def __init__(self, security_handler: &#34;StandardSecurityHandler&#34;) -&gt; None:
         super().__init__()
         self.filter = Name(&#34;Standard&#34;)
         self.length = security_handler.key_length
-        self.r = security_handler.r
+        self.r = security_handler.revision
         self.o = f&#34;&lt;{security_handler.o.upper()}&gt;&#34;
         self.u = f&#34;&lt;{security_handler.u.upper()}&gt;&#34;
-        self.v = security_handler.v
+        if security_handler.revision == 6:
+            self.o_e = f&#34;&lt;{security_handler.oe.upper()}&gt;&#34;
+            self.u_e = f&#34;&lt;{security_handler.ue.upper()}&gt;&#34;
+            self.perms = f&#34;&lt;{security_handler.perms.upper()}&gt;&#34;
+        self.v = security_handler.version
         self.p = int32(security_handler.access_permission)
         if not security_handler.encrypt_metadata:
             self.encrypt_metadata = &#34;false&#34;
@@ -613,7 +850,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler"><code class="flex name class">
 <span>class <span class="ident">StandardSecurityHandler</span></span>
-<span>(</span><span>fpdf, owner_password, user_password=None, permission=None, encryption_method=None, encrypt_metadata=False)</span>
+<span>(</span><span>fpdf, owner_password: str, user_password: Optional[str] = None, permission: <a title="fpdf.enums.AccessPermission" href="enums.html#fpdf.enums.AccessPermission">AccessPermission</a> = AccessPermission.PRINT_HIGH_RES|ASSEMBLE|COPY_FOR_ACCESSIBILITY|FILL_FORMS|ANNOTATION|COPY|MODIFY|PRINT_LOW_RES, encryption_method: <a title="fpdf.enums.EncryptionMethod" href="enums.html#fpdf.enums.EncryptionMethod">EncryptionMethod</a> = EncryptionMethod.RC4, encrypt_metadata: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This class is referenced in the main PDF class and is used to handle all encryption functions
@@ -623,7 +860,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L107-L303" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L115-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StandardSecurityHandler:
     &#34;&#34;&#34;
@@ -640,11 +877,11 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
     def __init__(
         self,
         fpdf,
-        owner_password,
-        user_password=None,
-        permission=None,
-        encryption_method=None,
-        encrypt_metadata=False,
+        owner_password: str,
+        user_password: Union[str, None] = None,
+        permission: AccessPermission = AccessPermission.all(),
+        encryption_method: EncryptionMethod = EncryptionMethod.RC4,
+        encrypt_metadata: bool = False,
     ):
         self.fpdf = fpdf
         self.access_permission = (
@@ -658,66 +895,87 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
         self.cf = None
         self.key_length = 128
 
+        if import_error and self.encryption_method in (
+            EncryptionMethod.AES_128,
+            EncryptionMethod.AES_256,
+        ):
+            raise EnvironmentError(
+                &#34;cryptography module not available&#34;
+                &#34; - Try: &#39;pip install cryptography&#39; or use RC4 encryption method&#34;
+                f&#34; - Import error was: {import_error}&#34;
+            )
         if self.encryption_method == EncryptionMethod.AES_128:
-            if import_error:
-                raise EnvironmentError(
-                    &#34;cryptography module not available&#34;
-                    &#34; - Try: &#39;pip install cryptography&#39; or use RC4 encryption method&#34;
-                    f&#34; - Import error was: {import_error}&#34;
-                )
-            self.v = 4
-            self.r = 4
+            self.version = 4
+            self.revision = 4
             fpdf._set_min_pdf_version(&#34;1.6&#34;)
             self.cf = CryptFilter(mode=&#34;AESV2&#34;, length=self.key_length)
+        elif self.encryption_method == EncryptionMethod.AES_256:
+            self.version = 5
+            self.revision = 6
+            fpdf._set_min_pdf_version(&#34;2.0&#34;)
+            self.key_length = 256
+            self.cf = CryptFilter(mode=&#34;AESV3&#34;, length=self.key_length)
         elif self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
-            self.v = 4
-            self.r = 4
+            self.version = 4
+            self.revision = 4
             fpdf._set_min_pdf_version(&#34;1.6&#34;)
             self.cf = CryptFilter(mode=&#34;V2&#34;, length=self.key_length)
         else:
-            self.v = 2
-            self.r = 3
+            self.version = 2
+            self.revision = 3
             fpdf._set_min_pdf_version(&#34;1.5&#34;)
             # not including crypt filter because it&#39;s only required on V=4
             # if needed, it would be CryptFilter(mode=V2)
 
         self.encrypt_metadata = encrypt_metadata
 
-    def generate_passwords(self, file_id):
-        &#34;&#34;&#34;Return the first hash of the PDF file id&#34;&#34;&#34;
+    def generate_passwords(self, file_id: str) -&gt; None:
+        &#34;&#34;&#34;File_id is the first hash of the PDF file id&#34;&#34;&#34;
         self.file_id = file_id
         self.info_id = file_id[1:33]
-        self.o = self.generate_owner_password()
-        self.k = self.generate_encryption_key()
-        self.u = self.generate_user_password()
+        if self.revision == 6:
+            self.k = self.get_random_bytes(32)
+            self.generate_user_password_rev6()
+            self.generate_owner_password_rev6()
+            self.generate_perms_rev6()
+        else:
+            self.o = self.generate_owner_password()
+            self.k = self.generate_encryption_key()
+            self.u = self.generate_user_password()
 
-    def get_encryption_obj(self):
+    def get_encryption_obj(self) -&gt; EncryptionDictionary:
         &#34;&#34;&#34;Return an encryption dictionary&#34;&#34;&#34;
         return EncryptionDictionary(self)
 
-    def encrypt(self, text, obj_id):
+    def encrypt(
+        self, text: Union[str, bytearray, bytes], obj_id: int
+    ) -&gt; Union[str, bytes]:
         &#34;&#34;&#34;Method invoked by PDFObject and PDFContentStream to encrypt strings and streams&#34;&#34;&#34;
+        LOGGER.debug(&#34;Encrypting %s&#34;, text)
         return (
             self.encrypt_stream(text, obj_id)
             if isinstance(text, (bytearray, bytes))
             else self.encrypt_string(text, obj_id)
         )
 
-    def encrypt_string(self, string, obj_id):
+    def encrypt_string(self, string: str, obj_id: int) -&gt; str:
         if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
-            return PDFString(string).serialize()
+            return PDFString(string, encrypt=False).serialize()
         LOGGER.debug(&#34;Encrypting string: %s&#34;, string)
         return f&#34;&lt;{bytes(self.encrypt_bytes(string.encode(&#39;latin-1&#39;), obj_id)).hex().upper()}&gt;&#34;
 
-    def encrypt_stream(self, stream, obj_id):
+    def encrypt_stream(self, stream: bytes, obj_id: int) -&gt; bytes:
         if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
             return stream
         return bytes(self.encrypt_bytes(stream, obj_id))
 
-    def is_aes_algorithm(self):
-        return self.encryption_method == EncryptionMethod.AES_128
+    def is_aes_algorithm(self) -&gt; bool:
+        return self.encryption_method in (
+            EncryptionMethod.AES_128,
+            EncryptionMethod.AES_256,
+        )
 
-    def encrypt_bytes(self, data, obj_id):
+    def encrypt_bytes(self, data: bytes, obj_id: int):
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 1: Encryption of data using the RC4 or AES algorithms
         Append object ID and generation ID to the key and encrypt the data
@@ -739,22 +997,114 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
             return self.encrypt_AES_cryptography(key, data)
         return ARC4().encrypt(key, data)
 
-    def encrypt_AES_cryptography(self, key, data):
-        iv = self.get_initialization_vector(16)
-        padder = PKCS7(self.key_length).padder()
+    def encrypt_AES_cryptography(self, key: bytes, data: bytes) -&gt; bytes:
+        &#34;&#34;&#34;Encrypts an array of bytes using AES algorithms (AES 128 or AES 256)&#34;&#34;&#34;
+        iv = bytearray(self.get_random_bytes(16))
+        padder = PKCS7(128).padder()
         padded_data = padder.update(data)
         padded_data += padder.finalize()
-        cipher = Cipher(AES128(key), modes.CBC(iv))
+        cipher = (
+            Cipher(AES128(key), modes.CBC(iv))
+            if self.encryption_method == EncryptionMethod.AES_128
+            else Cipher(AES256(self.k), modes.CBC(iv))
+        )
         encryptor = cipher.encryptor()
         data = encryptor.update(padded_data) + encryptor.finalize()
         iv.extend(data)
         return iv
 
     @classmethod
-    def get_initialization_vector(cls, size):
-        return bytearray(urandom(size))
+    def get_random_bytes(cls: Type[&#34;StandardSecurityHandler&#34;], size: int) -&gt; bytes:
+        &#34;&#34;&#34;
+        https://docs.python.org/3/library/os.html#os.urandom
+        os.urandom will use OS-specific sources to generate random bytes
+        suitable for cryptographic use
+        &#34;&#34;&#34;
+        return urandom(size)
 
-    def padded_password(self, password):
+    @classmethod
+    def prepare_string(cls: Type[&#34;StandardSecurityHandler&#34;], string: str) -&gt; bytes:
+        &#34;&#34;&#34;
+        PDF2.0 - ISO 32000-2:2020
+        All passwords for revision 6 shall be based on Unicode. Preprocessing of a user-provided password
+        consists first of normalizing its representation by applying the &#34;SASLPrep&#34; profile (Internet RFC 4013)
+        of the &#34;stringprep&#34; algorithm (Internet RFC 3454) to the supplied password using the Normalize and BiDi
+        options. Next, the password string shall be converted to UTF-8 encoding, and then truncated to the
+        first 127 bytes if the string is longer than 127 bytes
+
+        Python offers a stringprep module with the tables mapped in methods
+        &#34;&#34;&#34;
+
+        # Mapping
+        def char_map(char: str) -&gt; str:
+            if not char:
+                return &#34;&#34;
+            # Commonly mapped to nothing
+            if stringprep.in_table_b1(char):
+                return &#34;&#34;
+            # Map non-ascii space characters to space
+            if stringprep.in_table_c12(char):
+                return &#34;\u0020&#34;
+            return char
+
+        if len(string) &lt; 1:
+            return bytes()
+
+        prepared_string = &#34;&#34;.join(char_map(c) for c in string)
+
+        # Normalization - applies Unicode normalization form KC
+        prepared_string = unicodedata.ucd_3_2_0.normalize(&#34;NFKC&#34;, prepared_string)
+
+        # Prohibited output - RCF4013 2.3
+        def is_prohibited(char: str) -&gt; bool:
+            return (
+                stringprep.in_table_c12(char)  # Non-ASCII space characters
+                or stringprep.in_table_c21_c22(char)  # Control characters
+                or stringprep.in_table_c3(char)  # Private use
+                or stringprep.in_table_c4(char)  # Non-character code points
+                or stringprep.in_table_c5(char)  # Surrogate codes
+                or stringprep.in_table_c6(char)  # Inappropriate for plain text
+                or stringprep.in_table_c7(
+                    char
+                )  # Inappropriate for canonical representation
+                or stringprep.in_table_c8(
+                    char
+                )  # Change display properties or are deprecated
+                or stringprep.in_table_c9(char)  # Tagging characters
+            )
+
+        for char in prepared_string:
+            if is_prohibited(char):
+                raise FPDFException(
+                    f&#34;The password {string} contains prohibited characters&#34;
+                )
+
+        # Bidirectional characters
+        def has_character(string: str, fun: Callable) -&gt; bool:
+            return any(fun(char) for char in string)
+
+        if has_character(prepared_string, stringprep.in_table_d1):
+            # If a string contains any RandALCat character, the string MUST NOT contain any LCat character.
+            if has_character(prepared_string, stringprep.in_table_d2):
+                raise FPDFException(
+                    f&#34;The password {string} contains invalid bidirectional characters.&#34;
+                )
+            # If a string contains any RandALCat character, a RandALCat character MUST be the first character
+            # of the string, and a RandALCat character MUST be the last character of the string.
+            if not (
+                stringprep.in_table_d1(prepared_string[0])
+                and stringprep.in_table_d1(prepared_string[-1])
+            ):
+                raise FPDFException(
+                    f&#34;The password {string} contains invalid bidirectional characters.&#34;
+                )
+
+        if len(prepared_string) &gt; 127:
+            prepared_string = prepared_string[:127]
+
+        return prepared_string.encode(&#34;UTF-8&#34;)
+
+    def padded_password(self, password: str) -&gt; bytearray:
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 2: Computing an encryption key
         Step (a) - Add the default padding at the end of provided password to make it 32 bit long
@@ -765,7 +1115,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
         p.extend(self.DEFAULT_PADDING[: (32 - len(p))])
         return p
 
-    def generate_owner_password(self):
+    def generate_owner_password(self) -&gt; str:
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 3: Computing the encryption dictionary&#39;s O (owner password) value
         The security handler is only using revision 3 or 4, so the legacy r2 version is not implemented here
@@ -779,10 +1129,10 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
             new_key = []
             for k in rc4key:
                 new_key.append(k ^ i)
-            result = ARC4().encrypt(new_key, result)
+            result = ARC4().encrypt(bytes(new_key), result)
         return bytes(result).hex()
 
-    def generate_user_password(self):
+    def generate_user_password(self) -&gt; str:
         &#34;&#34;&#34;
         PDF32000 reference - Algorithm 5: Computing the encryption dictionary&#39;s U (user password) value
         The security handler is only using revision 3 or 4, so the legacy r2 version is not implemented here
@@ -790,19 +1140,131 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
         m = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
         m.update(bytearray(self.DEFAULT_PADDING))
         m.update(bytes.fromhex(self.info_id))
-        result = m.digest()
+        result = bytearray(m.digest())
         key = self.k
         for i in range(20):
             new_key = []
             for k in key:
                 new_key.append(k ^ i)
-            result = ARC4().encrypt(new_key, result)
+            result = ARC4().encrypt(bytes(new_key), result)
         result.extend(
             (result[x] ^ self.DEFAULT_PADDING[x]) for x in range(16)
         )  # add 16 bytes of random padding
         return bytes(result).hex()
 
-    def generate_encryption_key(self):
+    @classmethod
+    def compute_hash(
+        cls: Type[&#34;StandardSecurityHandler&#34;],
+        input_password: bytes,
+        salt: bytes,
+        user_key: bytes = bytearray(),
+    ) -&gt; bytes:
+        &#34;&#34;&#34;
+        Algorithm 2B - section 7.6.4.3.4 of the ISO 32000-2:2020
+        Applied on Security handlers revision 6
+        &#34;&#34;&#34;
+        k = hashlib.sha256(input_password + salt + user_key).digest()
+        round_number = 0
+        while True:
+            round_number += 1
+            k1 = input_password + k + user_key
+            # Step (a + b)
+            cipher = Cipher(AES128(k[:16]), modes.CBC(k[16:32]))
+            encryptor = cipher.encryptor()
+            e = encryptor.update(k1 * 64) + encryptor.finalize()
+            # Step (c)
+            # remainder = int.from_bytes(e[:16], byteorder=&#34;big&#34;) % 3
+            remainder = sum(e[:16]) % 3
+            # Step (d)
+            if remainder == 0:
+                k = hashlib.sha256(e).digest()
+            elif remainder == 1:
+                k = hashlib.sha384(e).digest()
+            else:
+                k = hashlib.sha512(e).digest()
+            # Step (e)
+            if round_number &gt;= 64 and e[-1] &lt;= round_number - 32:
+                break
+
+        return k[:32]
+
+    def generate_user_password_rev6(self) -&gt; None:
+        &#34;&#34;&#34;
+        Generating the U (user password) and UE (user encryption)
+        for security handlers of revision 6
+        Algorithm 8 - Section 7.6.4.4.7 of the ISO 32000-2:2020
+        &#34;&#34;&#34;
+        user_password = self.prepare_string(self.user_password)
+        if not user_password:
+            user_password = bytearray()
+        user_validation_salt = self.get_random_bytes(8)
+        user_key_salt = self.get_random_bytes(8)
+        u = (
+            self.compute_hash(input_password=user_password, salt=user_validation_salt)
+            + user_validation_salt
+            + user_key_salt
+        )
+        self.u = u.hex()
+
+        key = self.compute_hash(input_password=user_password, salt=user_key_salt)
+        cipher = Cipher(AES256(key), modes.CBC(b&#34;\x00&#34; * 16))
+        encryptor = cipher.encryptor()
+        ue = encryptor.update(self.k) + encryptor.finalize()
+        self.ue = ue.hex()
+
+    def generate_owner_password_rev6(self) -&gt; None:
+        &#34;&#34;&#34;
+        Generating the O (owner password) and OE (owner encryption)
+        for security handlers of revision 6
+        Algorithm 9 - Section 7.6.4.4.8 of the ISO 32000-2:2020
+        &#34;&#34;&#34;
+        owner_password = self.prepare_string(self.owner_password)
+        if not owner_password:
+            raise FPDFException(f&#34;Invalid owner password {self.owner_password}&#34;)
+        owner_validation_salt = self.get_random_bytes(8)
+        owner_key_salt = self.get_random_bytes(8)
+        o = (
+            self.compute_hash(
+                input_password=owner_password,
+                salt=owner_validation_salt,
+                user_key=bytes.fromhex(self.u),
+            )
+            + owner_validation_salt
+            + owner_key_salt
+        )
+        self.o = o.hex()
+
+        key = self.compute_hash(
+            input_password=owner_password,
+            salt=owner_key_salt,
+            user_key=bytes.fromhex(self.u),
+        )
+
+        cipher = Cipher(AES256(key), modes.CBC(b&#34;\x00&#34; * 16))
+        encryptor = cipher.encryptor()
+        oe = encryptor.update(self.k) + encryptor.finalize()
+        self.oe = oe.hex()
+
+    def generate_perms_rev6(self) -&gt; None:
+        &#34;&#34;&#34;
+        7.6.4.4.9 Algorithm 10: Computing the encryption dictionary’s Perms (permissions) value
+        (Security handlers of revision 6) of the ISO 32000-2:2020
+        &#34;&#34;&#34;
+        perms64b = 0xFFFFFFFF00000000 | self.access_permission
+        encrypt_metadata = b&#34;T&#34; if self.encrypt_metadata else b&#34;F&#34;
+        perms_input = (
+            perms64b.to_bytes(8, byteorder=&#34;little&#34;, signed=False)
+            + encrypt_metadata
+            + b&#34;adb&#34;
+            + self.get_random_bytes(4)
+        )
+        # nosemgrep: python.cryptography.security.insecure-cipher-mode-ecb.insecure-cipher-mode-ecb
+        cipher = Cipher(AES256(self.k), modes.ECB())
+        encryptor = cipher.encryptor()
+        perms = encryptor.update(perms_input) + encryptor.finalize()
+        self.perms = perms.hex()
+
+    def generate_encryption_key(self) -&gt; bytes:
         &#34;&#34;&#34;
         PDF32000 reference
         Algorithm 2: Computing an encryption key
@@ -816,7 +1278,7 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
             )
         )
         m.update(bytes.fromhex(self.info_id))
-        if self.encrypt_metadata is False and self.v == 4:
+        if self.encrypt_metadata is False and self.version == 4:
             m.update(bytes([0xFF, 0xFF, 0xFF, 0xFF]))
         result = m.digest()[: (math.ceil(self.key_length / 8))]
         for _ in range(50):
@@ -832,36 +1294,193 @@ The PDF trailer must reference this object (/Encrypt)</p></div>
 </dl>
 <h3>Static methods</h3>
 <dl>
-<dt id="fpdf.encryption.StandardSecurityHandler.get_initialization_vector"><code class="name flex">
-<span>def <span class="ident">get_initialization_vector</span></span>(<span>size)</span>
+<dt id="fpdf.encryption.StandardSecurityHandler.compute_hash"><code class="name flex">
+<span>def <span class="ident">compute_hash</span></span>(<span>input_password: bytes, salt: bytes, user_key: bytes = bytearray(b'')) ‑> bytes</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Algorithm 2B - section 7.6.4.3.4 of the ISO 32000-2:2020
+Applied on Security handlers revision 6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L232-L234" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L405-L439" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
-def get_initialization_vector(cls, size):
-    return bytearray(urandom(size))</code></pre>
+def compute_hash(
+    cls: Type[&#34;StandardSecurityHandler&#34;],
+    input_password: bytes,
+    salt: bytes,
+    user_key: bytes = bytearray(),
+) -&gt; bytes:
+    &#34;&#34;&#34;
+    Algorithm 2B - section 7.6.4.3.4 of the ISO 32000-2:2020
+    Applied on Security handlers revision 6
+    &#34;&#34;&#34;
+    k = hashlib.sha256(input_password + salt + user_key).digest()
+    round_number = 0
+    while True:
+        round_number += 1
+        k1 = input_password + k + user_key
+        # Step (a + b)
+        cipher = Cipher(AES128(k[:16]), modes.CBC(k[16:32]))
+        encryptor = cipher.encryptor()
+        e = encryptor.update(k1 * 64) + encryptor.finalize()
+        # Step (c)
+        # remainder = int.from_bytes(e[:16], byteorder=&#34;big&#34;) % 3
+        remainder = sum(e[:16]) % 3
+        # Step (d)
+        if remainder == 0:
+            k = hashlib.sha256(e).digest()
+        elif remainder == 1:
+            k = hashlib.sha384(e).digest()
+        else:
+            k = hashlib.sha512(e).digest()
+        # Step (e)
+        if round_number &gt;= 64 and e[-1] &lt;= round_number - 32:
+            break
+
+    return k[:32]</code></pre>
+</details>
+</dd>
+<dt id="fpdf.encryption.StandardSecurityHandler.get_random_bytes"><code class="name flex">
+<span>def <span class="ident">get_random_bytes</span></span>(<span>size: int) ‑> bytes</span>
+</code></dt>
+<dd>
+<div class="desc"><p><a href="https://docs.python.org/3/library/os.html#os.urandom">https://docs.python.org/3/library/os.html#os.urandom</a>
+os.urandom will use OS-specific sources to generate random bytes
+suitable for cryptographic use</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L266-L273" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@classmethod
+def get_random_bytes(cls: Type[&#34;StandardSecurityHandler&#34;], size: int) -&gt; bytes:
+    &#34;&#34;&#34;
+    https://docs.python.org/3/library/os.html#os.urandom
+    os.urandom will use OS-specific sources to generate random bytes
+    suitable for cryptographic use
+    &#34;&#34;&#34;
+    return urandom(size)</code></pre>
+</details>
+</dd>
+<dt id="fpdf.encryption.StandardSecurityHandler.prepare_string"><code class="name flex">
+<span>def <span class="ident">prepare_string</span></span>(<span>string: str) ‑> bytes</span>
+</code></dt>
+<dd>
+<div class="desc"><p>PDF2.0 - ISO 32000-2:2020
+All passwords for revision 6 shall be based on Unicode. Preprocessing of a user-provided password
+consists first of normalizing its representation by applying the "SASLPrep" profile (Internet RFC 4013)
+of the "stringprep" algorithm (Internet RFC 3454) to the supplied password using the Normalize and BiDi
+options. Next, the password string shall be converted to UTF-8 encoding, and then truncated to the
+first 127 bytes if the string is longer than 127 bytes</p>
+<p>Python offers a stringprep module with the tables mapped in methods</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L275-L355" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@classmethod
+def prepare_string(cls: Type[&#34;StandardSecurityHandler&#34;], string: str) -&gt; bytes:
+    &#34;&#34;&#34;
+    PDF2.0 - ISO 32000-2:2020
+    All passwords for revision 6 shall be based on Unicode. Preprocessing of a user-provided password
+    consists first of normalizing its representation by applying the &#34;SASLPrep&#34; profile (Internet RFC 4013)
+    of the &#34;stringprep&#34; algorithm (Internet RFC 3454) to the supplied password using the Normalize and BiDi
+    options. Next, the password string shall be converted to UTF-8 encoding, and then truncated to the
+    first 127 bytes if the string is longer than 127 bytes
+
+    Python offers a stringprep module with the tables mapped in methods
+    &#34;&#34;&#34;
+
+    # Mapping
+    def char_map(char: str) -&gt; str:
+        if not char:
+            return &#34;&#34;
+        # Commonly mapped to nothing
+        if stringprep.in_table_b1(char):
+            return &#34;&#34;
+        # Map non-ascii space characters to space
+        if stringprep.in_table_c12(char):
+            return &#34;\u0020&#34;
+        return char
+
+    if len(string) &lt; 1:
+        return bytes()
+
+    prepared_string = &#34;&#34;.join(char_map(c) for c in string)
+
+    # Normalization - applies Unicode normalization form KC
+    prepared_string = unicodedata.ucd_3_2_0.normalize(&#34;NFKC&#34;, prepared_string)
+
+    # Prohibited output - RCF4013 2.3
+    def is_prohibited(char: str) -&gt; bool:
+        return (
+            stringprep.in_table_c12(char)  # Non-ASCII space characters
+            or stringprep.in_table_c21_c22(char)  # Control characters
+            or stringprep.in_table_c3(char)  # Private use
+            or stringprep.in_table_c4(char)  # Non-character code points
+            or stringprep.in_table_c5(char)  # Surrogate codes
+            or stringprep.in_table_c6(char)  # Inappropriate for plain text
+            or stringprep.in_table_c7(
+                char
+            )  # Inappropriate for canonical representation
+            or stringprep.in_table_c8(
+                char
+            )  # Change display properties or are deprecated
+            or stringprep.in_table_c9(char)  # Tagging characters
+        )
+
+    for char in prepared_string:
+        if is_prohibited(char):
+            raise FPDFException(
+                f&#34;The password {string} contains prohibited characters&#34;
+            )
+
+    # Bidirectional characters
+    def has_character(string: str, fun: Callable) -&gt; bool:
+        return any(fun(char) for char in string)
+
+    if has_character(prepared_string, stringprep.in_table_d1):
+        # If a string contains any RandALCat character, the string MUST NOT contain any LCat character.
+        if has_character(prepared_string, stringprep.in_table_d2):
+            raise FPDFException(
+                f&#34;The password {string} contains invalid bidirectional characters.&#34;
+            )
+        # If a string contains any RandALCat character, a RandALCat character MUST be the first character
+        # of the string, and a RandALCat character MUST be the last character of the string.
+        if not (
+            stringprep.in_table_d1(prepared_string[0])
+            and stringprep.in_table_d1(prepared_string[-1])
+        ):
+            raise FPDFException(
+                f&#34;The password {string} contains invalid bidirectional characters.&#34;
+            )
+
+    if len(prepared_string) &gt; 127:
+        prepared_string = prepared_string[:127]
+
+    return prepared_string.encode(&#34;UTF-8&#34;)</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
 <dt id="fpdf.encryption.StandardSecurityHandler.encrypt"><code class="name flex">
-<span>def <span class="ident">encrypt</span></span>(<span>self, text, obj_id)</span>
+<span>def <span class="ident">encrypt</span></span>(<span>self, text: Union[str, bytearray, bytes], obj_id: int) ‑> Union[str, bytes]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method invoked by PDFObject and PDFContentStream to encrypt strings and streams</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L177-L183" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L200-L209" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def encrypt(self, text, obj_id):
+<pre><code class="python">def encrypt(
+    self, text: Union[str, bytearray, bytes], obj_id: int
+) -&gt; Union[str, bytes]:
     &#34;&#34;&#34;Method invoked by PDFObject and PDFContentStream to encrypt strings and streams&#34;&#34;&#34;
+    LOGGER.debug(&#34;Encrypting %s&#34;, text)
     return (
         self.encrypt_stream(text, obj_id)
         if isinstance(text, (bytearray, bytes))
@@ -870,21 +1489,26 @@ def get_initialization_vector(cls, size):
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.encrypt_AES_cryptography"><code class="name flex">
-<span>def <span class="ident">encrypt_AES_cryptography</span></span>(<span>self, key, data)</span>
+<span>def <span class="ident">encrypt_AES_cryptography</span></span>(<span>self, key: bytes, data: bytes) ‑> bytes</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Encrypts an array of bytes using AES algorithms (AES 128 or AES 256)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L221-L230" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L250-L264" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def encrypt_AES_cryptography(self, key, data):
-    iv = self.get_initialization_vector(16)
-    padder = PKCS7(self.key_length).padder()
+<pre><code class="python">def encrypt_AES_cryptography(self, key: bytes, data: bytes) -&gt; bytes:
+    &#34;&#34;&#34;Encrypts an array of bytes using AES algorithms (AES 128 or AES 256)&#34;&#34;&#34;
+    iv = bytearray(self.get_random_bytes(16))
+    padder = PKCS7(128).padder()
     padded_data = padder.update(data)
     padded_data += padder.finalize()
-    cipher = Cipher(AES128(key), modes.CBC(iv))
+    cipher = (
+        Cipher(AES128(key), modes.CBC(iv))
+        if self.encryption_method == EncryptionMethod.AES_128
+        else Cipher(AES256(self.k), modes.CBC(iv))
+    )
     encryptor = cipher.encryptor()
     data = encryptor.update(padded_data) + encryptor.finalize()
     iv.extend(data)
@@ -892,7 +1516,7 @@ def get_initialization_vector(cls, size):
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.encrypt_bytes"><code class="name flex">
-<span>def <span class="ident">encrypt_bytes</span></span>(<span>self, data, obj_id)</span>
+<span>def <span class="ident">encrypt_bytes</span></span>(<span>self, data: bytes, obj_id: int)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>PDF32000 reference - Algorithm 1: Encryption of data using the RC4 or AES algorithms
@@ -901,9 +1525,9 @@ Generation ID is fixed as 0. Will need to revisit if the application start chang
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L199-L219" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L228-L248" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def encrypt_bytes(self, data, obj_id):
+<pre><code class="python">def encrypt_bytes(self, data: bytes, obj_id: int):
     &#34;&#34;&#34;
     PDF32000 reference - Algorithm 1: Encryption of data using the RC4 or AES algorithms
     Append object ID and generation ID to the key and encrypt the data
@@ -927,40 +1551,40 @@ Generation ID is fixed as 0. Will need to revisit if the application start chang
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.encrypt_stream"><code class="name flex">
-<span>def <span class="ident">encrypt_stream</span></span>(<span>self, stream, obj_id)</span>
+<span>def <span class="ident">encrypt_stream</span></span>(<span>self, stream: bytes, obj_id: int) ‑> bytes</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L191-L194" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L217-L220" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def encrypt_stream(self, stream, obj_id):
+<pre><code class="python">def encrypt_stream(self, stream: bytes, obj_id: int) -&gt; bytes:
     if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
         return stream
     return bytes(self.encrypt_bytes(stream, obj_id))</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.encrypt_string"><code class="name flex">
-<span>def <span class="ident">encrypt_string</span></span>(<span>self, string, obj_id)</span>
+<span>def <span class="ident">encrypt_string</span></span>(<span>self, string: str, obj_id: int) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L185-L189" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L211-L215" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def encrypt_string(self, string, obj_id):
+<pre><code class="python">def encrypt_string(self, string: str, obj_id: int) -&gt; str:
     if self.encryption_method == EncryptionMethod.NO_ENCRYPTION:
-        return PDFString(string).serialize()
+        return PDFString(string, encrypt=False).serialize()
     LOGGER.debug(&#34;Encrypting string: %s&#34;, string)
     return f&#34;&lt;{bytes(self.encrypt_bytes(string.encode(&#39;latin-1&#39;), obj_id)).hex().upper()}&gt;&#34;</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.generate_encryption_key"><code class="name flex">
-<span>def <span class="ident">generate_encryption_key</span></span>(<span>self)</span>
+<span>def <span class="ident">generate_encryption_key</span></span>(<span>self) ‑> bytes</span>
 </code></dt>
 <dd>
 <div class="desc"><p>PDF32000 reference
@@ -968,9 +1592,9 @@ Algorithm 2: Computing an encryption key</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L284-L303" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L517-L536" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def generate_encryption_key(self):
+<pre><code class="python">def generate_encryption_key(self) -&gt; bytes:
     &#34;&#34;&#34;
     PDF32000 reference
     Algorithm 2: Computing an encryption key
@@ -984,7 +1608,7 @@ Algorithm 2: Computing an encryption key</p></div>
         )
     )
     m.update(bytes.fromhex(self.info_id))
-    if self.encrypt_metadata is False and self.v == 4:
+    if self.encrypt_metadata is False and self.version == 4:
         m.update(bytes([0xFF, 0xFF, 0xFF, 0xFF]))
     result = m.digest()[: (math.ceil(self.key_length / 8))]
     for _ in range(50):
@@ -993,7 +1617,7 @@ Algorithm 2: Computing an encryption key</p></div>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.generate_owner_password"><code class="name flex">
-<span>def <span class="ident">generate_owner_password</span></span>(<span>self)</span>
+<span>def <span class="ident">generate_owner_password</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>PDF32000 reference - Algorithm 3: Computing the encryption dictionary's O (owner password) value
@@ -1001,9 +1625,9 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L247-L262" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L368-L383" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def generate_owner_password(self):
+<pre><code class="python">def generate_owner_password(self) -&gt; str:
     &#34;&#34;&#34;
     PDF32000 reference - Algorithm 3: Computing the encryption dictionary&#39;s O (owner password) value
     The security handler is only using revision 3 or 4, so the legacy r2 version is not implemented here
@@ -1017,31 +1641,114 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
         new_key = []
         for k in rc4key:
             new_key.append(k ^ i)
-        result = ARC4().encrypt(new_key, result)
+        result = ARC4().encrypt(bytes(new_key), result)
     return bytes(result).hex()</code></pre>
 </details>
 </dd>
-<dt id="fpdf.encryption.StandardSecurityHandler.generate_passwords"><code class="name flex">
-<span>def <span class="ident">generate_passwords</span></span>(<span>self, file_id)</span>
+<dt id="fpdf.encryption.StandardSecurityHandler.generate_owner_password_rev6"><code class="name flex">
+<span>def <span class="ident">generate_owner_password_rev6</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return the first hash of the PDF file id</p></div>
+<div class="desc"><p>Generating the O (owner password) and OE (owner encryption)
+for security handlers of revision 6
+Algorithm 9 - Section 7.6.4.4.8 of the ISO 32000-2:2020</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L165-L171" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L465-L496" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def generate_passwords(self, file_id):
-    &#34;&#34;&#34;Return the first hash of the PDF file id&#34;&#34;&#34;
+<pre><code class="python">def generate_owner_password_rev6(self) -&gt; None:
+    &#34;&#34;&#34;
+    Generating the O (owner password) and OE (owner encryption)
+    for security handlers of revision 6
+    Algorithm 9 - Section 7.6.4.4.8 of the ISO 32000-2:2020
+    &#34;&#34;&#34;
+    owner_password = self.prepare_string(self.owner_password)
+    if not owner_password:
+        raise FPDFException(f&#34;Invalid owner password {self.owner_password}&#34;)
+    owner_validation_salt = self.get_random_bytes(8)
+    owner_key_salt = self.get_random_bytes(8)
+    o = (
+        self.compute_hash(
+            input_password=owner_password,
+            salt=owner_validation_salt,
+            user_key=bytes.fromhex(self.u),
+        )
+        + owner_validation_salt
+        + owner_key_salt
+    )
+    self.o = o.hex()
+
+    key = self.compute_hash(
+        input_password=owner_password,
+        salt=owner_key_salt,
+        user_key=bytes.fromhex(self.u),
+    )
+
+    cipher = Cipher(AES256(key), modes.CBC(b&#34;\x00&#34; * 16))
+    encryptor = cipher.encryptor()
+    oe = encryptor.update(self.k) + encryptor.finalize()
+    self.oe = oe.hex()</code></pre>
+</details>
+</dd>
+<dt id="fpdf.encryption.StandardSecurityHandler.generate_passwords"><code class="name flex">
+<span>def <span class="ident">generate_passwords</span></span>(<span>self, file_id: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>File_id is the first hash of the PDF file id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L182-L194" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def generate_passwords(self, file_id: str) -&gt; None:
+    &#34;&#34;&#34;File_id is the first hash of the PDF file id&#34;&#34;&#34;
     self.file_id = file_id
     self.info_id = file_id[1:33]
-    self.o = self.generate_owner_password()
-    self.k = self.generate_encryption_key()
-    self.u = self.generate_user_password()</code></pre>
+    if self.revision == 6:
+        self.k = self.get_random_bytes(32)
+        self.generate_user_password_rev6()
+        self.generate_owner_password_rev6()
+        self.generate_perms_rev6()
+    else:
+        self.o = self.generate_owner_password()
+        self.k = self.generate_encryption_key()
+        self.u = self.generate_user_password()</code></pre>
+</details>
+</dd>
+<dt id="fpdf.encryption.StandardSecurityHandler.generate_perms_rev6"><code class="name flex">
+<span>def <span class="ident">generate_perms_rev6</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>7.6.4.4.9 Algorithm 10: Computing the encryption dictionary’s Perms (permissions) value
+(Security handlers of revision 6) of the ISO 32000-2:2020</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L498-L515" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def generate_perms_rev6(self) -&gt; None:
+    &#34;&#34;&#34;
+    7.6.4.4.9 Algorithm 10: Computing the encryption dictionary’s Perms (permissions) value
+    (Security handlers of revision 6) of the ISO 32000-2:2020
+    &#34;&#34;&#34;
+    perms64b = 0xFFFFFFFF00000000 | self.access_permission
+    encrypt_metadata = b&#34;T&#34; if self.encrypt_metadata else b&#34;F&#34;
+    perms_input = (
+        perms64b.to_bytes(8, byteorder=&#34;little&#34;, signed=False)
+        + encrypt_metadata
+        + b&#34;adb&#34;
+        + self.get_random_bytes(4)
+    )
+    # nosemgrep: python.cryptography.security.insecure-cipher-mode-ecb.insecure-cipher-mode-ecb
+    cipher = Cipher(AES256(self.k), modes.ECB())
+    encryptor = cipher.encryptor()
+    perms = encryptor.update(perms_input) + encryptor.finalize()
+    self.perms = perms.hex()</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.generate_user_password"><code class="name flex">
-<span>def <span class="ident">generate_user_password</span></span>(<span>self)</span>
+<span>def <span class="ident">generate_user_password</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>PDF32000 reference - Algorithm 5: Computing the encryption dictionary's U (user password) value
@@ -1049,9 +1756,9 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L264-L282" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L385-L403" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def generate_user_password(self):
+<pre><code class="python">def generate_user_password(self) -&gt; str:
     &#34;&#34;&#34;
     PDF32000 reference - Algorithm 5: Computing the encryption dictionary&#39;s U (user password) value
     The security handler is only using revision 3 or 4, so the legacy r2 version is not implemented here
@@ -1059,50 +1766,90 @@ The security handler is only using revision 3 or 4, so the legacy r2 version is 
     m = hashlib.new(&#34;md5&#34;, usedforsecurity=False)
     m.update(bytearray(self.DEFAULT_PADDING))
     m.update(bytes.fromhex(self.info_id))
-    result = m.digest()
+    result = bytearray(m.digest())
     key = self.k
     for i in range(20):
         new_key = []
         for k in key:
             new_key.append(k ^ i)
-        result = ARC4().encrypt(new_key, result)
+        result = ARC4().encrypt(bytes(new_key), result)
     result.extend(
         (result[x] ^ self.DEFAULT_PADDING[x]) for x in range(16)
     )  # add 16 bytes of random padding
     return bytes(result).hex()</code></pre>
 </details>
 </dd>
+<dt id="fpdf.encryption.StandardSecurityHandler.generate_user_password_rev6"><code class="name flex">
+<span>def <span class="ident">generate_user_password_rev6</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generating the U (user password) and UE (user encryption)
+for security handlers of revision 6
+Algorithm 8 - Section 7.6.4.4.7 of the ISO 32000-2:2020</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L441-L463" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def generate_user_password_rev6(self) -&gt; None:
+    &#34;&#34;&#34;
+    Generating the U (user password) and UE (user encryption)
+    for security handlers of revision 6
+    Algorithm 8 - Section 7.6.4.4.7 of the ISO 32000-2:2020
+    &#34;&#34;&#34;
+    user_password = self.prepare_string(self.user_password)
+    if not user_password:
+        user_password = bytearray()
+    user_validation_salt = self.get_random_bytes(8)
+    user_key_salt = self.get_random_bytes(8)
+    u = (
+        self.compute_hash(input_password=user_password, salt=user_validation_salt)
+        + user_validation_salt
+        + user_key_salt
+    )
+    self.u = u.hex()
+
+    key = self.compute_hash(input_password=user_password, salt=user_key_salt)
+    cipher = Cipher(AES256(key), modes.CBC(b&#34;\x00&#34; * 16))
+    encryptor = cipher.encryptor()
+    ue = encryptor.update(self.k) + encryptor.finalize()
+    self.ue = ue.hex()</code></pre>
+</details>
+</dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.get_encryption_obj"><code class="name flex">
-<span>def <span class="ident">get_encryption_obj</span></span>(<span>self)</span>
+<span>def <span class="ident">get_encryption_obj</span></span>(<span>self) ‑> <a title="fpdf.encryption.EncryptionDictionary" href="#fpdf.encryption.EncryptionDictionary">EncryptionDictionary</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return an encryption dictionary</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L173-L175" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L196-L198" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def get_encryption_obj(self):
+<pre><code class="python">def get_encryption_obj(self) -&gt; EncryptionDictionary:
     &#34;&#34;&#34;Return an encryption dictionary&#34;&#34;&#34;
     return EncryptionDictionary(self)</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.is_aes_algorithm"><code class="name flex">
-<span>def <span class="ident">is_aes_algorithm</span></span>(<span>self)</span>
+<span>def <span class="ident">is_aes_algorithm</span></span>(<span>self) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L196-L197" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L222-L226" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def is_aes_algorithm(self):
-    return self.encryption_method == EncryptionMethod.AES_128</code></pre>
+<pre><code class="python">def is_aes_algorithm(self) -&gt; bool:
+    return self.encryption_method in (
+        EncryptionMethod.AES_128,
+        EncryptionMethod.AES_256,
+    )</code></pre>
 </details>
 </dd>
 <dt id="fpdf.encryption.StandardSecurityHandler.padded_password"><code class="name flex">
-<span>def <span class="ident">padded_password</span></span>(<span>self, password)</span>
+<span>def <span class="ident">padded_password</span></span>(<span>self, password: str) ‑> bytearray</span>
 </code></dt>
 <dd>
 <div class="desc"><p>PDF32000 reference - Algorithm 2: Computing an encryption key
@@ -1110,9 +1857,9 @@ Step (a) - Add the default padding at the end of provided password to make it 32
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/encryption.py#L236-L245" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/encryption.py#L357-L366" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def padded_password(self, password):
+<pre><code class="python">def padded_password(self, password: str) -&gt; bytearray:
     &#34;&#34;&#34;
     PDF32000 reference - Algorithm 2: Computing an encryption key
     Step (a) - Add the default padding at the end of provided password to make it 32 bit long
@@ -1170,6 +1917,7 @@ Step (a) - Add the default padding at the end of provided password to make it 32
 <h4><code><a title="fpdf.encryption.StandardSecurityHandler" href="#fpdf.encryption.StandardSecurityHandler">StandardSecurityHandler</a></code></h4>
 <ul class="">
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.DEFAULT_PADDING" href="#fpdf.encryption.StandardSecurityHandler.DEFAULT_PADDING">DEFAULT_PADDING</a></code></li>
+<li><code><a title="fpdf.encryption.StandardSecurityHandler.compute_hash" href="#fpdf.encryption.StandardSecurityHandler.compute_hash">compute_hash</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.encrypt" href="#fpdf.encryption.StandardSecurityHandler.encrypt">encrypt</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.encrypt_AES_cryptography" href="#fpdf.encryption.StandardSecurityHandler.encrypt_AES_cryptography">encrypt_AES_cryptography</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.encrypt_bytes" href="#fpdf.encryption.StandardSecurityHandler.encrypt_bytes">encrypt_bytes</a></code></li>
@@ -1177,12 +1925,16 @@ Step (a) - Add the default padding at the end of provided password to make it 32
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.encrypt_string" href="#fpdf.encryption.StandardSecurityHandler.encrypt_string">encrypt_string</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_encryption_key" href="#fpdf.encryption.StandardSecurityHandler.generate_encryption_key">generate_encryption_key</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_owner_password" href="#fpdf.encryption.StandardSecurityHandler.generate_owner_password">generate_owner_password</a></code></li>
+<li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_owner_password_rev6" href="#fpdf.encryption.StandardSecurityHandler.generate_owner_password_rev6">generate_owner_password_rev6</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_passwords" href="#fpdf.encryption.StandardSecurityHandler.generate_passwords">generate_passwords</a></code></li>
+<li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_perms_rev6" href="#fpdf.encryption.StandardSecurityHandler.generate_perms_rev6">generate_perms_rev6</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_user_password" href="#fpdf.encryption.StandardSecurityHandler.generate_user_password">generate_user_password</a></code></li>
+<li><code><a title="fpdf.encryption.StandardSecurityHandler.generate_user_password_rev6" href="#fpdf.encryption.StandardSecurityHandler.generate_user_password_rev6">generate_user_password_rev6</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.get_encryption_obj" href="#fpdf.encryption.StandardSecurityHandler.get_encryption_obj">get_encryption_obj</a></code></li>
-<li><code><a title="fpdf.encryption.StandardSecurityHandler.get_initialization_vector" href="#fpdf.encryption.StandardSecurityHandler.get_initialization_vector">get_initialization_vector</a></code></li>
+<li><code><a title="fpdf.encryption.StandardSecurityHandler.get_random_bytes" href="#fpdf.encryption.StandardSecurityHandler.get_random_bytes">get_random_bytes</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.is_aes_algorithm" href="#fpdf.encryption.StandardSecurityHandler.is_aes_algorithm">is_aes_algorithm</a></code></li>
 <li><code><a title="fpdf.encryption.StandardSecurityHandler.padded_password" href="#fpdf.encryption.StandardSecurityHandler.padded_password">padded_password</a></code></li>
+<li><code><a title="fpdf.encryption.StandardSecurityHandler.prepare_string" href="#fpdf.encryption.StandardSecurityHandler.prepare_string">prepare_string</a></code></li>
 </ul>
 </li>
 </ul>

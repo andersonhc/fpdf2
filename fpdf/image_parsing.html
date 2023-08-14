@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L1-L465" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L1-L468" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import base64, zlib
 from io import BytesIO
@@ -43,7 +43,7 @@ try:
 
         RESAMPLE = Resampling.LANCZOS
     except ImportError:  # For Pillow &lt; 9.1.0
-        # pylint: disable=no-member
+        # pylint: disable=no-member, useless-suppression
         RESAMPLE = Image.ANTIALIAS
 except ImportError:
     Image = None
@@ -145,6 +145,7 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
         raise EnvironmentError(&#34;Pillow not available - fpdf2 cannot insert images&#34;)
 
     is_pil_img = True
+    keep_bytes_io_open = False
     jpeg_inverted = False  # flag to check whether a cmyk image is jpeg or not, if set to True the decode array is inverted in output.py
     img_raw_data = None
     if not img or isinstance(img, (Path, str)):
@@ -152,9 +153,8 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
         img = Image.open(img_raw_data)
         is_pil_img = False
     elif not isinstance(img, Image.Image):
-        if isinstance(img, bytes):
-            img = BytesIO(img)
-        img_raw_data = img
+        keep_bytes_io_open = isinstance(img, BytesIO)
+        img_raw_data = BytesIO(img) if isinstance(img, bytes) else img
         img = Image.open(img_raw_data)
         is_pil_img = False
 
@@ -322,7 +322,10 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
         dp = f&#34;/BlackIs1 true /Columns {w} /K -1 /Rows {h}&#34;
 
     if not is_pil_img:
-        img.close()
+        if keep_bytes_io_open:
+            img.fp = None  # cf. issue #881
+        else:
+            img.close()
 
     info.update(
         {
@@ -509,7 +512,7 @@ def _has_alpha(img, alpha_channel):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L339-L360" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L342-L363" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ccitt_payload_location_from_pil(img):
     &#34;&#34;&#34;
@@ -551,7 +554,7 @@ def _has_alpha(img, alpha_channel):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L108-L312" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L108-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
     &#34;&#34;&#34;
@@ -564,6 +567,7 @@ def _has_alpha(img, alpha_channel):
         raise EnvironmentError(&#34;Pillow not available - fpdf2 cannot insert images&#34;)
 
     is_pil_img = True
+    keep_bytes_io_open = False
     jpeg_inverted = False  # flag to check whether a cmyk image is jpeg or not, if set to True the decode array is inverted in output.py
     img_raw_data = None
     if not img or isinstance(img, (Path, str)):
@@ -571,9 +575,8 @@ def _has_alpha(img, alpha_channel):
         img = Image.open(img_raw_data)
         is_pil_img = False
     elif not isinstance(img, Image.Image):
-        if isinstance(img, bytes):
-            img = BytesIO(img)
-        img_raw_data = img
+        keep_bytes_io_open = isinstance(img, BytesIO)
+        img_raw_data = BytesIO(img) if isinstance(img, bytes) else img
         img = Image.open(img_raw_data)
         is_pil_img = False
 
@@ -741,7 +744,10 @@ def _has_alpha(img, alpha_channel):
         dp = f&#34;/BlackIs1 true /Columns {w} /K -1 /Rows {h}&#34;
 
     if not is_pil_img:
-        img.close()
+        if keep_bytes_io_open:
+            img.fp = None  # cf. issue #881
+        else:
+            img.close()
 
     info.update(
         {
@@ -768,7 +774,7 @@ def _has_alpha(img, alpha_channel):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L90-L105" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L90-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_iccp_valid(iccp, filename):
     &#34;Checks the validity of an ICC profile&#34;
@@ -798,7 +804,7 @@ It always return a BytesIO buffer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L60-L80" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L60-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load_image(filename):
     &#34;&#34;&#34;
@@ -831,7 +837,7 @@ It always return a BytesIO buffer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L363-L413" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L366-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transcode_monochrome(img):
     &#34;&#34;&#34;
@@ -900,7 +906,7 @@ It always return a BytesIO buffer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/PyFPDF/fpdf2/blob/29d01fa3cd7b0e60f9af988275cddbf91b55a3e2/fpdf/image_parsing.py#L315-L336" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/5451b3b3bb50f9e023c1af1405a3fa91fa57c18c/fpdf/image_parsing.py#L318-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class temp_attr:
     &#34;&#34;&#34;
