@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/errors.py#L1-L53" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/errors.py#L1-L52" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFException(Exception):
     pass
@@ -38,7 +38,6 @@ class FPDFPageFormatException(FPDFException):
         super().__init__()
         if unknown and one:
             raise TypeError(
-                # pylint: disable=implicit-str-concat
                 &#34;FPDF Page Format Exception cannot be both for &#34;
                 &#34;unknown type and for wrong number of arguments&#34;
             )
@@ -100,7 +99,7 @@ class FPDFUnicodeEncodingException(FPDFException):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/errors.py#L1-L2" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/errors.py#L1-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFException(Exception):
     pass</code></pre>
@@ -125,7 +124,7 @@ class FPDFUnicodeEncodingException(FPDFException):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/errors.py#L5-L33" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/errors.py#L5-L32" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFPageFormatException(FPDFException):
     &#34;&#34;&#34;Error is thrown when a bad page format is given&#34;&#34;&#34;
@@ -134,7 +133,6 @@ class FPDFUnicodeEncodingException(FPDFException):
         super().__init__()
         if unknown and one:
             raise TypeError(
-                # pylint: disable=implicit-str-concat
                 &#34;FPDF Page Format Exception cannot be both for &#34;
                 &#34;unknown type and for wrong number of arguments&#34;
             )
@@ -173,7 +171,7 @@ class FPDFUnicodeEncodingException(FPDFException):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/errors.py#L36-L53" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/errors.py#L35-L52" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFUnicodeEncodingException(FPDFException):
     &#34;&#34;&#34;Error is thrown when a character that cannot be encoded by the chosen encoder is provided&#34;&#34;&#34;

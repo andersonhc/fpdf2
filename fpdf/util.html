@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>fpdf.util API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Various utilities that could not be gathered logically in a specific module …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,18 +22,52 @@
 <h1 class="title">Module <code>fpdf.util</code></h1>
 </header>
 <section id="section-intro">
+<p>Various utilities that could not be gathered logically in a specific module.</p>
+<p>The contents of this module are internal to fpdf2, and not part of the public API.
+They may change at any time without prior warning or any deprecation period,
+in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L1-L194" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L1-L224" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import gc, os, warnings
+<pre><code class="python">&#34;&#34;&#34;
+Various utilities that could not be gathered logically in a specific module.
+
+The contents of this module are internal to fpdf2, and not part of the public API.
+They may change at any time without prior warning or any deprecation period,
+in non-backward-compatible ways.
+&#34;&#34;&#34;
+import gc, os, warnings
 from numbers import Number
 from tracemalloc import get_traced_memory, is_tracing
-from typing import Iterable, Tuple, Union
+from typing import Iterable, Tuple, Union, NamedTuple
 
 # default block size from src/libImaging/Storage.c:
 PIL_MEM_BLOCK_SIZE_IN_MIB = 16
+
+
+class Padding(NamedTuple):
+    top: Number = 0
+    right: Number = 0
+    bottom: Number = 0
+    left: Number = 0
+
+    @classmethod
+    def new(cls, padding: Union[int, float, tuple, list]):
+        &#34;&#34;&#34;Return a 4-tuple of padding values from a single value or a 2, 3 or 4-tuple according to CSS rules&#34;&#34;&#34;
+        if isinstance(padding, (int, float)):
+            return Padding(padding, padding, padding, padding)
+        if len(padding) == 2:
+            return Padding(padding[0], padding[1], padding[0], padding[1])
+        if len(padding) == 3:
+            return Padding(padding[0], padding[1], padding[2], padding[1])
+        if len(padding) == 4:
+            return Padding(*padding)
+
+        raise ValueError(
+            f&#34;padding shall be a number or a sequence of 2, 3 or 4 numbers, got {str(padding)}&#34;
+        )
 
 
 def buffer_subst(buffer, placeholder, value):
@@ -238,7 +272,7 @@ def get_pillow_allocated_memory() -&gt; str:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L10-L15" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L40-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def buffer_subst(buffer, placeholder, value):
     buffer_size = len(buffer)
@@ -264,7 +298,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L60-L80" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L90-L110" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convert_unit(
     to_convert: Union[float, int, Iterable[Union[float, int, Iterable]]],
@@ -297,7 +331,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L18-L32" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L48-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def escape_parens(s):
     &#34;&#34;&#34;Add a backslash character before , ( and )&#34;&#34;&#34;
@@ -324,7 +358,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L169-L179" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L199-L209" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_gc_managed_objs_total_size() -&gt; str:
     &#34;From experiments, not very reliable&#34;
@@ -347,7 +381,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L92-L102" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L122-L132" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_mem_usage(prefix) -&gt; str:
     _collected_count = gc.collect()
@@ -370,7 +404,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L188-L194" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L218-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_pillow_allocated_memory() -&gt; str:
     # pylint: disable=c-extension-no-member,import-outside-toplevel
@@ -389,7 +423,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L127-L145" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L157-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_heap_and_stack_sizes() -&gt; Tuple[str]:
     heap_size_in_mib, stack_size_in_mib = &#34;&lt;unavailable&gt;&#34;, &#34;&lt;unavailable&gt;&#34;
@@ -420,7 +454,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L105-L109" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L135-L139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_rss() -&gt; str:
     rss_as_mib = get_process_rss_as_mib()
@@ -437,7 +471,7 @@ new_unit (str, float, int): A unit accepted by fpdf.FPDF or a number</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L112-L124" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L142-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_process_rss_as_mib() -&gt; Union[Number, None]:
     &#34;Inspired by psutil source code&#34;
@@ -463,7 +497,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L148-L166" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L178-L196" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_pymalloc_allocated_over_total_size() -&gt; Tuple[str]:
     &#34;&#34;&#34;
@@ -506,7 +540,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L35-L57" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L65-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_scale_factor(unit: Union[str, Number]) -&gt; float:
     &#34;&#34;&#34;
@@ -541,7 +575,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L182-L185" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L212-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_tracemalloc_traced_memory() -&gt; str:
     &#34;Requires python -X tracemalloc&#34;
@@ -557,7 +591,7 @@ From experiments, not very reliable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/util.py#L88-L89" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L118-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def print_mem_usage(prefix):
     print(get_mem_usage(prefix))</code></pre>
@@ -566,6 +600,96 @@ From experiments, not very reliable</p></div>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fpdf.util.Padding"><code class="flex name class">
+<span>class <span class="ident">Padding</span></span>
+<span>(</span><span>top: numbers.Number = 0, right: numbers.Number = 0, bottom: numbers.Number = 0, left: numbers.Number = 0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Padding(top, right, bottom, left)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L17-L37" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Padding(NamedTuple):
+    top: Number = 0
+    right: Number = 0
+    bottom: Number = 0
+    left: Number = 0
+
+    @classmethod
+    def new(cls, padding: Union[int, float, tuple, list]):
+        &#34;&#34;&#34;Return a 4-tuple of padding values from a single value or a 2, 3 or 4-tuple according to CSS rules&#34;&#34;&#34;
+        if isinstance(padding, (int, float)):
+            return Padding(padding, padding, padding, padding)
+        if len(padding) == 2:
+            return Padding(padding[0], padding[1], padding[0], padding[1])
+        if len(padding) == 3:
+            return Padding(padding[0], padding[1], padding[2], padding[1])
+        if len(padding) == 4:
+            return Padding(*padding)
+
+        raise ValueError(
+            f&#34;padding shall be a number or a sequence of 2, 3 or 4 numbers, got {str(padding)}&#34;
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fpdf.util.Padding.new"><code class="name flex">
+<span>def <span class="ident">new</span></span>(<span>padding: Union[int, float, tuple, list])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a 4-tuple of padding values from a single value or a 2, 3 or 4-tuple according to CSS rules</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/util.py#L23-L37" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@classmethod
+def new(cls, padding: Union[int, float, tuple, list]):
+    &#34;&#34;&#34;Return a 4-tuple of padding values from a single value or a 2, 3 or 4-tuple according to CSS rules&#34;&#34;&#34;
+    if isinstance(padding, (int, float)):
+        return Padding(padding, padding, padding, padding)
+    if len(padding) == 2:
+        return Padding(padding[0], padding[1], padding[0], padding[1])
+    if len(padding) == 3:
+        return Padding(padding[0], padding[1], padding[2], padding[1])
+    if len(padding) == 4:
+        return Padding(*padding)
+
+    raise ValueError(
+        f&#34;padding shall be a number or a sequence of 2, 3 or 4 numbers, got {str(padding)}&#34;
+    )</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fpdf.util.Padding.bottom"><code class="name">var <span class="ident">bottom</span> : numbers.Number</code></dt>
+<dd>
+<div class="desc"><p>Alias for field number 2</p></div>
+</dd>
+<dt id="fpdf.util.Padding.left"><code class="name">var <span class="ident">left</span> : numbers.Number</code></dt>
+<dd>
+<div class="desc"><p>Alias for field number 3</p></div>
+</dd>
+<dt id="fpdf.util.Padding.right"><code class="name">var <span class="ident">right</span> : numbers.Number</code></dt>
+<dd>
+<div class="desc"><p>Alias for field number 1</p></div>
+</dd>
+<dt id="fpdf.util.Padding.top"><code class="name">var <span class="ident">top</span> : numbers.Number</code></dt>
+<dd>
+<div class="desc"><p>Alias for field number 0</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -594,6 +718,20 @@ From experiments, not very reliable</p></div>
 <li><code><a title="fpdf.util.get_scale_factor" href="#fpdf.util.get_scale_factor">get_scale_factor</a></code></li>
 <li><code><a title="fpdf.util.get_tracemalloc_traced_memory" href="#fpdf.util.get_tracemalloc_traced_memory">get_tracemalloc_traced_memory</a></code></li>
 <li><code><a title="fpdf.util.print_mem_usage" href="#fpdf.util.print_mem_usage">print_mem_usage</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fpdf.util.Padding" href="#fpdf.util.Padding">Padding</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.util.Padding.bottom" href="#fpdf.util.Padding.bottom">bottom</a></code></li>
+<li><code><a title="fpdf.util.Padding.left" href="#fpdf.util.Padding.left">left</a></code></li>
+<li><code><a title="fpdf.util.Padding.new" href="#fpdf.util.Padding.new">new</a></code></li>
+<li><code><a title="fpdf.util.Padding.right" href="#fpdf.util.Padding.right">right</a></code></li>
+<li><code><a title="fpdf.util.Padding.top" href="#fpdf.util.Padding.top">top</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

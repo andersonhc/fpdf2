@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>fpdf.sign API documentation</title>
-<meta name="description" content="Document signature generation" />
+<meta name="description" content="Module dedicated to document signature generation …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,13 +22,22 @@
 <h1 class="title">Module <code>fpdf.sign</code></h1>
 </header>
 <section id="section-intro">
-<p>Document signature generation</p>
+<p>Module dedicated to document signature generation.</p>
+<p>The contents of this module are internal to fpdf2, and not part of the public API.
+They may change at any time without prior warning or any deprecation period,
+in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/sign.py#L1-L90" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/sign.py#L1-L96" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;Document signature generation&#34;
+<pre><code class="python">&#34;&#34;&#34;
+Module dedicated to document signature generation.
+
+The contents of this module are internal to fpdf2, and not part of the public API.
+They may change at any time without prior warning or any deprecation period,
+in non-backward-compatible ways.
+&#34;&#34;&#34;
 import hashlib
 from datetime import timezone
 from unittest.mock import patch
@@ -136,7 +145,7 @@ The signing operation does not alter the buffer size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/sign.py#L36-L81" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/sign.py#L42-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sign_content(signer, buffer, key, cert, extra_certs, hashalgo, sign_time):
     &#34;&#34;&#34;
@@ -200,7 +209,7 @@ The signing operation does not alter the buffer size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/sign.py#L11-L33" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/sign.py#L17-L39" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Signature:
     def __init__(self, contact_info=None, location=None, m=None, reason=None):
@@ -255,7 +264,7 @@ The signing operation does not alter the buffer size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/sign.py#L27-L33" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/sign.py#L33-L39" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(

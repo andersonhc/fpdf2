@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>fpdf.svg API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Utilities to parse SVG graphics into fpdf.drawing objects …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,23 @@
 <h1 class="title">Module <code>fpdf.svg</code></h1>
 </header>
 <section id="section-intro">
+<p>Utilities to parse SVG graphics into fpdf.drawing objects.</p>
+<p>The contents of this module are internal to fpdf2, and not part of the public API.
+They may change at any time without prior warning or any deprecation period,
+in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L1-L933" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L1-L939" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import math, re, warnings
+<pre><code class="python">&#34;&#34;&#34;
+Utilities to parse SVG graphics into fpdf.drawing objects.
+
+The contents of this module are internal to fpdf2, and not part of the public API.
+They may change at any time without prior warning or any deprecation period,
+in non-backward-compatible ways.
+&#34;&#34;&#34;
+import math, re, warnings
 
 from fontTools.svgLib.path import parse_path
 from fontTools.pens.basePen import BasePen
@@ -69,7 +80,6 @@ _HANDY_NAMESPACES = {
 
 NUMBER_SPLIT = re.compile(r&#34;(?:\s+,\s+|\s+,|,\s+|\s+|,)&#34;)
 TRANSFORM_GETTER = re.compile(
-    # pylint: disable=implicit-str-concat
     r&#34;(matrix|rotate|scale|scaleX|scaleY|skew|skewX|skewY|translate|translateX|translateY)&#34;
     r&#34;\(((?:\s*(?:[-+]?[\d\.]+,?)+\s*)+)\)&#34;
 )
@@ -985,7 +995,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L565-L617" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L571-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PathPen(BasePen):
     def __init__(self, pdf_path, *args, **kwargs):
@@ -1059,7 +1069,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L598-L610" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L604-L616" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def arcTo(self, rx, ry, rotation, arc, sweep, end):
     self.pdf_path.arc_to(
@@ -1087,7 +1097,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L628-L933" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L634-L939" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SVGObject:
     &#34;&#34;&#34;
@@ -1419,7 +1429,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L633-L648" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L639-L654" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def from_file(cls, filename, *args, encoding=&#34;utf-8&#34;, **kwargs):
@@ -1450,7 +1460,7 @@ def from_file(cls, filename, *args, encoding=&#34;utf-8&#34;, **kwargs):
 <p>The page viewport is used for sizing the SVG.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>pdf</code></strong> :&ensp;<code><a title="fpdf.FPDF" href="index.html#fpdf.FPDF">FPDF</a></code></dt>
+<dt><strong><code>pdf</code></strong> :&ensp;<code>fpdf.FPDF</code></dt>
 <dd>the document to which the converted SVG is rendered.</dd>
 <dt><strong><code>x</code></strong> :&ensp;<code>Number</code></dt>
 <dd>abscissa of the converted SVG's top-left corner.</dd>
@@ -1463,7 +1473,7 @@ written.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L820-L844" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L826-L850" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def draw_to_page(self, pdf, x=None, y=None, debug_stream=None):
     &#34;&#34;&#34;
@@ -1504,7 +1514,7 @@ dimensions for a page in the current PDF document.</p>
 <p>If the SVG document size is specified in absolute units, then it is not scaled.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>pdf</code></strong> :&ensp;<code><a title="fpdf.FPDF" href="index.html#fpdf.FPDF">FPDF</a></code></dt>
+<dt><strong><code>pdf</code></strong> :&ensp;<code>fpdf.FPDF</code></dt>
 <dd>the pdf to use the page size of.</dd>
 <dt><strong><code>align_viewbox</code></strong> :&ensp;<code>bool</code></dt>
 <dd>if True, mimic some of the SVG alignment rules if the
@@ -1515,7 +1525,7 @@ viewbox aspect ratio does not match that of the viewport.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L714-L734" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L720-L740" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transform_to_page_viewport(self, pdf, align_viewbox=True):
     &#34;&#34;&#34;
@@ -1574,7 +1584,7 @@ converted from the SVG, scaled to the given viewport size.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/87368da5c0abd5ab440bda82bf676d438aec1c6d/fpdf/svg.py#L736-L818" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/526e2f320c34b518cb90270045db92364bdbbdde/fpdf/svg.py#L742-L824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transform_to_rect_viewport(
     self, scale, width, height, align_viewbox=True, ignore_svg_top_attrs=False
