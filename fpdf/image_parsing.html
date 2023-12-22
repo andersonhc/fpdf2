@@ -25,9 +25,10 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L1-L468" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L1-L574" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import base64, zlib
+<pre><code class="python">import base64, hashlib, io, zlib
+from dataclasses import dataclass
 from io import BytesIO
 from math import ceil
 from urllib.request import urlopen
@@ -49,10 +50,19 @@ except ImportError:
     Image = None
 
 from .errors import FPDFException
+from .image_datastructures import ImageCache, RasterImageInfo, VectorImageInfo
+from .svg import SVGObject
+
+
+@dataclass
+class ImageSettings:
+    # Passed to zlib.compress() - In range 0-9 - Default is currently equivalent to 6:
+    compression_level: int = -1
 
 
 LOGGER = logging.getLogger(__name__)
 SUPPORTED_IMAGE_FILTERS = (&#34;AUTO&#34;, &#34;FlateDecode&#34;, &#34;DCTDecode&#34;, &#34;JPXDecode&#34;)
+SETTINGS = ImageSettings()
 
 # fmt: off
 TIFFBitRevTable = [
@@ -86,6 +96,78 @@ TIFFBitRevTable = [
 # fmt: on
 
 
+def preload_image(image_cache: ImageCache, name, dims=None):
+    &#34;&#34;&#34;
+    Read an image and load it into memory.
+
+    For raster images: following this call, the image is inserted in `image_cache.images`,
+    and following calls to `FPDF.image()` will re-use the same cached values, without re-reading the image.
+
+    For vector images: the data is loaded and the metadata extracted.
+
+    Args:
+        image_cache: an `ImageCache` instance, usually the `.image_cache` attribute of a `FPDF` instance.
+        name: either a string representing a file path to an image, an URL to an image,
+            an io.BytesIO, or a instance of `PIL.Image.Image`.
+        dims (Tuple[float]): optional dimensions as a tuple (width, height) to resize the image
+            (raster only) before storing it in the PDF.
+
+    Returns: A tuple, consisting of 3 values: the name, the image data,
+        and an instance of a subclass of `ImageInfo`.
+    &#34;&#34;&#34;
+    # Identify and load SVG data:
+    if str(name).endswith(&#34;.svg&#34;):
+        return get_svg_info(name, load_image(str(name)), image_cache=image_cache)
+    if isinstance(name, bytes) and _is_svg(name.strip()):
+        return get_svg_info(name, io.BytesIO(name), image_cache=image_cache)
+    if isinstance(name, io.BytesIO) and _is_svg(name.getvalue().strip()):
+        return get_svg_info(&#34;vector_image&#34;, name, image_cache=image_cache)
+
+    # Load raster data.
+    if isinstance(name, str):
+        img = None
+    elif isinstance(name, Image.Image):
+        bytes_ = name.tobytes()
+        img_hash = hashlib.new(&#34;md5&#34;, usedforsecurity=False)  # nosec B324
+        img_hash.update(bytes_)
+        name, img = img_hash.hexdigest(), name
+    elif isinstance(name, (bytes, io.BytesIO)):
+        bytes_ = name.getvalue() if isinstance(name, io.BytesIO) else name
+        bytes_ = bytes_.strip()
+        img_hash = hashlib.new(&#34;md5&#34;, usedforsecurity=False)  # nosec B324
+        img_hash.update(bytes_)
+        name, img = img_hash.hexdigest(), name
+    else:
+        name, img = str(name), name
+    info = image_cache.images.get(name)
+    if info:
+        info[&#34;usages&#34;] += 1
+    else:
+        info = get_img_info(name, img, image_cache.image_filter, dims)
+        info[&#34;i&#34;] = len(image_cache.images) + 1
+        info[&#34;usages&#34;] = 1
+        info[&#34;iccp_i&#34;] = None
+        iccp = info.get(&#34;iccp&#34;)
+        if iccp:
+            LOGGER.debug(
+                &#34;ICC profile found for image %s - It will be inserted in the PDF document&#34;,
+                name,
+            )
+            if iccp in image_cache.icc_profiles:
+                info[&#34;iccp_i&#34;] = image_cache.icc_profiles[iccp]
+            else:
+                iccp_i = len(image_cache.icc_profiles)
+                image_cache.icc_profiles[iccp] = iccp_i
+                info[&#34;iccp_i&#34;] = iccp_i
+            info[&#34;iccp&#34;] = None
+        image_cache.images[name] = info
+    return name, img, info
+
+
+def _is_svg(bytes_):
+    return bytes_.startswith(b&#34;&lt;?xml &#34;) or bytes_.startswith(b&#34;&lt;svg &#34;)
+
+
 def load_image(filename):
     &#34;&#34;&#34;
     This method is used to load external resources, such as images.
@@ -111,7 +193,10 @@ def load_image(filename):
 
 def _decode_base64_image(base64Image):
     &#34;Decode the base 64 image string into an io byte stream.&#34;
-    imageData = base64Image.split(&#34;base64,&#34;)[1]
+    frags = base64Image.split(&#34;base64,&#34;)
+    if len(frags) != 2:
+        raise NotImplementedError(&#34;Unsupported non-base64 image data&#34;)
+    imageData = frags[1]
     decodedData = base64.b64decode(imageData)
     return BytesIO(decodedData)
 
@@ -134,6 +219,20 @@ def is_iccp_valid(iccp, filename):
     return True
 
 
+def get_svg_info(filename, img, image_cache):
+    svg = SVGObject(img.getvalue(), image_cache=image_cache)
+    if svg.viewbox:
+        _, _, w, h = svg.viewbox
+    else:
+        w = h = 0.0
+    if svg.width:
+        w = svg.width
+    if svg.height:
+        h = svg.height
+    info = VectorImageInfo(data=svg, w=w, h=h)
+    return filename, svg, info
+
+
 def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
     &#34;&#34;&#34;
     Args:
@@ -146,7 +245,9 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
 
     is_pil_img = True
     keep_bytes_io_open = False
-    jpeg_inverted = False  # flag to check whether a cmyk image is jpeg or not, if set to True the decode array is inverted in output.py
+    # Flag to check whether a cmyk image is jpeg or not, if set to True the decode array
+    # is inverted in output.py
+    jpeg_inverted = False
     img_raw_data = None
     if not img or isinstance(img, (Path, str)):
         img_raw_data = load_image(filename)
@@ -182,7 +283,7 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
         img_altered = True
 
     w, h = img.size
-    info = {}
+    info = RasterImageInfo()
 
     iccp = None
     if &#34;icc_profile&#34; in img.info:
@@ -200,18 +301,21 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
             if img.mode == &#34;L&#34;:
                 dpn, bpc, colspace = 1, 8, &#34;DeviceGray&#34;
             img_raw_data.seek(0)
-            return {
-                &#34;data&#34;: img_raw_data.read(),
-                &#34;w&#34;: w,
-                &#34;h&#34;: h,
-                &#34;cs&#34;: colspace,
-                &#34;iccp&#34;: iccp,
-                &#34;dpn&#34;: dpn,
-                &#34;bpc&#34;: bpc,
-                &#34;f&#34;: image_filter,
-                &#34;inverted&#34;: jpeg_inverted,
-                &#34;dp&#34;: f&#34;/Predictor 15 /Colors {dpn} /Columns {w}&#34;,
-            }
+            info.update(
+                {
+                    &#34;data&#34;: img_raw_data.read(),
+                    &#34;w&#34;: w,
+                    &#34;h&#34;: h,
+                    &#34;cs&#34;: colspace,
+                    &#34;iccp&#34;: iccp,
+                    &#34;dpn&#34;: dpn,
+                    &#34;bpc&#34;: bpc,
+                    &#34;f&#34;: image_filter,
+                    &#34;inverted&#34;: jpeg_inverted,
+                    &#34;dp&#34;: f&#34;/Predictor 15 /Colors {dpn} /Columns {w}&#34;,
+                }
+            )
+            return info
         # We can directly copy the data out of a CCITT Group 4 encoded TIFF, if it
         # only contains a single strip
         if (
@@ -245,18 +349,21 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
             else:
                 raise ValueError(f&#34;unsupported FillOrder: {fillorder}&#34;)
             dpn, bpc, colspace = 1, 1, &#34;DeviceGray&#34;
-            return {
-                &#34;data&#34;: ccittrawdata,
-                &#34;w&#34;: w,
-                &#34;h&#34;: h,
-                &#34;iccp&#34;: None,
-                &#34;dpn&#34;: dpn,
-                &#34;cs&#34;: colspace,
-                &#34;bpc&#34;: bpc,
-                &#34;f&#34;: image_filter,
-                &#34;inverted&#34;: jpeg_inverted,
-                &#34;dp&#34;: f&#34;/BlackIs1 {str(not inverted).lower()} /Columns {w} /K -1 /Rows {h}&#34;,
-            }
+            info.update(
+                {
+                    &#34;data&#34;: ccittrawdata,
+                    &#34;w&#34;: w,
+                    &#34;h&#34;: h,
+                    &#34;iccp&#34;: None,
+                    &#34;dpn&#34;: dpn,
+                    &#34;cs&#34;: colspace,
+                    &#34;bpc&#34;: bpc,
+                    &#34;f&#34;: image_filter,
+                    &#34;inverted&#34;: jpeg_inverted,
+                    &#34;dp&#34;: f&#34;/BlackIs1 {str(not inverted).lower()} /Columns {w} /K -1 /Rows {h}&#34;,
+                }
+            )
+            return info
 
     # garbage collection
     img_raw_data = None
@@ -340,7 +447,6 @@ def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
             &#34;dp&#34;: dp,
         }
     )
-
     return info
 
 
@@ -489,7 +595,7 @@ def _to_zdata(img, remove_slice=None, select_slice=None):
         data_with_padding.extend(b&#34;\0&#34;)
         data_with_padding.extend(data[i : i + row_size])
 
-    return zlib.compress(data_with_padding)
+    return zlib.compress(data_with_padding, level=SETTINGS.compression_level)
 
 
 def _has_alpha(img, alpha_channel):
@@ -512,7 +618,7 @@ def _has_alpha(img, alpha_channel):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L342-L363" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L448-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ccitt_payload_location_from_pil(img):
     &#34;&#34;&#34;
@@ -554,7 +660,7 @@ def _has_alpha(img, alpha_channel):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L108-L315" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L207-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_img_info(filename, img=None, image_filter=&#34;AUTO&#34;, dims=None):
     &#34;&#34;&#34;
@@ -568,7 +674,9 @@ def _has_alpha(img, alpha_channel):
 
     is_pil_img = True
     keep_bytes_io_open = False
-    jpeg_inverted = False  # flag to check whether a cmyk image is jpeg or not, if set to True the decode array is inverted in output.py
+    # Flag to check whether a cmyk image is jpeg or not, if set to True the decode array
+    # is inverted in output.py
+    jpeg_inverted = False
     img_raw_data = None
     if not img or isinstance(img, (Path, str)):
         img_raw_data = load_image(filename)
@@ -604,7 +712,7 @@ def _has_alpha(img, alpha_channel):
         img_altered = True
 
     w, h = img.size
-    info = {}
+    info = RasterImageInfo()
 
     iccp = None
     if &#34;icc_profile&#34; in img.info:
@@ -622,18 +730,21 @@ def _has_alpha(img, alpha_channel):
             if img.mode == &#34;L&#34;:
                 dpn, bpc, colspace = 1, 8, &#34;DeviceGray&#34;
             img_raw_data.seek(0)
-            return {
-                &#34;data&#34;: img_raw_data.read(),
-                &#34;w&#34;: w,
-                &#34;h&#34;: h,
-                &#34;cs&#34;: colspace,
-                &#34;iccp&#34;: iccp,
-                &#34;dpn&#34;: dpn,
-                &#34;bpc&#34;: bpc,
-                &#34;f&#34;: image_filter,
-                &#34;inverted&#34;: jpeg_inverted,
-                &#34;dp&#34;: f&#34;/Predictor 15 /Colors {dpn} /Columns {w}&#34;,
-            }
+            info.update(
+                {
+                    &#34;data&#34;: img_raw_data.read(),
+                    &#34;w&#34;: w,
+                    &#34;h&#34;: h,
+                    &#34;cs&#34;: colspace,
+                    &#34;iccp&#34;: iccp,
+                    &#34;dpn&#34;: dpn,
+                    &#34;bpc&#34;: bpc,
+                    &#34;f&#34;: image_filter,
+                    &#34;inverted&#34;: jpeg_inverted,
+                    &#34;dp&#34;: f&#34;/Predictor 15 /Colors {dpn} /Columns {w}&#34;,
+                }
+            )
+            return info
         # We can directly copy the data out of a CCITT Group 4 encoded TIFF, if it
         # only contains a single strip
         if (
@@ -667,18 +778,21 @@ def _has_alpha(img, alpha_channel):
             else:
                 raise ValueError(f&#34;unsupported FillOrder: {fillorder}&#34;)
             dpn, bpc, colspace = 1, 1, &#34;DeviceGray&#34;
-            return {
-                &#34;data&#34;: ccittrawdata,
-                &#34;w&#34;: w,
-                &#34;h&#34;: h,
-                &#34;iccp&#34;: None,
-                &#34;dpn&#34;: dpn,
-                &#34;cs&#34;: colspace,
-                &#34;bpc&#34;: bpc,
-                &#34;f&#34;: image_filter,
-                &#34;inverted&#34;: jpeg_inverted,
-                &#34;dp&#34;: f&#34;/BlackIs1 {str(not inverted).lower()} /Columns {w} /K -1 /Rows {h}&#34;,
-            }
+            info.update(
+                {
+                    &#34;data&#34;: ccittrawdata,
+                    &#34;w&#34;: w,
+                    &#34;h&#34;: h,
+                    &#34;iccp&#34;: None,
+                    &#34;dpn&#34;: dpn,
+                    &#34;cs&#34;: colspace,
+                    &#34;bpc&#34;: bpc,
+                    &#34;f&#34;: image_filter,
+                    &#34;inverted&#34;: jpeg_inverted,
+                    &#34;dp&#34;: f&#34;/BlackIs1 {str(not inverted).lower()} /Columns {w} /K -1 /Rows {h}&#34;,
+                }
+            )
+            return info
 
     # garbage collection
     img_raw_data = None
@@ -762,8 +876,31 @@ def _has_alpha(img, alpha_channel):
             &#34;dp&#34;: dp,
         }
     )
-
     return info</code></pre>
+</details>
+</dd>
+<dt id="fpdf.image_parsing.get_svg_info"><code class="name flex">
+<span>def <span class="ident">get_svg_info</span></span>(<span>filename, img, image_cache)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L193-L204" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get_svg_info(filename, img, image_cache):
+    svg = SVGObject(img.getvalue(), image_cache=image_cache)
+    if svg.viewbox:
+        _, _, w, h = svg.viewbox
+    else:
+        w = h = 0.0
+    if svg.width:
+        w = svg.width
+    if svg.height:
+        h = svg.height
+    info = VectorImageInfo(data=svg, w=w, h=h)
+    return filename, svg, info</code></pre>
 </details>
 </dd>
 <dt id="fpdf.image_parsing.is_iccp_valid"><code class="name flex">
@@ -774,7 +911,7 @@ def _has_alpha(img, alpha_channel):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L90-L105" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L175-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_iccp_valid(iccp, filename):
     &#34;Checks the validity of an ICC profile&#34;
@@ -804,7 +941,7 @@ It always return a BytesIO buffer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L60-L80" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L142-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load_image(filename):
     &#34;&#34;&#34;
@@ -829,6 +966,100 @@ It always return a BytesIO buffer.</p></div>
         return BytesIO(local_file.read())</code></pre>
 </details>
 </dd>
+<dt id="fpdf.image_parsing.preload_image"><code class="name flex">
+<span>def <span class="ident">preload_image</span></span>(<span>image_cache: <a title="fpdf.image_datastructures.ImageCache" href="image_datastructures.html#fpdf.image_datastructures.ImageCache">ImageCache</a>, name, dims=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read an image and load it into memory.</p>
+<p>For raster images: following this call, the image is inserted in <code>image_cache.images</code>,
+and following calls to <code>FPDF.image()</code> will re-use the same cached values, without re-reading the image.</p>
+<p>For vector images: the data is loaded and the metadata extracted.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>image_cache</code></strong></dt>
+<dd>an <code>ImageCache</code> instance, usually the <code>.image_cache</code> attribute of a <code>FPDF</code> instance.</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>either a string representing a file path to an image, an URL to an image,
+an io.BytesIO, or a instance of <code>PIL.Image.Image</code>.</dd>
+<dt><strong><code>dims</code></strong> :&ensp;<code>Tuple[float]</code></dt>
+<dd>optional dimensions as a tuple (width, height) to resize the image
+(raster only) before storing it in the PDF.</dd>
+</dl>
+<p>Returns: A tuple, consisting of 3 values: the name, the image data,
+and an instance of a subclass of <code>ImageInfo</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L70-L135" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def preload_image(image_cache: ImageCache, name, dims=None):
+    &#34;&#34;&#34;
+    Read an image and load it into memory.
+
+    For raster images: following this call, the image is inserted in `image_cache.images`,
+    and following calls to `FPDF.image()` will re-use the same cached values, without re-reading the image.
+
+    For vector images: the data is loaded and the metadata extracted.
+
+    Args:
+        image_cache: an `ImageCache` instance, usually the `.image_cache` attribute of a `FPDF` instance.
+        name: either a string representing a file path to an image, an URL to an image,
+            an io.BytesIO, or a instance of `PIL.Image.Image`.
+        dims (Tuple[float]): optional dimensions as a tuple (width, height) to resize the image
+            (raster only) before storing it in the PDF.
+
+    Returns: A tuple, consisting of 3 values: the name, the image data,
+        and an instance of a subclass of `ImageInfo`.
+    &#34;&#34;&#34;
+    # Identify and load SVG data:
+    if str(name).endswith(&#34;.svg&#34;):
+        return get_svg_info(name, load_image(str(name)), image_cache=image_cache)
+    if isinstance(name, bytes) and _is_svg(name.strip()):
+        return get_svg_info(name, io.BytesIO(name), image_cache=image_cache)
+    if isinstance(name, io.BytesIO) and _is_svg(name.getvalue().strip()):
+        return get_svg_info(&#34;vector_image&#34;, name, image_cache=image_cache)
+
+    # Load raster data.
+    if isinstance(name, str):
+        img = None
+    elif isinstance(name, Image.Image):
+        bytes_ = name.tobytes()
+        img_hash = hashlib.new(&#34;md5&#34;, usedforsecurity=False)  # nosec B324
+        img_hash.update(bytes_)
+        name, img = img_hash.hexdigest(), name
+    elif isinstance(name, (bytes, io.BytesIO)):
+        bytes_ = name.getvalue() if isinstance(name, io.BytesIO) else name
+        bytes_ = bytes_.strip()
+        img_hash = hashlib.new(&#34;md5&#34;, usedforsecurity=False)  # nosec B324
+        img_hash.update(bytes_)
+        name, img = img_hash.hexdigest(), name
+    else:
+        name, img = str(name), name
+    info = image_cache.images.get(name)
+    if info:
+        info[&#34;usages&#34;] += 1
+    else:
+        info = get_img_info(name, img, image_cache.image_filter, dims)
+        info[&#34;i&#34;] = len(image_cache.images) + 1
+        info[&#34;usages&#34;] = 1
+        info[&#34;iccp_i&#34;] = None
+        iccp = info.get(&#34;iccp&#34;)
+        if iccp:
+            LOGGER.debug(
+                &#34;ICC profile found for image %s - It will be inserted in the PDF document&#34;,
+                name,
+            )
+            if iccp in image_cache.icc_profiles:
+                info[&#34;iccp_i&#34;] = image_cache.icc_profiles[iccp]
+            else:
+                iccp_i = len(image_cache.icc_profiles)
+                image_cache.icc_profiles[iccp] = iccp_i
+                info[&#34;iccp_i&#34;] = iccp_i
+            info[&#34;iccp&#34;] = None
+        image_cache.images[name] = info
+    return name, img, info</code></pre>
+</details>
+</dd>
 <dt id="fpdf.image_parsing.transcode_monochrome"><code class="name flex">
 <span>def <span class="ident">transcode_monochrome</span></span>(<span>img)</span>
 </code></dt>
@@ -837,7 +1068,7 @@ It always return a BytesIO buffer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L366-L416" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L472-L522" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transcode_monochrome(img):
     &#34;&#34;&#34;
@@ -897,6 +1128,30 @@ It always return a BytesIO buffer.</p></div>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="fpdf.image_parsing.ImageSettings"><code class="flex name class">
+<span>class <span class="ident">ImageSettings</span></span>
+<span>(</span><span>compression_level: int = -1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ImageSettings(compression_level: int = -1)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L28-L31" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@dataclass
+class ImageSettings:
+    # Passed to zlib.compress() - In range 0-9 - Default is currently equivalent to 6:
+    compression_level: int = -1</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="fpdf.image_parsing.ImageSettings.compression_level"><code class="name">var <span class="ident">compression_level</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="fpdf.image_parsing.temp_attr"><code class="flex name class">
 <span>class <span class="ident">temp_attr</span></span>
 <span>(</span><span>obj, field, value)</span>
@@ -906,7 +1161,7 @@ It always return a BytesIO buffer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/image_parsing.py#L318-L339" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/image_parsing.py#L424-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class temp_attr:
     &#34;&#34;&#34;
@@ -950,13 +1205,21 @@ It always return a BytesIO buffer.</p></div>
 <ul class="">
 <li><code><a title="fpdf.image_parsing.ccitt_payload_location_from_pil" href="#fpdf.image_parsing.ccitt_payload_location_from_pil">ccitt_payload_location_from_pil</a></code></li>
 <li><code><a title="fpdf.image_parsing.get_img_info" href="#fpdf.image_parsing.get_img_info">get_img_info</a></code></li>
+<li><code><a title="fpdf.image_parsing.get_svg_info" href="#fpdf.image_parsing.get_svg_info">get_svg_info</a></code></li>
 <li><code><a title="fpdf.image_parsing.is_iccp_valid" href="#fpdf.image_parsing.is_iccp_valid">is_iccp_valid</a></code></li>
 <li><code><a title="fpdf.image_parsing.load_image" href="#fpdf.image_parsing.load_image">load_image</a></code></li>
+<li><code><a title="fpdf.image_parsing.preload_image" href="#fpdf.image_parsing.preload_image">preload_image</a></code></li>
 <li><code><a title="fpdf.image_parsing.transcode_monochrome" href="#fpdf.image_parsing.transcode_monochrome">transcode_monochrome</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="fpdf.image_parsing.ImageSettings" href="#fpdf.image_parsing.ImageSettings">ImageSettings</a></code></h4>
+<ul class="">
+<li><code><a title="fpdf.image_parsing.ImageSettings.compression_level" href="#fpdf.image_parsing.ImageSettings.compression_level">compression_level</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="fpdf.image_parsing.temp_attr" href="#fpdf.image_parsing.temp_attr">temp_attr</a></code></h4>
 </li>

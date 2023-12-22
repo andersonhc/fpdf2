@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L1-L728" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L1-L713" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
 from numbers import Number
@@ -38,63 +38,6 @@ from .fonts import CORE_FONTS, FontFace
 from .util import Padding
 
 DEFAULT_HEADINGS_STYLE = FontFace(emphasis=&#34;BOLD&#34;)
-
-
-def draw_box_borders(pdf, x1, y1, x2, y2, border, fill_color=None):
-    &#34;&#34;&#34;Draws a box using the provided style - private helper used by table for drawing the cell and table borders.
-    Difference between this and rect() is that border can be defined as &#34;L,R,T,B&#34; to draw only some of the four borders;
-    compatible with get_border(i,k)
-
-    See Also: rect()&#34;&#34;&#34;
-
-    if fill_color:
-        prev_fill_color = pdf.fill_color
-        if isinstance(fill_color, (int, float)):
-            fill_color = [fill_color]
-        pdf.set_fill_color(*fill_color)
-
-    sl = []
-
-    k = pdf.k
-
-    # y top to bottom instead of bottom to top
-    y1 = pdf.h - y1
-    y2 = pdf.h - y2
-
-    # scale
-    x1 *= k
-    x2 *= k
-    y2 *= k
-    y1 *= k
-
-    if fill_color:
-        op = &#34;B&#34; if border == 1 else &#34;f&#34;
-        sl.append(f&#34;{x1:.2f} {y2:.2f} &#34; f&#34;{x2 - x1:.2f} {y1 - y2:.2f} re {op}&#34;)
-    elif border == 1:
-        sl.append(f&#34;{x1:.2f} {y2:.2f} &#34; f&#34;{x2 - x1:.2f} {y1 - y2:.2f} re S&#34;)
-
-    if isinstance(border, str):
-        if &#34;L&#34; in border:
-            sl.append(f&#34;{x1:.2f} {y2:.2f} m &#34; f&#34;{x1:.2f} {y1:.2f} l S&#34;)
-        if &#34;B&#34; in border:
-            sl.append(f&#34;{x1:.2f} {y2:.2f} m &#34; f&#34;{x2:.2f} {y2:.2f} l S&#34;)
-        if &#34;R&#34; in border:
-            sl.append(f&#34;{x2:.2f} {y2:.2f} m &#34; f&#34;{x2:.2f} {y1:.2f} l S&#34;)
-        if &#34;T&#34; in border:
-            sl.append(f&#34;{x1:.2f} {y1:.2f} m &#34; f&#34;{x2:.2f} {y1:.2f} l S&#34;)
-
-    s = &#34; &#34;.join(sl)
-    pdf._out(s)  # pylint: disable=protected-access
-
-    if fill_color:
-        pdf.set_fill_color(prev_fill_color)
-
-
-@dataclass(frozen=True)
-class RowLayoutInfo:
-    height: float
-    triggers_page_jump: bool
-    rendered_height: dict
 
 
 class Table:
@@ -146,7 +89,7 @@ class Table:
                 Defines the visual style of the top headings row: size, color, emphasis...
             line_height (number): optional. Defines how much vertical space a line of text will occupy
             markdown (bool): optional, default to False. Enable markdown interpretation of cells textual content
-            text_align (str, fpdf.enums.Align): optional, default to JUSTIFY. Control text alignment inside cells.
+            text_align (str, fpdf.enums.Align, tuple): optional, default to JUSTIFY. Control text alignment inside cells.
             v_align (str, fpdf.enums.AlignV): optional, default to CENTER. Control vertical alignment of cells content
             width (number): optional. Sets the table width
             wrapmode (fpdf.enums.WrapMode): &#34;WORD&#34; for word based line wrapping (default),
@@ -177,6 +120,7 @@ class Table:
         self._width = fpdf.epw if width is None else width
         self._wrapmode = wrapmode
         self._num_heading_rows = num_heading_rows
+        self._initial_style = None
         self.rows = []
 
         if padding is None:
@@ -213,9 +157,11 @@ class Table:
         for row in rows:
             self.row(row)
 
-    def row(self, cells=()):
+    def row(self, cells=(), style=None):
         &#34;Adds a row to the table. Yields a `Row` object.&#34;
-        row = Row(self._fpdf)
+        if self._initial_style is None:
+            self._initial_style = self._fpdf.font_face()
+        row = Row(self, style=style)
         self.rows.append(row)
         for cell in cells:
             row.cell(cell)
@@ -351,9 +297,7 @@ class Table:
             return &#34;B&#34; if i &lt; self._num_heading_rows else 0
         return &#34;&#34;.join(border)
 
-    def _render_table_row(
-        self, i, row_layout_info, cell_x_positions, fill=False, **kwargs
-    ):
+    def _render_table_row(self, i, row_layout_info, cell_x_positions, **kwargs):
         row = self.rows[i]
         j = 0
         y = self._fpdf.y  # remember current y position, reset after each cell
@@ -366,7 +310,6 @@ class Table:
                 row_height=self._line_height,
                 cell_height_info=row_layout_info,
                 cell_x_positions=cell_x_positions,
-                fill=fill,
                 **kwargs,
             )
             j += cell.colspan
@@ -380,7 +323,6 @@ class Table:
         j,
         cell,
         row_height,  # height of a row of text including line spacing
-        fill=False,
         cell_height_info=None,  # full height of a cell, including padding, used to render borders and images
         cell_x_positions=None,  # x-positions of the individual columns, pre-calculated for speed. Only relevant when rendering
         **kwargs,
@@ -410,29 +352,15 @@ class Table:
         text_align = cell.align or self._text_align
         if not isinstance(text_align, (Align, str)):
             text_align = text_align[j]
+
+        style = self._initial_style
+        cell_mode_fill = self._cell_fill_mode.should_fill_cell(i, j)
+        if cell_mode_fill and self._cell_fill_color:
+            style = style.replace(fill_color=self._cell_fill_color)
         if i &lt; self._num_heading_rows:
-            style = self._headings_style
-        else:
-            style = cell.style or row.style
-        if style and style.fill_color:
-            fill = True
-        elif (
-            not fill
-            and self._cell_fill_color
-            and self._cell_fill_mode != TableCellFillMode.NONE
-        ):
-            if self._cell_fill_mode == TableCellFillMode.ALL:
-                fill = True
-            elif self._cell_fill_mode == TableCellFillMode.ROWS:
-                fill = bool(i % 2)
-            elif self._cell_fill_mode == TableCellFillMode.COLUMNS:
-                fill = bool(j % 2)
-        if fill and self._cell_fill_color and not (style and style.fill_color):
-            style = (
-                style.replace(fill_color=self._cell_fill_color)
-                if style
-                else FontFace(fill_color=self._cell_fill_color)
-            )
+            style = FontFace.combine(style, self._headings_style)
+        style = FontFace.combine(style, row.style)
+        style = FontFace.combine(style, cell.style)
 
         padding = Padding.new(cell.padding) if cell.padding else self._padding
 
@@ -476,7 +404,7 @@ class Table:
                 x2,
                 y2,
                 border=self.get_cell_border(i, j),
-                fill_color=style.fill_color if fill else None,
+                fill_color=style.fill_color if style else None,
             )
 
             # draw outer box if needed
@@ -565,6 +493,7 @@ class Table:
                     output=MethodReturnValue.PAGE_BREAK | MethodReturnValue.HEIGHT,
                     wrapmode=self._wrapmode,
                     padding=padding,
+                    link=cell.link,
                     **kwargs,
                 )
 
@@ -663,10 +592,10 @@ class Table:
 class Row:
     &#34;Object that `Table.row()` yields, used to build a row in a table&#34;
 
-    def __init__(self, fpdf):
-        self._fpdf = fpdf
+    def __init__(self, table, style=None):
+        self._table = table
         self.cells = []
-        self.style = fpdf.font_face()
+        self.style = style
 
     @property
     def cols_count(self):
@@ -715,12 +644,13 @@ class Row:
         if text and img:
             raise NotImplementedError(
                 &#34;fpdf2 currently does not support inserting text with an image in the same table cell.&#34;
-                &#34;Pull Requests are welcome to implement this 😊&#34;
+                &#34; Pull Requests are welcome to implement this 😊&#34;
             )
         if not style:
+            # pylint: disable=protected-access
             # We capture the current font settings:
-            font_face = self._fpdf.font_face()
-            if font_face != self.style:
+            font_face = self._table._fpdf.font_face()
+            if font_face not in (self.style, self._table._initial_style):
                 style = font_face
         cell = Cell(
             text, align, v_align, style, img, img_fill_width, colspan, padding, link
@@ -754,7 +684,62 @@ class Cell:
     link: Optional[Union[str, int]]
 
     def write(self, text, align=None):
-        raise NotImplementedError(&#34;Not implemented yet&#34;)</code></pre>
+        raise NotImplementedError(&#34;Not implemented yet&#34;)
+
+
+@dataclass(frozen=True)
+class RowLayoutInfo:
+    height: float
+    triggers_page_jump: bool
+    rendered_height: dict
+
+
+def draw_box_borders(pdf, x1, y1, x2, y2, border, fill_color=None):
+    &#34;&#34;&#34;Draws a box using the provided style - private helper used by table for drawing the cell and table borders.
+    Difference between this and rect() is that border can be defined as &#34;L,R,T,B&#34; to draw only some of the four borders;
+    compatible with get_border(i,k)
+
+    See Also: rect()&#34;&#34;&#34;
+
+    if fill_color:
+        prev_fill_color = pdf.fill_color
+        pdf.set_fill_color(fill_color)
+
+    sl = []
+
+    k = pdf.k
+
+    # y top to bottom instead of bottom to top
+    y1 = pdf.h - y1
+    y2 = pdf.h - y2
+
+    # scale
+    x1 *= k
+    x2 *= k
+    y2 *= k
+    y1 *= k
+
+    if fill_color:
+        op = &#34;B&#34; if border == 1 else &#34;f&#34;
+        sl.append(f&#34;{x1:.2f} {y2:.2f} &#34; f&#34;{x2 - x1:.2f} {y1 - y2:.2f} re {op}&#34;)
+    elif border == 1:
+        sl.append(f&#34;{x1:.2f} {y2:.2f} &#34; f&#34;{x2 - x1:.2f} {y1 - y2:.2f} re S&#34;)
+
+    if isinstance(border, str):
+        if &#34;L&#34; in border:
+            sl.append(f&#34;{x1:.2f} {y2:.2f} m &#34; f&#34;{x1:.2f} {y1:.2f} l S&#34;)
+        if &#34;B&#34; in border:
+            sl.append(f&#34;{x1:.2f} {y2:.2f} m &#34; f&#34;{x2:.2f} {y2:.2f} l S&#34;)
+        if &#34;R&#34; in border:
+            sl.append(f&#34;{x2:.2f} {y2:.2f} m &#34; f&#34;{x2:.2f} {y1:.2f} l S&#34;)
+        if &#34;T&#34; in border:
+            sl.append(f&#34;{x1:.2f} {y1:.2f} m &#34; f&#34;{x2:.2f} {y1:.2f} l S&#34;)
+
+    s = &#34; &#34;.join(sl)
+    pdf._out(s)  # pylint: disable=protected-access
+
+    if fill_color:
+        pdf.set_fill_color(prev_fill_color)</code></pre>
 </details>
 </section>
 <section>
@@ -775,7 +760,7 @@ compatible with get_border(i,k)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L14-L61" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L668-L713" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def draw_box_borders(pdf, x1, y1, x2, y2, border, fill_color=None):
     &#34;&#34;&#34;Draws a box using the provided style - private helper used by table for drawing the cell and table borders.
@@ -786,9 +771,7 @@ compatible with get_border(i,k)</p>
 
     if fill_color:
         prev_fill_color = pdf.fill_color
-        if isinstance(fill_color, (int, float)):
-            fill_color = [fill_color]
-        pdf.set_fill_color(*fill_color)
+        pdf.set_fill_color(fill_color)
 
     sl = []
 
@@ -841,7 +824,7 @@ compatible with get_border(i,k)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L703-L728" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L633-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass(frozen=True)
 class Cell:
@@ -919,7 +902,7 @@ class Cell:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L727-L728" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L657-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self, text, align=None):
     raise NotImplementedError(&#34;Not implemented yet&#34;)</code></pre>
@@ -929,22 +912,22 @@ class Cell:
 </dd>
 <dt id="fpdf.table.Row"><code class="flex name class">
 <span>class <span class="ident">Row</span></span>
-<span>(</span><span>fpdf)</span>
+<span>(</span><span>table, style=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Object that <code><a title="fpdf.table.Table.row" href="#fpdf.table.Table.row">Table.row()</a></code> yields, used to build a row in a table</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L634-L700" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L563-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Row:
     &#34;Object that `Table.row()` yields, used to build a row in a table&#34;
 
-    def __init__(self, fpdf):
-        self._fpdf = fpdf
+    def __init__(self, table, style=None):
+        self._table = table
         self.cells = []
-        self.style = fpdf.font_face()
+        self.style = style
 
     @property
     def cols_count(self):
@@ -993,12 +976,13 @@ class Cell:
         if text and img:
             raise NotImplementedError(
                 &#34;fpdf2 currently does not support inserting text with an image in the same table cell.&#34;
-                &#34;Pull Requests are welcome to implement this 😊&#34;
+                &#34; Pull Requests are welcome to implement this 😊&#34;
             )
         if not style:
+            # pylint: disable=protected-access
             # We capture the current font settings:
-            font_face = self._fpdf.font_face()
-            if font_face != self.style:
+            font_face = self._table._fpdf.font_face()
+            if font_face not in (self.style, self._table._initial_style):
                 style = font_face
         cell = Cell(
             text, align, v_align, style, img, img_fill_width, colspan, padding, link
@@ -1014,7 +998,7 @@ class Cell:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L642-L644" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L571-L573" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def cols_count(self):
@@ -1027,7 +1011,7 @@ def cols_count(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L646-L654" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L575-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def column_indices(self):
@@ -1075,7 +1059,7 @@ using the full width of the current table column.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L656-L700" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L585-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cell(
     self,
@@ -1110,12 +1094,13 @@ using the full width of the current table column.</dd>
     if text and img:
         raise NotImplementedError(
             &#34;fpdf2 currently does not support inserting text with an image in the same table cell.&#34;
-            &#34;Pull Requests are welcome to implement this 😊&#34;
+            &#34; Pull Requests are welcome to implement this 😊&#34;
         )
     if not style:
+        # pylint: disable=protected-access
         # We capture the current font settings:
-        font_face = self._fpdf.font_face()
-        if font_face != self.style:
+        font_face = self._table._fpdf.font_face()
+        if font_face not in (self.style, self._table._initial_style):
             style = font_face
     cell = Cell(
         text, align, v_align, style, img, img_fill_width, colspan, padding, link
@@ -1135,7 +1120,7 @@ using the full width of the current table column.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L64-L68" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L661-L665" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass(frozen=True)
 class RowLayoutInfo:
@@ -1198,7 +1183,7 @@ Defines the visual style of the top headings row: size, color, emphasis&hellip;<
 <dd>optional. Defines how much vertical space a line of text will occupy</dd>
 <dt><strong><code>markdown</code></strong> :&ensp;<code>bool</code></dt>
 <dd>optional, default to False. Enable markdown interpretation of cells textual content</dd>
-<dt><strong><code>text_align</code></strong> :&ensp;<code>str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a></code></dt>
+<dt><strong><code>text_align</code></strong> :&ensp;<code>str, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a>, tuple</code></dt>
 <dd>optional, default to JUSTIFY. Control text alignment inside cells.</dd>
 <dt><strong><code>v_align</code></strong> :&ensp;<code>str, fpdf.enums.AlignV</code></dt>
 <dd>optional, default to CENTER. Control vertical alignment of cells content</dd>
@@ -1221,7 +1206,7 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L71-L631" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L14-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Table:
     &#34;&#34;&#34;
@@ -1272,7 +1257,7 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
                 Defines the visual style of the top headings row: size, color, emphasis...
             line_height (number): optional. Defines how much vertical space a line of text will occupy
             markdown (bool): optional, default to False. Enable markdown interpretation of cells textual content
-            text_align (str, fpdf.enums.Align): optional, default to JUSTIFY. Control text alignment inside cells.
+            text_align (str, fpdf.enums.Align, tuple): optional, default to JUSTIFY. Control text alignment inside cells.
             v_align (str, fpdf.enums.AlignV): optional, default to CENTER. Control vertical alignment of cells content
             width (number): optional. Sets the table width
             wrapmode (fpdf.enums.WrapMode): &#34;WORD&#34; for word based line wrapping (default),
@@ -1303,6 +1288,7 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
         self._width = fpdf.epw if width is None else width
         self._wrapmode = wrapmode
         self._num_heading_rows = num_heading_rows
+        self._initial_style = None
         self.rows = []
 
         if padding is None:
@@ -1339,9 +1325,11 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
         for row in rows:
             self.row(row)
 
-    def row(self, cells=()):
+    def row(self, cells=(), style=None):
         &#34;Adds a row to the table. Yields a `Row` object.&#34;
-        row = Row(self._fpdf)
+        if self._initial_style is None:
+            self._initial_style = self._fpdf.font_face()
+        row = Row(self, style=style)
         self.rows.append(row)
         for cell in cells:
             row.cell(cell)
@@ -1477,9 +1465,7 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
             return &#34;B&#34; if i &lt; self._num_heading_rows else 0
         return &#34;&#34;.join(border)
 
-    def _render_table_row(
-        self, i, row_layout_info, cell_x_positions, fill=False, **kwargs
-    ):
+    def _render_table_row(self, i, row_layout_info, cell_x_positions, **kwargs):
         row = self.rows[i]
         j = 0
         y = self._fpdf.y  # remember current y position, reset after each cell
@@ -1492,7 +1478,6 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
                 row_height=self._line_height,
                 cell_height_info=row_layout_info,
                 cell_x_positions=cell_x_positions,
-                fill=fill,
                 **kwargs,
             )
             j += cell.colspan
@@ -1506,7 +1491,6 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
         j,
         cell,
         row_height,  # height of a row of text including line spacing
-        fill=False,
         cell_height_info=None,  # full height of a cell, including padding, used to render borders and images
         cell_x_positions=None,  # x-positions of the individual columns, pre-calculated for speed. Only relevant when rendering
         **kwargs,
@@ -1536,29 +1520,15 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
         text_align = cell.align or self._text_align
         if not isinstance(text_align, (Align, str)):
             text_align = text_align[j]
+
+        style = self._initial_style
+        cell_mode_fill = self._cell_fill_mode.should_fill_cell(i, j)
+        if cell_mode_fill and self._cell_fill_color:
+            style = style.replace(fill_color=self._cell_fill_color)
         if i &lt; self._num_heading_rows:
-            style = self._headings_style
-        else:
-            style = cell.style or row.style
-        if style and style.fill_color:
-            fill = True
-        elif (
-            not fill
-            and self._cell_fill_color
-            and self._cell_fill_mode != TableCellFillMode.NONE
-        ):
-            if self._cell_fill_mode == TableCellFillMode.ALL:
-                fill = True
-            elif self._cell_fill_mode == TableCellFillMode.ROWS:
-                fill = bool(i % 2)
-            elif self._cell_fill_mode == TableCellFillMode.COLUMNS:
-                fill = bool(j % 2)
-        if fill and self._cell_fill_color and not (style and style.fill_color):
-            style = (
-                style.replace(fill_color=self._cell_fill_color)
-                if style
-                else FontFace(fill_color=self._cell_fill_color)
-            )
+            style = FontFace.combine(style, self._headings_style)
+        style = FontFace.combine(style, row.style)
+        style = FontFace.combine(style, cell.style)
 
         padding = Padding.new(cell.padding) if cell.padding else self._padding
 
@@ -1602,7 +1572,7 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
                 x2,
                 y2,
                 border=self.get_cell_border(i, j),
-                fill_color=style.fill_color if fill else None,
+                fill_color=style.fill_color if style else None,
             )
 
             # draw outer box if needed
@@ -1691,6 +1661,7 @@ first_row_as_headings is used in case num_heading_rows is 1.</dd>
                     output=MethodReturnValue.PAGE_BREAK | MethodReturnValue.HEIGHT,
                     wrapmode=self._wrapmode,
                     padding=padding,
+                    link=cell.link,
                     **kwargs,
                 )
 
@@ -1798,7 +1769,7 @@ Can be overriden to customize this logic</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L273-L323" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L219-L269" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_cell_border(self, i, j):
     &#34;&#34;&#34;
@@ -1861,7 +1832,7 @@ Can be overriden to customize this logic</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L195-L271" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L141-L217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(self):
     &#34;This is an internal method called by `fpdf.FPDF.table()` once the table is finished&#34;
@@ -1943,18 +1914,20 @@ Can be overriden to customize this logic</p></div>
 </details>
 </dd>
 <dt id="fpdf.table.Table.row"><code class="name flex">
-<span>def <span class="ident">row</span></span>(<span>self, cells=())</span>
+<span>def <span class="ident">row</span></span>(<span>self, cells=(), style=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a row to the table. Yields a <code><a title="fpdf.table.Row" href="#fpdf.table.Row">Row</a></code> object.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/table.py#L187-L193" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/table.py#L131-L139" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def row(self, cells=()):
+<pre><code class="python">def row(self, cells=(), style=None):
     &#34;Adds a row to the table. Yields a `Row` object.&#34;
-    row = Row(self._fpdf)
+    if self._initial_style is None:
+        self._initial_style = self._fpdf.font_face()
+    row = Row(self, style=style)
     self.rows.append(row)
     for cell in cells:
         row.cell(cell)

@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L1-L174" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L1-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import hashlib
 from datetime import datetime
@@ -73,6 +73,7 @@ class AnnotationMixin:
         file_spec: str = None,
         field_type: str = None,
         value=None,
+        default_appearance: str = None,  # for free text annotations
     ):
         self.type = Name(&#34;Annot&#34;)
         self.subtype = Name(subtype)
@@ -100,6 +101,7 @@ class AnnotationMixin:
             else None
         )
         self.f_s = file_spec
+        self.d_a = default_appearance
 
 
 class PDFAnnotation(AnnotationMixin, PDFObject):
@@ -129,6 +131,7 @@ class AnnotationDict(AnnotationMixin):
         &#34;name&#34;,
         &#34;ink_list&#34;,
         &#34;f_s&#34;,
+        &#34;d_a&#34;,
     )
 
     def serialize(self, _security_handler=None, _obj_id=None):
@@ -214,14 +217,14 @@ class FileSpec(NamedTuple):
 <dl>
 <dt id="fpdf.annotations.AnnotationDict"><code class="flex name class">
 <span>class <span class="ident">AnnotationDict</span></span>
-<span>(</span><span>subtype: str, x: int, y: int, width: int, height: int, flags: Tuple[<a title="fpdf.enums.AnnotationFlag" href="enums.html#fpdf.enums.AnnotationFlag">AnnotationFlag</a>] = (&lt;AnnotationFlag.PRINT: 4&gt;,), contents: str = None, dest: <a title="fpdf.syntax.Destination" href="syntax.html#fpdf.syntax.Destination">Destination</a> = None, action: <a title="fpdf.actions.Action" href="actions.html#fpdf.actions.Action">Action</a> = None, color: tuple = None, modification_time: datetime.datetime = None, title: str = None, quad_points: tuple = None, border_width: int = 0, name: Union[<a title="fpdf.enums.AnnotationName" href="enums.html#fpdf.enums.AnnotationName">AnnotationName</a>, <a title="fpdf.enums.FileAttachmentAnnotationName" href="enums.html#fpdf.enums.FileAttachmentAnnotationName">FileAttachmentAnnotationName</a>] = None, ink_list: Tuple[int] = (), file_spec: str = None, field_type: str = None, value=None)</span>
+<span>(</span><span>subtype: str, x: int, y: int, width: int, height: int, flags: Tuple[<a title="fpdf.enums.AnnotationFlag" href="enums.html#fpdf.enums.AnnotationFlag">AnnotationFlag</a>] = (&lt;AnnotationFlag.PRINT: 4&gt;,), contents: str = None, dest: <a title="fpdf.syntax.Destination" href="syntax.html#fpdf.syntax.Destination">Destination</a> = None, action: <a title="fpdf.actions.Action" href="actions.html#fpdf.actions.Action">Action</a> = None, color: tuple = None, modification_time: datetime.datetime = None, title: str = None, quad_points: tuple = None, border_width: int = 0, name: Union[<a title="fpdf.enums.AnnotationName" href="enums.html#fpdf.enums.AnnotationName">AnnotationName</a>, <a title="fpdf.enums.FileAttachmentAnnotationName" href="enums.html#fpdf.enums.FileAttachmentAnnotationName">FileAttachmentAnnotationName</a>] = None, ink_list: Tuple[int] = (), file_spec: str = None, field_type: str = None, value=None, default_appearance: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A PDF annotation that get serialized as an inline &lt;<dictionnary>&gt;</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L83-L117" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L85-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AnnotationDict(AnnotationMixin):
     &#34;A PDF annotation that get serialized as an inline &lt;&lt;dictionnary&gt;&gt;&#34;
@@ -243,6 +246,7 @@ class FileSpec(NamedTuple):
         &#34;name&#34;,
         &#34;ink_list&#34;,
         &#34;f_s&#34;,
+        &#34;d_a&#34;,
     )
 
     def serialize(self, _security_handler=None, _obj_id=None):
@@ -278,6 +282,10 @@ class FileSpec(NamedTuple):
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
 <dt id="fpdf.annotations.AnnotationDict.contents"><code class="name">var <span class="ident">contents</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="fpdf.annotations.AnnotationDict.d_a"><code class="name">var <span class="ident">d_a</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
@@ -344,7 +352,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L105-L111" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L108-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(
@@ -359,14 +367,14 @@ class FileSpec(NamedTuple):
 </dd>
 <dt id="fpdf.annotations.AnnotationMixin"><code class="flex name class">
 <span>class <span class="ident">AnnotationMixin</span></span>
-<span>(</span><span>subtype: str, x: int, y: int, width: int, height: int, flags: Tuple[<a title="fpdf.enums.AnnotationFlag" href="enums.html#fpdf.enums.AnnotationFlag">AnnotationFlag</a>] = (&lt;AnnotationFlag.PRINT: 4&gt;,), contents: str = None, dest: <a title="fpdf.syntax.Destination" href="syntax.html#fpdf.syntax.Destination">Destination</a> = None, action: <a title="fpdf.actions.Action" href="actions.html#fpdf.actions.Action">Action</a> = None, color: tuple = None, modification_time: datetime.datetime = None, title: str = None, quad_points: tuple = None, border_width: int = 0, name: Union[<a title="fpdf.enums.AnnotationName" href="enums.html#fpdf.enums.AnnotationName">AnnotationName</a>, <a title="fpdf.enums.FileAttachmentAnnotationName" href="enums.html#fpdf.enums.FileAttachmentAnnotationName">FileAttachmentAnnotationName</a>] = None, ink_list: Tuple[int] = (), file_spec: str = None, field_type: str = None, value=None)</span>
+<span>(</span><span>subtype: str, x: int, y: int, width: int, height: int, flags: Tuple[<a title="fpdf.enums.AnnotationFlag" href="enums.html#fpdf.enums.AnnotationFlag">AnnotationFlag</a>] = (&lt;AnnotationFlag.PRINT: 4&gt;,), contents: str = None, dest: <a title="fpdf.syntax.Destination" href="syntax.html#fpdf.syntax.Destination">Destination</a> = None, action: <a title="fpdf.actions.Action" href="actions.html#fpdf.actions.Action">Action</a> = None, color: tuple = None, modification_time: datetime.datetime = None, title: str = None, quad_points: tuple = None, border_width: int = 0, name: Union[<a title="fpdf.enums.AnnotationName" href="enums.html#fpdf.enums.AnnotationName">AnnotationName</a>, <a title="fpdf.enums.FileAttachmentAnnotationName" href="enums.html#fpdf.enums.FileAttachmentAnnotationName">FileAttachmentAnnotationName</a>] = None, ink_list: Tuple[int] = (), file_spec: str = None, field_type: str = None, value=None, default_appearance: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L25-L73" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L25-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AnnotationMixin:
     def __init__(
@@ -390,6 +398,7 @@ class FileSpec(NamedTuple):
         file_spec: str = None,
         field_type: str = None,
         value=None,
+        default_appearance: str = None,  # for free text annotations
     ):
         self.type = Name(&#34;Annot&#34;)
         self.subtype = Name(subtype)
@@ -416,7 +425,8 @@ class FileSpec(NamedTuple):
             if ink_list
             else None
         )
-        self.f_s = file_spec</code></pre>
+        self.f_s = file_spec
+        self.d_a = default_appearance</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -433,7 +443,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L161-L174" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L164-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FileSpec(NamedTuple):
     embedded_file: PDFEmbeddedFile
@@ -479,7 +489,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L166-L174" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L169-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = {
@@ -503,7 +513,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L76-L80" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L78-L82" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFAnnotation(AnnotationMixin, PDFObject):
     &#34;A PDF annotation that get serialized as an obj&lt;&lt;/&gt;&gt;endobj block&#34;
@@ -537,7 +547,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L120-L158" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L123-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFEmbeddedFile(PDFContentStream):
     def __init__(
@@ -594,7 +604,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L154-L155" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L157-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basename(self):
     return self._basename</code></pre>
@@ -608,7 +618,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L157-L158" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L160-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def file_spec(self):
     return FileSpec(self, self._basename, self._desc)</code></pre>
@@ -622,7 +632,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L148-L149" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L151-L152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def globally_enclosed(self):
     return self._globally_enclosed</code></pre>
@@ -636,7 +646,7 @@ class FileSpec(NamedTuple):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/annotations.py#L151-L152" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/annotations.py#L154-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_globally_enclosed(self, value):
     self._globally_enclosed = value</code></pre>
@@ -676,6 +686,7 @@ class FileSpec(NamedTuple):
 <li><code><a title="fpdf.annotations.AnnotationDict.border" href="#fpdf.annotations.AnnotationDict.border">border</a></code></li>
 <li><code><a title="fpdf.annotations.AnnotationDict.c" href="#fpdf.annotations.AnnotationDict.c">c</a></code></li>
 <li><code><a title="fpdf.annotations.AnnotationDict.contents" href="#fpdf.annotations.AnnotationDict.contents">contents</a></code></li>
+<li><code><a title="fpdf.annotations.AnnotationDict.d_a" href="#fpdf.annotations.AnnotationDict.d_a">d_a</a></code></li>
 <li><code><a title="fpdf.annotations.AnnotationDict.dest" href="#fpdf.annotations.AnnotationDict.dest">dest</a></code></li>
 <li><code><a title="fpdf.annotations.AnnotationDict.f" href="#fpdf.annotations.AnnotationDict.f">f</a></code></li>
 <li><code><a title="fpdf.annotations.AnnotationDict.f_s" href="#fpdf.annotations.AnnotationDict.f_s">f_s</a></code></li>

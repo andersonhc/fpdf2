@@ -22,11 +22,67 @@
 
     const contributors = [
     {
+        name: 'mohindra9211',
+        contributions: [],
+        location: 'India',
+        pulls: 0,
+        issues: 3,
+    },
+    {
+        name: 'Lucas-C',
+        contributions: ['blog', 'code', 'doc', 'infra', 'maintenance', 'question'],
+        location: 'Angers & Nantes, France',
+        pulls: 227,
+        issues: 67,
+    },
+    {
+        name: 'mjasperse',
+        contributions: ['bug', 'code'],
+        location: 'Melbourne, Australia',
+        pulls: 2,
+        issues: 2,
+    },
+    {
+        name: 'afriedman412',
+        contributions: ['code'],
+        location: 'Brooklyn, NY',
+        pulls: 8,
+        issues: 0,
+    },
+    {
+        name: 'viniciustozzi',
+        contributions: [],
+        location: 'Germany',
+        pulls: 0,
+        issues: 1,
+    },
+    {
+        name: 'jdoconnor',
+        contributions: [],
+        location: 'San Francisco Bay Area',
+        pulls: 0,
+        issues: 1,
+    },
+    {
+        name: 'jmunoz94',
+        contributions: ['test', 'doc', 'translation'],
+        location: 'Piedecuesta, Colombia',
+        pulls: 3,
+        issues: 0,
+    },
+    {
         name: 'andersonhc',
         contributions: ['question', 'code', 'research', 'bug', 'doc', 'ideas'],
         location: 'Montreal, Canada',
-        pulls: 16,
+        pulls: 17,
         issues: 2,
+    },
+    {
+        name: 'stevenlis',
+        contributions: [],
+        location: 'New York, NY',
+        pulls: 0,
+        issues: 1,
     },
     {
         name: 'tfenne',
@@ -34,13 +90,6 @@
         location: 'Boulder, CO',
         pulls: 0,
         issues: 2,
-    },
-    {
-        name: 'Lucas-C',
-        contributions: ['blog', 'code', 'doc', 'infra', 'maintenance', 'question'],
-        location: 'Angers & Nantes, France',
-        pulls: 214,
-        issues: 66,
     },
     {
         name: 'SaiHarshaK',
@@ -300,13 +349,6 @@
         location: 'Dar es Salaam, Tanzania',
         pulls: 0,
         issues: 1,
-    },
-    {
-        name: 'jmunoz94',
-        contributions: ['test', 'doc'],
-        location: 'Piedecuesta, Colombia',
-        pulls: 2,
-        issues: 0,
     },
     {
         name: 'TeoColuccio',
@@ -598,7 +640,7 @@
     {
         name: 'Brianrmendes',
         contributions: [],
-        location: 'India',
+        location: 'United States',
         pulls: 1,
         issues: 0,
     },
@@ -696,7 +738,7 @@
     {
         name: 'pandrey2003',
         contributions: [],
-        location: 'Montenegro',
+        location: 'Austria',
         pulls: 0,
         issues: 2,
     },
@@ -944,7 +986,7 @@
                 if (contributor.issues || contributor.pulls) {
                     popupHtml += `</a>`;
                 }
-                L.marker(topResult.center).bindPopup(popupHtml).addTo(cMap);
+                L.marker(jitterSimilarPositions(topResult.center)).bindPopup(popupHtml).addTo(cMap);
             }
             contributors.shift();
             if (contributors.length > 0) {
@@ -953,5 +995,36 @@
         });
     }
     placeNextContributor();
+
+    /*
+     * Sometimes, several users have the exact same location.
+     * For those cases, we introduce some jitter in their lat/lng coordinates
+     * in order for the map markers to be visually distinct.
+     */
+    const POS_INCRS = [
+        { dlat: 0.1, dlng: 0.1},
+        { dlat: 0.1, dlng: -0.1},
+        { dlat: -0.1, dlng: -0.1},
+        { dlat: -0.1, dlng: 0.1},
+    ];
+    const positionsVisited = new Set();
+    function jitterSimilarPositions(pos) {
+        const origLat = pos.lat, origLng = pos.lng;
+        let posStr = `${pos.lat}-${pos.lng}`;
+        let incr_i = 0;
+        let incr_factor = 1;
+        while (positionsVisited.has(posStr)) {
+            pos.lat = origLat + POS_INCRS[incr_i].dlat * incr_factor;
+            pos.lng = origLng + POS_INCRS[incr_i].dlng * incr_factor;
+            posStr = `${pos.lat}-${pos.lng}`;
+            incr_i++;
+            if (incr_i === POS_INCRS.length) {
+                incr_factor++;
+                incr_i = 0;
+            }
+        }
+        positionsVisited.add(posStr);
+        return pos;
+    }
     </script>
 </body></html>

@@ -32,6 +32,7 @@ Gives direct access to some classes defined in submodules:</p>
 <li><code><a title="fpdf.enums.XPos" href="enums.html#fpdf.enums.XPos">XPos</a></code></li>
 <li><code><a title="fpdf.enums.YPos" href="enums.html#fpdf.enums.YPos">YPos</a></code></li>
 <li><code><a title="fpdf.errors.FPDFException" href="errors.html#fpdf.errors.FPDFException">FPDFException</a></code></li>
+<li><code><a title="fpdf.fonts.FontFace" href="fonts.html#fpdf.fonts.FontFace">FontFace</a></code></li>
 <li><code><a title="fpdf.fpdf.TitleStyle" href="fpdf.html#fpdf.fpdf.TitleStyle">TitleStyle</a></code></li>
 <li><code><a title="fpdf.prefs.ViewerPreferences" href="prefs.html#fpdf.prefs.ViewerPreferences">ViewerPreferences</a></code></li>
 <li><code><a title="fpdf.template.Template" href="template.html#fpdf.template.Template">Template</a></code></li>
@@ -40,7 +41,7 @@ Gives direct access to some classes defined in submodules:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/ab228614dd7220f6e562b0858adc41abc51e5d34/fpdf/__init__.py#L1-L70" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/__init__.py#L1-L86" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Root module.
@@ -52,13 +53,14 @@ Gives direct access to some classes defined in submodules:
 * `fpdf.enums.XPos`
 * `fpdf.enums.YPos`
 * `fpdf.errors.FPDFException`
+* `fpdf.fonts.FontFace`
 * `fpdf.fpdf.TitleStyle`
 * `fpdf.prefs.ViewerPreferences`
 * `fpdf.template.Template`
 * `fpdf.template.FlexTemplate`
 &#34;&#34;&#34;
 
-import sys
+import warnings, sys
 
 from .enums import Align, TextMode, XPos, YPos
 from .errors import FPDFException
@@ -68,10 +70,24 @@ from .fpdf import (
     FPDF_FONT_DIR as _FPDF_FONT_DIR,
     FPDF_VERSION as _FPDF_VERSION,
 )
+from .fonts import FontFace
 from .html import HTMLMixin, HTML2FPDF
 from .prefs import ViewerPreferences
 from .template import Template, FlexTemplate
 from .deprecation import WarnOnDeprecatedModuleAttributes
+
+try:
+    # This module only exists in PyFPDF, it has been removed in fpdf2 since v2.5.7:
+    # pylint: disable=import-self
+    from . import ttfonts
+
+    warnings.warn(
+        &#34;You have both PyFPDF &amp; fpdf2 installed. &#34;
+        &#34;Both packages cannot be installed at the same time as they share the same module namespace. &#34;
+        &#34;To only keep fpdf2, run: pip uninstall --yes pypdf &amp;&amp; pip install --upgrade fpdf2&#34;
+    )
+except ImportError:
+    pass  # no PyFPDF installation detected
 
 FPDF_VERSION = _FPDF_VERSION
 &#34;Current fpdf2 version, also available as `__version__`&#34;
@@ -95,6 +111,7 @@ __all__ = [
     # Classes:
     &#34;FPDF&#34;,
     &#34;FPDFException&#34;,
+    &#34;FontFace&#34;,
     &#34;Align&#34;,
     &#34;TextMode&#34;,
     &#34;XPos&#34;,
@@ -161,6 +178,10 @@ Includes the definition of the character widths of all PDF standard fonts …</p
 <dt><code class="name"><a title="fpdf.html" href="html.html">fpdf.html</a></code></dt>
 <dd>
 <div class="desc"><p>HTML renderer …</p></div>
+</dd>
+<dt><code class="name"><a title="fpdf.image_datastructures" href="image_datastructures.html">fpdf.image_datastructures</a></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="fpdf.image_parsing" href="image_parsing.html">fpdf.image_parsing</a></code></dt>
 <dd>
@@ -277,6 +298,7 @@ structural information about a document’s content …</p>
 <li><code><a title="fpdf.fpdf" href="fpdf.html">fpdf.fpdf</a></code></li>
 <li><code><a title="fpdf.graphics_state" href="graphics_state.html">fpdf.graphics_state</a></code></li>
 <li><code><a title="fpdf.html" href="html.html">fpdf.html</a></code></li>
+<li><code><a title="fpdf.image_datastructures" href="image_datastructures.html">fpdf.image_datastructures</a></code></li>
 <li><code><a title="fpdf.image_parsing" href="image_parsing.html">fpdf.image_parsing</a></code></li>
 <li><code><a title="fpdf.line_break" href="line_break.html">fpdf.line_break</a></code></li>
 <li><code><a title="fpdf.linearization" href="linearization.html">fpdf.linearization</a></code></li>
