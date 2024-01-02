@@ -29,7 +29,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L1-L1071" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L1-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Utilities to parse SVG graphics into fpdf.drawing objects.
@@ -991,16 +991,30 @@ class SVGObject:
     @force_nodocument
     def build_shape(self, shape):
         &#34;&#34;&#34;Convert an SVG shape tag into a PDF path object. Necessary to make xref (because ShapeBuilder doesn&#39;t have access to this object.)&#34;&#34;&#34;
-        shape_path = getattr(ShapeBuilder, shape_tags[shape.tag])(shape)
+        shape_builder = getattr(ShapeBuilder, shape_tags[shape.tag])
+        shape_path = shape_builder(shape)
         self.apply_clipping_path(shape_path, shape)
         self.update_xref(shape.attrib.get(&#34;id&#34;), shape_path)
         return shape_path
 
     @force_nodocument
     def build_clipping_path(self, shape, clip_id):
-        clipping_path_shape = getattr(ShapeBuilder, shape_tags[shape.tag])(shape, True)
+        if shape.tag in shape_tags:
+            shape_builder = getattr(ShapeBuilder, shape_tags[shape.tag])
+            clipping_path_shape = shape_builder(shape, True)
+        elif shape.tag in xmlns_lookup(&#34;svg&#34;, &#34;path&#34;):
+            clipping_path_shape = PaintedPath()
+            apply_styles(clipping_path_shape, shape)
+            svg_path = shape.attrib.get(&#34;d&#34;)
+            if svg_path is not None:
+                svg_path_converter(clipping_path_shape, svg_path)
+        else:
+            LOGGER.warning(
+                &#34;Ignoring unsupported &lt;clipPath&gt; child tag: &lt;%s&gt; (contributions are welcome to add support for it)&#34;,
+                shape.tag,
+            )
+            return
         self.update_xref(clip_id, clipping_path_shape)
-        return clipping_path_shape
 
     @force_nodocument
     def apply_clipping_path(self, stylable, svg_element):
@@ -1127,7 +1141,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L561-L613" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L561-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PathPen(BasePen):
     def __init__(self, pdf_path, *args, **kwargs):
@@ -1201,7 +1215,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L594-L606" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L594-L606" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def arcTo(self, rx, ry, rotation, arc, sweep, end):
     self.pdf_path.arc_to(
@@ -1229,7 +1243,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L1015-L1071" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L1029-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SVGImage(NamedTuple):
     href: str
@@ -1330,7 +1344,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L624-L1012" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L624-L1026" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SVGObject:
     &#34;&#34;&#34;
@@ -1669,16 +1683,30 @@ that are referenced as components are looked up by their name.</p></div>
     @force_nodocument
     def build_shape(self, shape):
         &#34;&#34;&#34;Convert an SVG shape tag into a PDF path object. Necessary to make xref (because ShapeBuilder doesn&#39;t have access to this object.)&#34;&#34;&#34;
-        shape_path = getattr(ShapeBuilder, shape_tags[shape.tag])(shape)
+        shape_builder = getattr(ShapeBuilder, shape_tags[shape.tag])
+        shape_path = shape_builder(shape)
         self.apply_clipping_path(shape_path, shape)
         self.update_xref(shape.attrib.get(&#34;id&#34;), shape_path)
         return shape_path
 
     @force_nodocument
     def build_clipping_path(self, shape, clip_id):
-        clipping_path_shape = getattr(ShapeBuilder, shape_tags[shape.tag])(shape, True)
+        if shape.tag in shape_tags:
+            shape_builder = getattr(ShapeBuilder, shape_tags[shape.tag])
+            clipping_path_shape = shape_builder(shape, True)
+        elif shape.tag in xmlns_lookup(&#34;svg&#34;, &#34;path&#34;):
+            clipping_path_shape = PaintedPath()
+            apply_styles(clipping_path_shape, shape)
+            svg_path = shape.attrib.get(&#34;d&#34;)
+            if svg_path is not None:
+                svg_path_converter(clipping_path_shape, svg_path)
+        else:
+            LOGGER.warning(
+                &#34;Ignoring unsupported &lt;clipPath&gt; child tag: &lt;%s&gt; (contributions are welcome to add support for it)&#34;,
+                shape.tag,
+            )
+            return
         self.update_xref(clip_id, clipping_path_shape)
-        return clipping_path_shape
 
     @force_nodocument
     def apply_clipping_path(self, stylable, svg_element):
@@ -1745,7 +1773,7 @@ that are referenced as components are looked up by their name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L629-L644" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L629-L644" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def from_file(cls, filename, *args, encoding=&#34;utf-8&#34;, **kwargs):
@@ -1789,7 +1817,7 @@ written.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L823-L848" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L823-L848" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def draw_to_page(self, pdf, x=None, y=None, debug_stream=None):
     &#34;&#34;&#34;
@@ -1842,7 +1870,7 @@ viewbox aspect ratio does not match that of the viewport.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L717-L737" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L717-L737" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transform_to_page_viewport(self, pdf, align_viewbox=True):
     &#34;&#34;&#34;
@@ -1901,7 +1929,7 @@ converted from the SVG, scaled to the given viewport size.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/2b1a28a8f99b4afb8f7e678a749ccc250c830749/fpdf/svg.py#L739-L821" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/f2496a78fb2616e61e5b73fce4a493f4e17f51b1/fpdf/svg.py#L739-L821" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transform_to_rect_viewport(
     self, scale, width, height, align_viewbox=True, ignore_svg_top_attrs=False
