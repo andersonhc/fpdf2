@@ -29,7 +29,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/recorder.py#L1-L78" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9805a80fab47ac2376ea75c277439b9842aefc5e/fpdf/recorder.py#L1-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 A wrapper class to allow rewinding/replaying changes made to a FPDF instance.
@@ -129,7 +129,7 @@ class CallRecorder:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/recorder.py#L71-L78" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9805a80fab47ac2376ea75c277439b9842aefc5e/fpdf/recorder.py#L71-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CallRecorder:
     def __init__(self, func, calls):
@@ -162,7 +162,7 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/recorder.py#L16-L68" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9805a80fab47ac2376ea75c277439b9842aefc5e/fpdf/recorder.py#L16-L68" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDFRecorder:
     &#34;&#34;&#34;
@@ -228,7 +228,7 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/recorder.py#L53-L68" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9805a80fab47ac2376ea75c277439b9842aefc5e/fpdf/recorder.py#L53-L68" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replay(self):
     for call in self._calls:
@@ -256,7 +256,7 @@ when generating large PDFs, doubling memory usage may be troublesome.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/recorder.py#L49-L51" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9805a80fab47ac2376ea75c277439b9842aefc5e/fpdf/recorder.py#L49-L51" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rewind(self):
     self.pdf.__dict__ = self._initial
