@@ -29,7 +29,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/sign.py#L1-L96" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/sign.py#L1-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Module dedicated to document signature generation.
@@ -38,6 +38,7 @@ The contents of this module are internal to fpdf2, and not part of the public AP
 They may change at any time without prior warning or any deprecation period,
 in non-backward-compatible ways.
 &#34;&#34;&#34;
+
 import hashlib
 from datetime import timezone
 from unittest.mock import patch
@@ -145,7 +146,7 @@ The signing operation does not alter the buffer size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/sign.py#L42-L87" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/sign.py#L43-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sign_content(signer, buffer, key, cert, extra_certs, hashalgo, sign_time):
     &#34;&#34;&#34;
@@ -209,7 +210,7 @@ The signing operation does not alter the buffer size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/sign.py#L17-L39" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/sign.py#L18-L40" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Signature:
     def __init__(self, contact_info=None, location=None, m=None, reason=None):
@@ -264,7 +265,7 @@ The signing operation does not alter the buffer size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/sign.py#L33-L39" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/sign.py#L34-L40" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(

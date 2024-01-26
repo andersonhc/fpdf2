@@ -29,7 +29,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1-L4208" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1-L4208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Vector drawing: managing colors, graphics states, paths, transforms...
@@ -355,9 +355,9 @@ class DeviceCMYK(
 
 __pdoc__[&#34;DeviceCMYK.OPERATOR&#34;] = False
 __pdoc__[&#34;DeviceCMYK.c&#34;] = &#34;The cyan color component. Must be in the interval [0, 1].&#34;
-__pdoc__[
-    &#34;DeviceCMYK.m&#34;
-] = &#34;The magenta color component. Must be in the interval [0, 1].&#34;
+__pdoc__[&#34;DeviceCMYK.m&#34;] = (
+    &#34;The magenta color component. Must be in the interval [0, 1].&#34;
+)
 __pdoc__[&#34;DeviceCMYK.y&#34;] = &#34;The yellow color component. Must be in the interval [0, 1].&#34;
 __pdoc__[&#34;DeviceCMYK.k&#34;] = &#34;The black color component. Must be in the interval [0, 1].&#34;
 __pdoc__[
@@ -4292,7 +4292,7 @@ class GraphicsContext:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L397-L418" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L397-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cmyk8(c, m, y, k, a=None):
     &#34;&#34;&#34;
@@ -4338,7 +4338,7 @@ interpreted as not specifying the opacity, so it will not be explicitly set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L421-L457" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L421-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def color_from_hex_string(hexstr):
     &#34;&#34;&#34;
@@ -4394,7 +4394,7 @@ interpreted as not specifying the opacity, so it will not be explicitly set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L460-L487" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L460-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def color_from_rgb_string(rgbstr):
     &#34;&#34;&#34;
@@ -4434,7 +4434,7 @@ interpreted as not specifying the opacity, so it will not be explicitly set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L386-L394" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L386-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convert_to_device_color(r, g=-1, b=-1):
     if isinstance(r, (DeviceGray, DeviceRGB)):
@@ -4471,7 +4471,7 @@ interpreted as not specifying the opacity, so it will not be explicitly set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L364-L383" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L364-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def gray8(g, a=None):
     &#34;&#34;&#34;
@@ -4510,7 +4510,7 @@ interpreted as not specifying the opacity, so it will not be explicitly set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L99-L111" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L99-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def number_to_str(number):
     &#34;&#34;&#34;
@@ -4558,7 +4558,7 @@ representation.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L115-L172" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L115-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_pdf_primitive(primitive):
     &#34;&#34;&#34;
@@ -4647,7 +4647,7 @@ representation.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L341-L361" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L341-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rgb8(r, g, b, a=None):
     &#34;&#34;&#34;
@@ -4689,7 +4689,7 @@ using a number of parameters to determine how it is constructed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2351-L2567" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2351-L2567" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Arc(NamedTuple):
     &#34;&#34;&#34;
@@ -4949,7 +4949,7 @@ element, two off-curve control points, and an end point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2035-L2104" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2035-L2104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class BezierCurve(NamedTuple):
     &#34;&#34;&#34;
@@ -5046,7 +5046,7 @@ element, two off-curve control points, and an end point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2052-L2055" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2052-L2055" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def end_point(self):
@@ -5078,7 +5078,7 @@ this warning is here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3822-L3921" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3822-L3921" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ClippingPath(PaintedPath):
     &#34;&#34;&#34;
@@ -5195,7 +5195,7 @@ this warning is here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3854-L3896" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3854-L3896" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(
     self, gsd_registry, style, last_item, initial_point, debug_stream=None, pfx=None
@@ -5270,7 +5270,7 @@ more than one line).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3898-L3921" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3898-L3921" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_debug(
     self, gsd_registry, style, last_item, initial_point, debug_stream, pfx
@@ -5343,7 +5343,7 @@ to the start of the current path.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3019-L3078" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3019-L3078" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Close(NamedTuple):
     &#34;&#34;&#34;
@@ -5420,7 +5420,7 @@ to the start of the current path.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L288-L320" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L288-L320" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DeviceCMYK(
     NamedTuple(
@@ -5468,7 +5468,7 @@ to the start of the current path.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L313-L317" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L313-L317" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def colors(self):
@@ -5488,7 +5488,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L319-L320" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L319-L320" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self) -&gt; str:
     return &#34; &#34;.join(number_to_str(val) for val in self.colors) + f&#34; {self.OPERATOR}&#34;</code></pre>
@@ -5505,7 +5505,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L241-L264" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L241-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DeviceGray(
     NamedTuple(
@@ -5544,7 +5544,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L258-L261" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L258-L261" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def colors(self):
@@ -5563,7 +5563,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L263-L264" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L263-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self) -&gt; str:
     return &#34; &#34;.join(number_to_str(val) for val in self.colors) + f&#34; {self.OPERATOR}&#34;</code></pre>
@@ -5580,7 +5580,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L182-L221" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L182-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DeviceRGB(
     NamedTuple(
@@ -5635,7 +5635,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L215-L218" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L215-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def colors(self):
@@ -5654,7 +5654,7 @@ def colors(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L220-L221" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L220-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self) -&gt; str:
     return &#34; &#34;.join(number_to_str(val) for val in self.colors) + f&#34; {self.OPERATOR}&#34;</code></pre>
@@ -5673,7 +5673,7 @@ is correctly scaled).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3081-L3248" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3081-L3248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DrawingContext:
     &#34;&#34;&#34;
@@ -5864,7 +5864,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3093-L3111" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3093-L3111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_item(self, item, _copy=True):
     &#34;&#34;&#34;
@@ -5917,7 +5917,7 @@ this context (an empty string is returned if there are no paths or groups)</p></
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3131-L3182" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3131-L3182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(self, gsd_registry, first_point, scale, height, starting_style):
     &#34;&#34;&#34;
@@ -6006,7 +6006,7 @@ this context (an empty string is returned if there are no paths or groups)</p></
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3184-L3248" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3184-L3248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_debug(
     self, gsd_registry, first_point, scale, height, starting_style, debug_stream
@@ -6087,7 +6087,7 @@ this context (an empty string is returned if there are no paths or groups)</p></
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2848-L2955" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2848-L2955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Ellipse(NamedTuple):
     &#34;&#34;&#34;
@@ -6222,7 +6222,7 @@ this context (an empty string is returned if there are no paths or groups)</p></
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3924-L4208" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3924-L4208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GraphicsContext:
     def __init__(self):
@@ -6518,7 +6518,7 @@ this context (an empty string is returned if there are no paths or groups)</p></
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3950-L3953" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3950-L3953" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def clipping_path(self):
@@ -6532,7 +6532,7 @@ def clipping_path(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3942-L3944" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3942-L3944" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def transform(self):
@@ -6561,7 +6561,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3959-L3974" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3959-L3974" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_item(self, item, _copy=True):
     &#34;&#34;&#34;
@@ -6589,7 +6589,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3979-L3981" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3979-L3981" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def merge(self, other_context):
     &#34;&#34;&#34;Copy another `GraphicsContext`&#39;s path items into this one.&#34;&#34;&#34;
@@ -6604,7 +6604,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3976-L3977" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3976-L3977" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def remove_last_item(self):
     del self.path_items[-1]</code></pre>
@@ -6618,7 +6618,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L4168-L4188" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L4168-L4188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(
     self,
@@ -6651,7 +6651,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L4190-L4208" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L4190-L4208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_debug(
     self,
@@ -6685,7 +6685,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L69-L89" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L69-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GraphicsStateDictRegistry(OrderedDict):
     &#34;&#34;&#34;
@@ -6724,7 +6724,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L74-L89" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L74-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def register_style(self, style: &#34;GraphicsStyle&#34;):
     sdict = style.serialize()
@@ -6759,7 +6759,7 @@ which use None as hints to the auto paint style detection code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1065-L1498" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1065-L1498" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GraphicsStyle:
     &#34;&#34;&#34;
@@ -7228,7 +7228,7 @@ inherit a given property, that property will preserve the inherit value.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1126-L1143" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1126-L1143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def merge(cls, parent, child):
@@ -7259,7 +7259,7 @@ def merge(cls, parent, child):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1179-L1181" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1179-L1181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def allow_transparency(self):
@@ -7272,7 +7272,7 @@ def allow_transparency(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1204-L1207" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1204-L1207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def auto_close(self):
@@ -7286,7 +7286,7 @@ def auto_close(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1307-L1310" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1307-L1310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def blend_mode(self):
@@ -7302,7 +7302,7 @@ be used to set the fill_opacity property as well.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1229-L1237" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1229-L1237" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def fill_color(self):
@@ -7321,7 +7321,7 @@ def fill_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1255-L1258" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1255-L1258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def fill_opacity(self):
@@ -7335,7 +7335,7 @@ def fill_opacity(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1216-L1219" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1216-L1219" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def intersection_rule(self):
@@ -7349,7 +7349,7 @@ def intersection_rule(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1190-L1193" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1190-L1193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def paint_rule(self):
@@ -7363,7 +7363,7 @@ def paint_rule(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1336-L1339" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1336-L1339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_cap_style(self):
@@ -7379,7 +7379,7 @@ be used to set the fill_opacity property as well.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1267-L1275" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1267-L1275" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_color(self):
@@ -7398,7 +7398,7 @@ def stroke_color(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1377-L1380" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1377-L1380" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_dash_pattern(self):
@@ -7412,7 +7412,7 @@ def stroke_dash_pattern(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1407-L1410" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1407-L1410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_dash_phase(self):
@@ -7426,7 +7426,7 @@ def stroke_dash_phase(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1350-L1353" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1350-L1353" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_join_style(self):
@@ -7440,7 +7440,7 @@ def stroke_join_style(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1365-L1368" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1365-L1368" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_miter_limit(self):
@@ -7454,7 +7454,7 @@ def stroke_miter_limit(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1295-L1298" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1295-L1298" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_opacity(self):
@@ -7468,7 +7468,7 @@ def stroke_opacity(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1321-L1324" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1321-L1324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def stroke_width(self):
@@ -7488,7 +7488,7 @@ def stroke_width(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1419-L1461" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1419-L1461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self):
     &#34;&#34;&#34;
@@ -7547,7 +7547,7 @@ def stroke_width(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1779-L1838" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1779-L1838" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HorizontalLine(NamedTuple):
     &#34;&#34;&#34;
@@ -7631,7 +7631,7 @@ def stroke_width(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2958-L3016" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2958-L3016" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ImplicitClose(NamedTuple):
     &#34;&#34;&#34;
@@ -7710,7 +7710,7 @@ point specified by <code>pt</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1645-L1710" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1645-L1710" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Line(NamedTuple):
     &#34;&#34;&#34;
@@ -7791,7 +7791,7 @@ point specified by <code>pt</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1658-L1661" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1658-L1661" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def end_point(self):
@@ -7816,7 +7816,7 @@ def end_point(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1513-L1577" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1513-L1577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Move(NamedTuple):
     &#34;&#34;&#34;
@@ -7896,7 +7896,7 @@ def end_point(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1525-L1528" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1525-L1528" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def end_point(self):
@@ -7923,7 +7923,7 @@ primitive path elements and <code><a title="fpdf.drawing.GraphicsContext" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3251-L3819" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3251-L3819" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PaintedPath:
     &#34;&#34;&#34;
@@ -8507,7 +8507,7 @@ primitive path elements and <code><a title="fpdf.drawing.GraphicsContext" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3299-L3302" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3299-L3302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def auto_close(self):
@@ -8521,7 +8521,7 @@ def auto_close(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3317-L3320" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3317-L3320" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def clipping_path(self):
@@ -8535,7 +8535,7 @@ def clipping_path(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3308-L3311" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3308-L3311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def paint_rule(self):
@@ -8549,7 +8549,7 @@ def paint_rule(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3285-L3288" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3285-L3288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def style(self):
@@ -8563,7 +8563,7 @@ def style(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3290-L3293" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3290-L3293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def transform(self):
@@ -8592,7 +8592,7 @@ caution.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3347-L3364" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3347-L3364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_path_element(self, item, _copy=True):
     &#34;&#34;&#34;
@@ -8661,7 +8661,7 @@ the previous path element.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3713-L3760" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3713-L3760" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def arc_relative(self, rx, ry, rotation, large_arc, positive_sweep, dx, dy):
     &#34;&#34;&#34;
@@ -8758,7 +8758,7 @@ angle.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3665-L3711" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3665-L3711" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def arc_to(self, rx, ry, rotation, large_arc, positive_sweep, x, y):
     &#34;&#34;&#34;
@@ -8828,7 +8828,7 @@ angle.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3401-L3413" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3401-L3413" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def circle(self, cx, cy, r):
     &#34;&#34;&#34;
@@ -8853,7 +8853,7 @@ angle.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3762-L3768" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3762-L3768" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def close(self):
     &#34;&#34;&#34;
@@ -8899,7 +8899,7 @@ the previous path element</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3591-L3623" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3591-L3623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def curve_relative(self, dx1, dy1, dx2, dy2, dx3, dy3):
     &#34;&#34;&#34;
@@ -8961,7 +8961,7 @@ the previous path element</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3569-L3589" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3569-L3589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def curve_to(self, x1, y1, x2, y2, x3, y3):
     &#34;&#34;&#34;
@@ -9007,7 +9007,7 @@ the previous path element</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3415-L3433" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3415-L3433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ellipse(self, cx, cy, rx, ry):
     &#34;&#34;&#34;
@@ -9048,7 +9048,7 @@ the previous path element.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3523-L3537" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3523-L3537" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def horizontal_line_relative(self, dx):
     &#34;&#34;&#34;
@@ -9083,7 +9083,7 @@ retrieved from the end point of the previous path element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3509-L3521" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3509-L3521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def horizontal_line_to(self, x):
     &#34;&#34;&#34;
@@ -9120,7 +9120,7 @@ the previous path element.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3492-L3507" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3492-L3507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def line_relative(self, dx, dy):
     &#34;&#34;&#34;
@@ -9157,7 +9157,7 @@ the previous path element.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3478-L3490" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3478-L3490" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def line_to(self, x, y):
     &#34;&#34;&#34;
@@ -9195,7 +9195,7 @@ the path is being rendered, or from 0, 0 if it is the first item.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3454-L3476" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3454-L3476" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def move_relative(self, x, y):
     &#34;&#34;&#34;
@@ -9242,7 +9242,7 @@ order to start a new subpath.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3435-L3452" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3435-L3452" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def move_to(self, x, y):
     &#34;&#34;&#34;
@@ -9289,7 +9289,7 @@ the previous path element</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3643-L3663" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3643-L3663" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def quadratic_curve_relative(self, dx1, dy1, dx2, dy2):
     &#34;&#34;&#34;
@@ -9335,7 +9335,7 @@ the previous path element</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3625-L3641" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3625-L3641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def quadratic_curve_to(self, x1, y1, x2, y2):
     &#34;&#34;&#34;
@@ -9387,7 +9387,7 @@ will not be rounded).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3369-L3399" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3369-L3399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rectangle(self, x, y, w, h, rx=0, ry=0):
     &#34;&#34;&#34;
@@ -9430,7 +9430,7 @@ will not be rounded).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3366-L3367" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3366-L3367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def remove_last_path_element(self):
     self._graphics_context.remove_last_item()</code></pre>
@@ -9444,7 +9444,7 @@ will not be rounded).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3776-L3793" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3776-L3793" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(
     self, gsd_registry, style, last_item, initial_point, debug_stream=None, pfx=None
@@ -9496,7 +9496,7 @@ more than one line).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3795-L3819" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3795-L3819" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_debug(
     self, gsd_registry, style, last_item, initial_point, debug_stream, pfx
@@ -9533,7 +9533,7 @@ more than one line).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3338-L3345" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3338-L3345" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@contextmanager
 def transform_group(self, transform):
@@ -9563,7 +9563,7 @@ the previous path element.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3553-L3567" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3553-L3567" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def vertical_line_relative(self, dy):
     &#34;&#34;&#34;
@@ -9598,7 +9598,7 @@ retrieved from the end point of the previous path element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L3539-L3551" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L3539-L3551" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def vertical_line_to(self, y):
     &#34;&#34;&#34;
@@ -9626,7 +9626,7 @@ retrieved from the end point of the previous path element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L490-L702" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L490-L702" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Point(NamedTuple):
     &#34;&#34;&#34;
@@ -9876,7 +9876,7 @@ the other point's x and y coordinates as distances.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L564-L581" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L564-L581" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __add__(self, other):
@@ -9918,7 +9918,7 @@ def __add__(self, other):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L651-L670" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L651-L670" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __floordiv__(self, other):
@@ -9966,7 +9966,7 @@ commutative)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L674-L699" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L674-L699" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __matmul__(self, other):
@@ -10012,7 +10012,7 @@ coordinates.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L611-L626" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L611-L626" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __mul__(self, other):
@@ -10042,7 +10042,7 @@ def __mul__(self, other):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L601-L609" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L601-L609" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __neg__(self):
@@ -10071,7 +10071,7 @@ def __neg__(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L583-L599" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L583-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __sub__(self, other):
@@ -10112,7 +10112,7 @@ def __sub__(self, other):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L630-L649" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L630-L649" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __truediv__(self, other):
@@ -10161,7 +10161,7 @@ between <code>(0, -1)</code> and <code>(1, 0)</code> is <code>+pi/2</code>).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L524-L549" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L524-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def angle(self, other):
     &#34;&#34;&#34;
@@ -10211,7 +10211,7 @@ between <code>(0, -1)</code> and <code>(1, 0)</code> is <code>+pi/2</code>).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L506-L522" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L506-L522" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dot(self, other):
     &#34;&#34;&#34;
@@ -10244,7 +10244,7 @@ point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L551-L562" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L551-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mag(self):
     &#34;&#34;&#34;
@@ -10268,7 +10268,7 @@ point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L501-L504" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L501-L504" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(self):
     &#34;&#34;&#34;Render the point to the string `&#34;x y&#34;` for emitting to a PDF.&#34;&#34;&#34;
@@ -10290,7 +10290,7 @@ element, one off-curve control point, and an end point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2187-L2276" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2187-L2276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class QuadraticBezierCurve(NamedTuple):
     &#34;&#34;&#34;
@@ -10403,7 +10403,7 @@ element, one off-curve control point, and an end point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2202-L2205" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2202-L2205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def end_point(self):
@@ -10422,7 +10422,7 @@ def end_point(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2207-L2220" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2207-L2220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_cubic_curve(self, start_point):
     ctrl = self.ctrl
@@ -10451,7 +10451,7 @@ def end_point(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2652-L2713" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2652-L2713" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Rectangle(NamedTuple):
     &#34;&#34;&#34;A pdf primitive rectangle.&#34;&#34;&#34;
@@ -10544,7 +10544,7 @@ using a number of parameters to determine how it is constructed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2570-L2649" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2570-L2649" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeArc(NamedTuple):
     &#34;&#34;&#34;
@@ -10666,7 +10666,7 @@ point of the previous path element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2107-L2184" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2107-L2184" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeBezierCurve(NamedTuple):
     &#34;&#34;&#34;
@@ -10778,7 +10778,7 @@ computes its abscissa offset from the end of that element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1841-L1904" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1841-L1904" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeHorizontalLine(NamedTuple):
     &#34;&#34;&#34;
@@ -10871,7 +10871,7 @@ point are resolved during the rendering process.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1713-L1776" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1713-L1776" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeLine(NamedTuple):
     &#34;&#34;&#34;
@@ -10962,7 +10962,7 @@ element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1580-L1642" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1580-L1642" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeMove(NamedTuple):
     &#34;&#34;&#34;
@@ -11051,7 +11051,7 @@ point of the previous path element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2279-L2348" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2279-L2348" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeQuadraticBezierCurve(NamedTuple):
     &#34;&#34;&#34;
@@ -11151,7 +11151,7 @@ computes its ordinate offset from the end of that element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1969-L2032" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1969-L2032" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RelativeVerticalLine(NamedTuple):
     &#34;&#34;&#34;
@@ -11241,7 +11241,7 @@ previous path element.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L2716-L2845" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L2716-L2845" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RoundedRectangle(NamedTuple):
     &#34;&#34;&#34;
@@ -11440,7 +11440,7 @@ manipulations following verb-ish naming (<code>translate</code>, <code>scale</co
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L705-L1054" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L705-L1054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transform(NamedTuple):
     &#34;&#34;&#34;
@@ -11808,7 +11808,7 @@ manipulations following verb-ish naming (<code>translate</code>, <code>scale</co
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L777-L784" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L777-L784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def identity(cls):
@@ -11836,7 +11836,7 @@ values represent clockwise rotations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L821-L836" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L821-L836" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def rotation(cls, theta):
@@ -11872,7 +11872,7 @@ values represent clockwise rotations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L838-L851" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L838-L851" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def rotation_d(cls, theta_d):
@@ -11910,7 +11910,7 @@ defaults to the value provided to the <code>x</code> argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L801-L819" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L801-L819" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def scaling(cls, x, y=None):
@@ -11951,7 +11951,7 @@ this defaults to the value provided to the <code>x</code> argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L853-L869" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L853-L869" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def shearing(cls, x, y=None):
@@ -11989,7 +11989,7 @@ def shearing(cls, x, y=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L786-L799" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L786-L799" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def translation(cls, x, y):
@@ -12025,7 +12025,7 @@ def translation(cls, x, y):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1008-L1029" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1008-L1029" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __matmul__(self, other):
@@ -12066,7 +12066,7 @@ def __matmul__(self, other):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L982-L1003" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L982-L1003" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@force_document
 def __mul__(self, other):
@@ -12117,7 +12117,7 @@ mutating self.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L961-L980" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L961-L980" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def about(self, x, y):
     &#34;&#34;&#34;
@@ -12156,7 +12156,7 @@ mutating self.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1031-L1046" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1031-L1046" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(self, last_item):
     &#34;&#34;&#34;
@@ -12197,7 +12197,7 @@ values represent clockwise rotations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L908-L923" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L908-L923" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rotate(self, theta):
     &#34;&#34;&#34;
@@ -12239,7 +12239,7 @@ values represent clockwise rotations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L925-L941" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L925-L941" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rotate_d(self, theta_d):
     &#34;&#34;&#34;
@@ -12285,7 +12285,7 @@ defaults to the value provided to the <code>x</code> argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L888-L906" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L888-L906" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def scale(self, x, y=None):
     &#34;&#34;&#34;
@@ -12331,7 +12331,7 @@ this defaults to the value provided to the <code>x</code> argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L943-L959" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L943-L959" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def shear(self, x, y=None):
     &#34;&#34;&#34;
@@ -12374,7 +12374,7 @@ mutating self.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L871-L886" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L871-L886" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def translate(self, x, y):
     &#34;&#34;&#34;
@@ -12406,7 +12406,7 @@ mutating self.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9569ccb5c466193db0949616a873474fcac6e319/fpdf/drawing.py#L1907-L1966" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/72c9153495198a3fab4bb45d23a4eb968370cfac/fpdf/drawing.py#L1907-L1966" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class VerticalLine(NamedTuple):
     &#34;&#34;&#34;
