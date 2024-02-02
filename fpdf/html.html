@@ -29,7 +29,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L1-L837" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L1-L847" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 HTML renderer
@@ -46,7 +46,7 @@ from .enums import TextEmphasis, XPos, YPos
 from .errors import FPDFException
 from .deprecation import get_stack_level
 from .fonts import FontFace
-from .table import Table, TableBordersLayout
+from .table import Table
 
 LOGGER = logging.getLogger(__name__)
 BULLET_WIN1252 = &#34;\x95&#34;  # BULLET character in Windows-1252 encoding
@@ -408,6 +408,7 @@ class HTML2FPDF(HTMLParser):
                 self.td_th.get(&#34;bgcolor&#34;, self.tr.get(&#34;bgcolor&#34;, None))
             )
             colspan = int(self.td_th.get(&#34;colspan&#34;, &#34;1&#34;))
+            rowspan = int(self.td_th.get(&#34;rowspan&#34;, &#34;1&#34;))
             emphasis = 0
             if self.td_th.get(&#34;b&#34;):
                 emphasis |= TextEmphasis.B
@@ -420,7 +421,9 @@ class HTML2FPDF(HTMLParser):
                 style = FontFace(
                     emphasis=emphasis, fill_color=bgcolor, color=self.pdf.text_color
                 )
-            self.table_row.cell(text=data, align=align, style=style, colspan=colspan)
+            self.table_row.cell(
+                text=data, align=align, style=style, colspan=colspan, rowspan=rowspan
+            )
             self.td_th[&#34;inserted&#34;] = True
         elif self.table is not None:
             # ignore anything else than td inside a table
@@ -586,23 +589,30 @@ class HTML2FPDF(HTMLParser):
                     width = self.pdf.epw * int(width[:-1]) / 100
                 else:
                     width = int(width) / self.pdf.k
-            if &#34;border&#34; in attrs:
-                borders_layout = (
-                    &#34;ALL&#34; if self.table_line_separators else &#34;NO_HORIZONTAL_LINES&#34;
-                )
-            else:
+            if &#34;border&#34; not in attrs:  # default borders
                 borders_layout = (
                     &#34;HORIZONTAL_LINES&#34;
                     if self.table_line_separators
                     else &#34;SINGLE_TOP_LINE&#34;
                 )
+            elif int(attrs[&#34;border&#34;]):  # explicitly enabled borders
+                borders_layout = (
+                    &#34;ALL&#34; if self.table_line_separators else &#34;NO_HORIZONTAL_LINES&#34;
+                )
+            else:  # explicitly disabled borders
+                borders_layout = &#34;NONE&#34;
             align = attrs.get(&#34;align&#34;, &#34;center&#34;).upper()
+            padding = float(attrs[&#34;cellpadding&#34;]) if &#34;cellpadding&#34; in attrs else None
+            spacing = float(attrs.get(&#34;cellspacing&#34;, 0))
             self.table = Table(
                 self.pdf,
                 align=align,
                 borders_layout=borders_layout,
                 line_height=self.h * 1.30,
                 width=width,
+                padding=padding,
+                gutter_width=spacing,
+                gutter_height=spacing,
             )
             self._ln()
         if tag == &#34;tr&#34;:
@@ -623,7 +633,7 @@ class HTML2FPDF(HTMLParser):
                 # =&gt; we are in the 1st &lt;tr&gt;, and the 1st cell is a &lt;td&gt;
                 # =&gt; we do not treat the first row as a header
                 # pylint: disable=protected-access
-                self.table._borders_layout = TableBordersLayout.NONE
+                self.table._first_row_as_headings = False
                 self.table._num_heading_rows = 0
             if &#34;height&#34; in attrs:
                 LOGGER.warning(
@@ -885,7 +895,7 @@ class HTMLMixin:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L212-L228" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L212-L228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def color_as_decimal(color=&#34;#000000&#34;):
     if not color:
@@ -944,7 +954,7 @@ to new image URLs</dd>
       <details class="source">
         <summary>
             <span>Expand source code</span>
-              <a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L231-L819" class="git-link">Browse git</a>
+              <a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L231-L829" class="git-link">Browse git</a>
         </summary>
         <pre><code class="python">class HTML2FPDF(HTMLParser):
     &#34;Render basic HTML to FPDF&#34;
@@ -1093,6 +1103,7 @@ to new image URLs</dd>
                 self.td_th.get(&#34;bgcolor&#34;, self.tr.get(&#34;bgcolor&#34;, None))
             )
             colspan = int(self.td_th.get(&#34;colspan&#34;, &#34;1&#34;))
+            rowspan = int(self.td_th.get(&#34;rowspan&#34;, &#34;1&#34;))
             emphasis = 0
             if self.td_th.get(&#34;b&#34;):
                 emphasis |= TextEmphasis.B
@@ -1105,7 +1116,9 @@ to new image URLs</dd>
                 style = FontFace(
                     emphasis=emphasis, fill_color=bgcolor, color=self.pdf.text_color
                 )
-            self.table_row.cell(text=data, align=align, style=style, colspan=colspan)
+            self.table_row.cell(
+                text=data, align=align, style=style, colspan=colspan, rowspan=rowspan
+            )
             self.td_th[&#34;inserted&#34;] = True
         elif self.table is not None:
             # ignore anything else than td inside a table
@@ -1271,23 +1284,30 @@ to new image URLs</dd>
                     width = self.pdf.epw * int(width[:-1]) / 100
                 else:
                     width = int(width) / self.pdf.k
-            if &#34;border&#34; in attrs:
-                borders_layout = (
-                    &#34;ALL&#34; if self.table_line_separators else &#34;NO_HORIZONTAL_LINES&#34;
-                )
-            else:
+            if &#34;border&#34; not in attrs:  # default borders
                 borders_layout = (
                     &#34;HORIZONTAL_LINES&#34;
                     if self.table_line_separators
                     else &#34;SINGLE_TOP_LINE&#34;
                 )
+            elif int(attrs[&#34;border&#34;]):  # explicitly enabled borders
+                borders_layout = (
+                    &#34;ALL&#34; if self.table_line_separators else &#34;NO_HORIZONTAL_LINES&#34;
+                )
+            else:  # explicitly disabled borders
+                borders_layout = &#34;NONE&#34;
             align = attrs.get(&#34;align&#34;, &#34;center&#34;).upper()
+            padding = float(attrs[&#34;cellpadding&#34;]) if &#34;cellpadding&#34; in attrs else None
+            spacing = float(attrs.get(&#34;cellspacing&#34;, 0))
             self.table = Table(
                 self.pdf,
                 align=align,
                 borders_layout=borders_layout,
                 line_height=self.h * 1.30,
                 width=width,
+                padding=padding,
+                gutter_width=spacing,
+                gutter_height=spacing,
             )
             self._ln()
         if tag == &#34;tr&#34;:
@@ -1308,7 +1328,7 @@ to new image URLs</dd>
                 # =&gt; we are in the 1st &lt;tr&gt;, and the 1st cell is a &lt;td&gt;
                 # =&gt; we do not treat the first row as a header
                 # pylint: disable=protected-access
-                self.table._borders_layout = TableBordersLayout.NONE
+                self.table._first_row_as_headings = False
                 self.table._num_heading_rows = 0
             if &#34;height&#34; in attrs:
                 LOGGER.warning(
@@ -1558,7 +1578,7 @@ to new image URLs</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L818-L819" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L828-L829" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, message):
     raise RuntimeError(message)</code></pre>
@@ -1574,7 +1594,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L746-L756" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L756-L766" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feed(self, data):
     super().feed(data)
@@ -1597,7 +1617,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L355-L414" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L355-L417" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_data(self, data):
     if self.td_th is not None:
@@ -1622,6 +1642,7 @@ as you want (may include '\n').</p></div>
             self.td_th.get(&#34;bgcolor&#34;, self.tr.get(&#34;bgcolor&#34;, None))
         )
         colspan = int(self.td_th.get(&#34;colspan&#34;, &#34;1&#34;))
+        rowspan = int(self.td_th.get(&#34;rowspan&#34;, &#34;1&#34;))
         emphasis = 0
         if self.td_th.get(&#34;b&#34;):
             emphasis |= TextEmphasis.B
@@ -1634,7 +1655,9 @@ as you want (may include '\n').</p></div>
             style = FontFace(
                 emphasis=emphasis, fill_color=bgcolor, color=self.pdf.text_color
             )
-        self.table_row.cell(text=data, align=align, style=style, colspan=colspan)
+        self.table_row.cell(
+            text=data, align=align, style=style, colspan=colspan, rowspan=rowspan
+        )
         self.td_th[&#34;inserted&#34;] = True
     elif self.table is not None:
         # ignore anything else than td inside a table
@@ -1669,7 +1692,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L658-L744" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L668-L754" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_endtag(self, tag):
     LOGGER.debug(&#34;ENDTAG %s&#34;, tag)
@@ -1768,7 +1791,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L430-L656" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L433-L666" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_starttag(self, tag, attrs):
     self._pre_started = False
@@ -1896,23 +1919,30 @@ as you want (may include '\n').</p></div>
                 width = self.pdf.epw * int(width[:-1]) / 100
             else:
                 width = int(width) / self.pdf.k
-        if &#34;border&#34; in attrs:
-            borders_layout = (
-                &#34;ALL&#34; if self.table_line_separators else &#34;NO_HORIZONTAL_LINES&#34;
-            )
-        else:
+        if &#34;border&#34; not in attrs:  # default borders
             borders_layout = (
                 &#34;HORIZONTAL_LINES&#34;
                 if self.table_line_separators
                 else &#34;SINGLE_TOP_LINE&#34;
             )
+        elif int(attrs[&#34;border&#34;]):  # explicitly enabled borders
+            borders_layout = (
+                &#34;ALL&#34; if self.table_line_separators else &#34;NO_HORIZONTAL_LINES&#34;
+            )
+        else:  # explicitly disabled borders
+            borders_layout = &#34;NONE&#34;
         align = attrs.get(&#34;align&#34;, &#34;center&#34;).upper()
+        padding = float(attrs[&#34;cellpadding&#34;]) if &#34;cellpadding&#34; in attrs else None
+        spacing = float(attrs.get(&#34;cellspacing&#34;, 0))
         self.table = Table(
             self.pdf,
             align=align,
             borders_layout=borders_layout,
             line_height=self.h * 1.30,
             width=width,
+            padding=padding,
+            gutter_width=spacing,
+            gutter_height=spacing,
         )
         self._ln()
     if tag == &#34;tr&#34;:
@@ -1933,7 +1963,7 @@ as you want (may include '\n').</p></div>
             # =&gt; we are in the 1st &lt;tr&gt;, and the 1st cell is a &lt;td&gt;
             # =&gt; we do not treat the first row as a header
             # pylint: disable=protected-access
-            self.table._borders_layout = TableBordersLayout.NONE
+            self.table._first_row_as_headings = False
             self.table._num_heading_rows = 0
         if &#34;height&#34; in attrs:
             LOGGER.warning(
@@ -2007,7 +2037,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L792-L798" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L802-L808" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def put_link(self, text):
     # Put a hyperlink
@@ -2026,7 +2056,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L801-L815" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L811-L825" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_toc(self, pdf, outline):
     &#34;This method can be overriden by subclasses to customize the Table of Contents style.&#34;
@@ -2053,7 +2083,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L758-L773" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L768-L783" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_font(self, face=None, size=None, set_default=False):
     if face:
@@ -2081,7 +2111,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L775-L784" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L785-L794" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_style(self, tag=None, enable=False):
     # Modify style and select corresponding font
@@ -2103,7 +2133,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L786-L790" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L796-L800" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_text_color(self, r=None, g=0, b=0):
     prev_page = self.pdf.page
@@ -2124,7 +2154,7 @@ You can now directly use the <code>FPDF.write_html()</code> method</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L822-L837" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/1effbb04433a7485ada827f1694a852b07079ab8/fpdf/html.py#L832-L847" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HTMLMixin:
     &#34;&#34;&#34;
