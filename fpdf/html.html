@@ -29,7 +29,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L1-L832" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L1-L837" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 HTML renderer
@@ -481,6 +481,11 @@ class HTML2FPDF(HTMLParser):
                 self.set_style(tag, True)
         if tag == &#34;a&#34;:
             self.href = attrs[&#34;href&#34;]
+            try:
+                page = int(self.href)
+                self.href = self.pdf.add_link(page=page)
+            except ValueError:
+                pass
         if tag == &#34;br&#34;:
             self._write_paragraph(&#34;\n&#34;)
         if tag == &#34;p&#34;:
@@ -521,7 +526,6 @@ class HTML2FPDF(HTMLParser):
             )
             self.set_text_color(*color)
             self.set_font(size=hsize_pt)
-
         if tag == &#34;hr&#34;:
             self.pdf.add_page(same=True)
         if tag == &#34;code&#34;:
@@ -612,7 +616,8 @@ class HTML2FPDF(HTMLParser):
             self.td_th = {k.lower(): v for k, v in attrs.items()}
             self.td_th[&#34;tag&#34;] = tag
             if tag == &#34;th&#34;:
-                self.td_th[&#34;align&#34;] = &#34;CENTER&#34;
+                if &#34;align&#34; not in self.td_th:
+                    self.td_th[&#34;align&#34;] = &#34;CENTER&#34;
                 self.td_th[&#34;b&#34;] = True
             elif len(self.table.rows) == 1 and not self.table_row.cells:
                 # =&gt; we are in the 1st &lt;tr&gt;, and the 1st cell is a &lt;td&gt;
@@ -880,7 +885,7 @@ class HTMLMixin:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L212-L228" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L212-L228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def color_as_decimal(color=&#34;#000000&#34;):
     if not color:
@@ -939,7 +944,7 @@ to new image URLs</dd>
       <details class="source">
         <summary>
             <span>Expand source code</span>
-              <a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L231-L814" class="git-link">Browse git</a>
+              <a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L231-L819" class="git-link">Browse git</a>
         </summary>
         <pre><code class="python">class HTML2FPDF(HTMLParser):
     &#34;Render basic HTML to FPDF&#34;
@@ -1161,6 +1166,11 @@ to new image URLs</dd>
                 self.set_style(tag, True)
         if tag == &#34;a&#34;:
             self.href = attrs[&#34;href&#34;]
+            try:
+                page = int(self.href)
+                self.href = self.pdf.add_link(page=page)
+            except ValueError:
+                pass
         if tag == &#34;br&#34;:
             self._write_paragraph(&#34;\n&#34;)
         if tag == &#34;p&#34;:
@@ -1201,7 +1211,6 @@ to new image URLs</dd>
             )
             self.set_text_color(*color)
             self.set_font(size=hsize_pt)
-
         if tag == &#34;hr&#34;:
             self.pdf.add_page(same=True)
         if tag == &#34;code&#34;:
@@ -1292,7 +1301,8 @@ to new image URLs</dd>
             self.td_th = {k.lower(): v for k, v in attrs.items()}
             self.td_th[&#34;tag&#34;] = tag
             if tag == &#34;th&#34;:
-                self.td_th[&#34;align&#34;] = &#34;CENTER&#34;
+                if &#34;align&#34; not in self.td_th:
+                    self.td_th[&#34;align&#34;] = &#34;CENTER&#34;
                 self.td_th[&#34;b&#34;] = True
             elif len(self.table.rows) == 1 and not self.table_row.cells:
                 # =&gt; we are in the 1st &lt;tr&gt;, and the 1st cell is a &lt;td&gt;
@@ -1548,7 +1558,7 @@ to new image URLs</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L813-L814" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L818-L819" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, message):
     raise RuntimeError(message)</code></pre>
@@ -1564,7 +1574,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L741-L751" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L746-L756" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feed(self, data):
     super().feed(data)
@@ -1587,7 +1597,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L355-L414" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L355-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_data(self, data):
     if self.td_th is not None:
@@ -1659,7 +1669,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L653-L739" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L658-L744" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_endtag(self, tag):
     LOGGER.debug(&#34;ENDTAG %s&#34;, tag)
@@ -1758,7 +1768,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L430-L651" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L430-L656" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def handle_starttag(self, tag, attrs):
     self._pre_started = False
@@ -1781,6 +1791,11 @@ as you want (may include '\n').</p></div>
             self.set_style(tag, True)
     if tag == &#34;a&#34;:
         self.href = attrs[&#34;href&#34;]
+        try:
+            page = int(self.href)
+            self.href = self.pdf.add_link(page=page)
+        except ValueError:
+            pass
     if tag == &#34;br&#34;:
         self._write_paragraph(&#34;\n&#34;)
     if tag == &#34;p&#34;:
@@ -1821,7 +1836,6 @@ as you want (may include '\n').</p></div>
         )
         self.set_text_color(*color)
         self.set_font(size=hsize_pt)
-
     if tag == &#34;hr&#34;:
         self.pdf.add_page(same=True)
     if tag == &#34;code&#34;:
@@ -1912,7 +1926,8 @@ as you want (may include '\n').</p></div>
         self.td_th = {k.lower(): v for k, v in attrs.items()}
         self.td_th[&#34;tag&#34;] = tag
         if tag == &#34;th&#34;:
-            self.td_th[&#34;align&#34;] = &#34;CENTER&#34;
+            if &#34;align&#34; not in self.td_th:
+                self.td_th[&#34;align&#34;] = &#34;CENTER&#34;
             self.td_th[&#34;b&#34;] = True
         elif len(self.table.rows) == 1 and not self.table_row.cells:
             # =&gt; we are in the 1st &lt;tr&gt;, and the 1st cell is a &lt;td&gt;
@@ -1992,7 +2007,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L787-L793" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L792-L798" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def put_link(self, text):
     # Put a hyperlink
@@ -2011,7 +2026,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L796-L810" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L801-L815" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render_toc(self, pdf, outline):
     &#34;This method can be overriden by subclasses to customize the Table of Contents style.&#34;
@@ -2038,7 +2053,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L753-L768" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L758-L773" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_font(self, face=None, size=None, set_default=False):
     if face:
@@ -2066,7 +2081,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L770-L779" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L775-L784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_style(self, tag=None, enable=False):
     # Modify style and select corresponding font
@@ -2088,7 +2103,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L781-L785" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L786-L790" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_text_color(self, r=None, g=0, b=0):
     prev_page = self.pdf.page
@@ -2109,7 +2124,7 @@ You can now directly use the <code>FPDF.write_html()</code> method</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9b18a9f49c96812fc4f2d93c6dee5abeef009a07/fpdf/html.py#L817-L832" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/6a8678b3f33a479b3f918d0024d204cdec084204/fpdf/html.py#L822-L837" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HTMLMixin:
     &#34;&#34;&#34;
