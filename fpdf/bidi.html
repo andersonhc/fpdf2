@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L1-L763" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L1-L763" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python"># This is an implementation of the Unicode Standard Annex #9
 # Unicode bidirectional algorithm - Revision 48 for Unicode 15.1.0
@@ -810,7 +810,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L419-L444" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L419-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def auto_detect_base_direction(
     string: str, stop_at_pdi: bool = False, debug: bool = False
@@ -848,7 +848,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L447-L511" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L447-L511" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def calculate_isolate_runs(paragraph: List[BidiCharacter]) -&gt; List[IsolatingRun]:
     # BD13 and X10
@@ -931,7 +931,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L148-L182" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L148-L182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class BidiCharacter:
     __slots__ = [
@@ -1006,7 +1006,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L171-L172" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L171-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_direction_from_level(self):
     return &#34;R&#34; if self.embedding_level % 2 else &#34;L&#34;</code></pre>
@@ -1020,7 +1020,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L174-L175" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L174-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_class(self, cls):
     self.bidi_class = cls</code></pre>
@@ -1037,7 +1037,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L514-L763" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L514-L763" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class BidiParagraph:
     __slots__ = (
@@ -1323,7 +1323,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L547-L548" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L547-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_all(self):
     return self.characters, self.reorder_resolved_levels()</code></pre>
@@ -1337,7 +1337,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L557-L692" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L557-L692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_bidi_characters(self) -&gt; List[BidiCharacter]:
     # Explicit leves and directions. Rule X1
@@ -1485,7 +1485,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L554-L555" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L554-L555" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_bidi_fragments(self):
     return self.split_bidi_fragments()</code></pre>
@@ -1499,7 +1499,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L535-L536" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L535-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_characters(self) -&gt; List[BidiCharacter]:
     return self.characters</code></pre>
@@ -1513,7 +1513,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L538-L542" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L538-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_characters_with_embedding_level(self) -&gt; List[BidiCharacter]:
     # Calculate embedding level for each character after breaking isolating runs.
@@ -1530,7 +1530,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L544-L545" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L544-L545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_reordered_characters(self) -&gt; List[BidiCharacter]:
     return self.reorder_resolved_levels()</code></pre>
@@ -1544,7 +1544,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L550-L552" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L550-L552" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_reordered_string(self):
     &#34;Used for conformance validation&#34;
@@ -1559,7 +1559,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L711-L763" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L711-L763" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reorder_resolved_levels(self):
     before_separator = True
@@ -1624,7 +1624,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L694-L709" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L694-L709" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def split_bidi_fragments(self):
     bidi_fragments = []
@@ -1655,7 +1655,7 @@ stop_at_pdi can be set to True to get the direction of a single isolate sequence
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L185-L194" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L185-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass
 class DirectionalStatus:
@@ -1693,7 +1693,7 @@ class DirectionalStatus:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L197-L416" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L197-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class IsolatingRun:
     __slots__ = [&#34;characters&#34;, &#34;previous_direction&#34;, &#34;next_direction&#34;]
@@ -1944,7 +1944,7 @@ How to calculate bracket pairs:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L289-L319" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L289-L319" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pair_brackets(self) -&gt; List[Tuple[int, int]]:
     &#34;&#34;&#34;
@@ -1987,7 +1987,7 @@ How to calculate bracket pairs:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L403-L416" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L403-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resolve_implicit_levels(self) -&gt; None:
     for bidi_char in self.characters:
@@ -2013,7 +2013,7 @@ How to calculate bracket pairs:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L321-L401" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L321-L401" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resolve_neutral_types(self) -&gt; None:
     def previous_strong(index: int):
@@ -2106,7 +2106,7 @@ How to calculate bracket pairs:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/f03b3b1df097aa8d75e625f690de236c62a7e085/fpdf/bidi.py#L208-L287" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/3b4b6f8e1ad3d8aba9ae0eef648cb6011e6b115a/fpdf/bidi.py#L208-L287" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resolve_weak_types(self) -&gt; None:
     # W1. Examine each nonspacing mark (NSM) in the isolating run sequence, and change the type of the NSM to Other Neutral
