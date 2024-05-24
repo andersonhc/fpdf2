@@ -31,7 +31,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L1-L3125" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L1-L3127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Font-related classes &amp; constants.
@@ -47,7 +47,6 @@ import re
 from bisect import bisect_left
 from collections import defaultdict
 from dataclasses import dataclass, replace
-from functools import lru_cache
 from typing import List, Optional, Tuple, Union
 
 from fontTools import ttLib
@@ -485,6 +484,8 @@ class SubsetMap:
             glyph = self.get_glyph(unicode=x)
             if glyph:
                 self._char_id_per_glyph[glyph] = int(x)
+        # This is a cache to speed things up:
+        self._char_id_per_unicode = {}
 
     def __repr__(self):
         return (
@@ -499,9 +500,10 @@ class SubsetMap:
         for glyph, char_id in self._char_id_per_glyph.items():
             yield glyph, char_id
 
-    # pylint: disable=method-cache-max-size-none
-    @lru_cache(maxsize=None)
     def pick(self, unicode: int):
+        cache_hit = self._char_id_per_unicode.get(unicode)
+        if cache_hit:
+            return cache_hit
         glyph = self.get_glyph(unicode=unicode)
         if glyph is None and unicode not in self.font.missing_glyphs:
             self.font.missing_glyphs.append(unicode)
@@ -517,10 +519,10 @@ class SubsetMap:
             char_id = self._next
             self._char_id_per_glyph[glyph] = char_id
             self._next += 1
+            # Fill cache:
+            self._char_id_per_unicode[glyph.unicode] = char_id
         return char_id
 
-    # pylint: disable=method-cache-max-size-none
-    @lru_cache(maxsize=None)
     def get_glyph(
         self, glyph=None, unicode=None, glyph_name=None, glyph_width=None
     ) -&gt; Glyph:
@@ -3178,7 +3180,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L112-L135" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L111-L134" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoreFont:
     # RAM usage optimization:
@@ -3250,7 +3252,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L131-L132" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L130-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encode_text(self, text):
     return f&#34;({escape_parens(text)}) Tj&#34;</code></pre>
@@ -3264,7 +3266,7 @@ CORE_FONTS_CHARWIDTHS[&#34;zapfdingbats&#34;] = {
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L126-L127" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L125-L126" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_text_width(self, text, font_size_pt, _):
     return (len(text), sum(self.cw[c] for c in text) * font_size_pt * 0.001)</code></pre>
@@ -3282,7 +3284,7 @@ This is a subset of <code><a title="fpdf.graphics_state.GraphicsStateMixin" href
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L40-L109" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L39-L108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass
 class FontFace:
@@ -3373,7 +3375,7 @@ Values of <code>other</code> that are None in this FontFace will be kept unchang
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L81-L109" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L80-L108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def combine(default_style, override_style):
@@ -3514,7 +3516,7 @@ can map a sequence of unicode characters to a single glyph</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L407-L423" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L406-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@dataclass(order=True)
 class Glyph:
@@ -3563,7 +3565,7 @@ class Glyph:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L24-L29" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L23-L28" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HarfBuzzFont(hb.Font):
     &#34;uharfbuzz.Font than can be deepcopied&#34;
@@ -3588,7 +3590,7 @@ class Glyph:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L382-L404" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L381-L403" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontDescriptor(PDFObject):
     def __init__(
@@ -3643,7 +3645,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L426-L508" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L425-L510" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SubsetMap:
     &#34;&#34;&#34;
@@ -3672,6 +3674,8 @@ the lowest possible representation.</p></div>
             glyph = self.get_glyph(unicode=x)
             if glyph:
                 self._char_id_per_glyph[glyph] = int(x)
+        # This is a cache to speed things up:
+        self._char_id_per_unicode = {}
 
     def __repr__(self):
         return (
@@ -3686,9 +3690,10 @@ the lowest possible representation.</p></div>
         for glyph, char_id in self._char_id_per_glyph.items():
             yield glyph, char_id
 
-    # pylint: disable=method-cache-max-size-none
-    @lru_cache(maxsize=None)
     def pick(self, unicode: int):
+        cache_hit = self._char_id_per_unicode.get(unicode)
+        if cache_hit:
+            return cache_hit
         glyph = self.get_glyph(unicode=unicode)
         if glyph is None and unicode not in self.font.missing_glyphs:
             self.font.missing_glyphs.append(unicode)
@@ -3704,10 +3709,10 @@ the lowest possible representation.</p></div>
             char_id = self._next
             self._char_id_per_glyph[glyph] = char_id
             self._next += 1
+            # Fill cache:
+            self._char_id_per_unicode[glyph.unicode] = char_id
         return char_id
 
-    # pylint: disable=method-cache-max-size-none
-    @lru_cache(maxsize=None)
     def get_glyph(
         self, glyph=None, unicode=None, glyph_name=None, glyph_width=None
     ) -&gt; Glyph:
@@ -3739,7 +3744,7 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L507-L508" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L509-L510" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_all_glyph_names(self):
     return [glyph.glyph_name for glyph in self._char_id_per_glyph]</code></pre>
@@ -3753,10 +3758,9 @@ the lowest possible representation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L488-L505" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L491-L507" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">@lru_cache(maxsize=None)
-def get_glyph(
+<pre><code class="python">def get_glyph(
     self, glyph=None, unicode=None, glyph_name=None, glyph_width=None
 ) -&gt; Glyph:
     if glyph:
@@ -3783,7 +3787,7 @@ def get_glyph(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L463-L465" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L464-L466" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     for glyph, char_id in self._char_id_per_glyph.items():
@@ -3798,10 +3802,12 @@ def get_glyph(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L468-L473" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L468-L475" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">@lru_cache(maxsize=None)
-def pick(self, unicode: int):
+<pre><code class="python">def pick(self, unicode: int):
+    cache_hit = self._char_id_per_unicode.get(unicode)
+    if cache_hit:
+        return cache_hit
     glyph = self.get_glyph(unicode=unicode)
     if glyph is None and unicode not in self.font.missing_glyphs:
         self.font.missing_glyphs.append(unicode)
@@ -3816,7 +3822,7 @@ def pick(self, unicode: int):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L475-L485" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L477-L489" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pick_glyph(self, glyph):
     char_id = self._char_id_per_glyph.get(glyph)
@@ -3828,6 +3834,8 @@ def pick(self, unicode: int):
         char_id = self._next
         self._char_id_per_glyph[glyph] = char_id
         self._next += 1
+        # Fill cache:
+        self._char_id_per_unicode[glyph.unicode] = char_id
     return char_id</code></pre>
 </details>
 </dd>
@@ -3842,7 +3850,7 @@ def pick(self, unicode: int):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L138-L379" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L137-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TTFFont:
     __slots__ = (  # RAM usage optimization
@@ -4168,7 +4176,7 @@ def pick(self, unicode: int):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L248-L250" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L247-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def close(self):
     self.ttfont.close()
@@ -4183,7 +4191,7 @@ def pick(self, unicode: int):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L303-L310" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L302-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def encode_text(self, text):
     txt_mapped = &#34;&#34;
@@ -4203,7 +4211,7 @@ def pick(self, unicode: int):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L252-L255" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L251-L254" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_text_width(self, text, font_size_pt, text_shaping_parms):
     if text_shaping_parms:
@@ -4219,7 +4227,7 @@ def pick(self, unicode: int):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L282-L301" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L281-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def perform_harfbuzz_shaping(self, text, font_size_pt, text_shaping_parms):
     &#34;&#34;&#34;
@@ -4252,7 +4260,7 @@ of the glyphs on the subset and map input characters to the cluster codes</p></d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L312-L379" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L311-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def shape_text(self, text, font_size_pt, text_shaping_parms):
     &#34;&#34;&#34;
@@ -4334,7 +4342,7 @@ and "x_offset" for each glyph. This method works for "left to right" or "right t
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/fonts.py#L257-L278" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/fonts.py#L256-L277" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def shaped_text_width(self, text, font_size_pt, text_shaping_parms):
     &#34;&#34;&#34;

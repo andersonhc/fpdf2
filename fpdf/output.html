@@ -31,7 +31,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L1-L1065" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L1-L1067" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 This module contains the serialization logic that produces a PDF document from a FPDF instance.
@@ -585,10 +585,14 @@ class OutputProducer:
                 glyph_names = font.subset.get_all_glyph_names()
 
                 if len(font.missing_glyphs) &gt; 0:
+                    msg = &#34;, &#34;.join(
+                        f&#34;&#39;{chr(x)}&#39; ({chr(x).encode(&#39;unicode-escape&#39;).decode()})&#34;
+                        for x in font.missing_glyphs[:10]
+                    )
+                    if len(font.missing_glyphs) &gt; 10:
+                        msg += f&#34;, ... (and {len(font.missing_glyphs) - 10} others)&#34;
                     LOGGER.warning(
-                        &#34;Font %s is missing the following glyphs: %s&#34;,
-                        fontname,
-                        &#34;, &#34;.join(chr(x) for x in font.missing_glyphs),
+                        &#34;Font %s is missing the following glyphs: %s&#34;, fontname, msg
                     )
 
                 # 2. make a subset
@@ -723,8 +727,6 @@ class OutputProducer:
                 self._add_pdf_obj(font_file_cs_obj, &#34;fonts&#34;)
                 font_descriptor_obj.font_file2 = font_file_cs_obj
 
-                font.subset.pick.cache_clear()
-                font.subset.get_glyph.cache_clear()
                 font.close()
 
         return font_objs_per_index
@@ -1115,7 +1117,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L961-L983" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L963-L985" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stream_content_for_raster_image(
     info: RasterImageInfo,
@@ -1156,7 +1158,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L111-L122" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L111-L122" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AcroForm:
     def __init__(self, fields, sig_flags):
@@ -1181,7 +1183,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L116-L122" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L116-L122" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None, _obj_id=None):
     obj_dict = build_obj_dict(
@@ -1204,7 +1206,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L82-L87" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L82-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CIDSystemInfo(PDFObject):
     def __init__(self):
@@ -1235,7 +1237,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L52-L54" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L52-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ContentWithoutID:
     def serialize(self, _security_handler=None):
@@ -1257,7 +1259,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L53-L54" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L53-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     pass</code></pre>
@@ -1274,7 +1276,7 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L340-L958" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L340-L960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OutputProducer:
     &#34;Generates the final bytearray representing the PDF document, based on a FPDF instance.&#34;
@@ -1489,10 +1491,14 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 glyph_names = font.subset.get_all_glyph_names()
 
                 if len(font.missing_glyphs) &gt; 0:
+                    msg = &#34;, &#34;.join(
+                        f&#34;&#39;{chr(x)}&#39; ({chr(x).encode(&#39;unicode-escape&#39;).decode()})&#34;
+                        for x in font.missing_glyphs[:10]
+                    )
+                    if len(font.missing_glyphs) &gt; 10:
+                        msg += f&#34;, ... (and {len(font.missing_glyphs) - 10} others)&#34;
                     LOGGER.warning(
-                        &#34;Font %s is missing the following glyphs: %s&#34;,
-                        fontname,
-                        &#34;, &#34;.join(chr(x) for x in font.missing_glyphs),
+                        &#34;Font %s is missing the following glyphs: %s&#34;, fontname, msg
                     )
 
                 # 2. make a subset
@@ -1627,8 +1633,6 @@ def _sizeof_fmt(num, suffix=&#34;B&#34;):
                 self._add_pdf_obj(font_file_cs_obj, &#34;fonts&#34;)
                 font_descriptor_obj.font_file2 = font_file_cs_obj
 
-                font.subset.pick.cache_clear()
-                font.subset.get_glyph.cache_clear()
                 font.close()
 
         return font_objs_per_index
@@ -1912,7 +1916,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L354-L469" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L354-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bufferize(self):
     &#34;&#34;&#34;
@@ -2045,7 +2049,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L125-L142" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L125-L142" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFCatalog(PDFObject):
     def __init__(
@@ -2091,7 +2095,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L290-L297" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L290-L297" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFExtGState(PDFObject):
     def __init__(self, dict_as_str):
@@ -2127,7 +2131,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L66-L79" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L66-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFont(PDFObject):
     def __init__(self, subtype, base_font, encoding=None, d_w=None, w=None):
@@ -2169,7 +2173,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L154-L157" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L154-L157" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFFontStream(PDFContentStream):
     def __init__(self, contents):
@@ -2200,7 +2204,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L57-L63" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L57-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFHeader(ContentWithoutID):
     def __init__(self, pdf_version):
@@ -2224,7 +2228,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L62-L63" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L62-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     return f&#34;%PDF-{self.pdf_version}&#34;</code></pre>
@@ -2243,7 +2247,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L209-L227" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L209-L227" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFICCPObject(PDFContentStream):
     __slots__ = (  # RAM usage optimization
@@ -2310,7 +2314,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L90-L108" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L90-L108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFInfo(PDFObject):
     def __init__(
@@ -2357,7 +2361,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L230-L278" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L230-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFPage(PDFObject):
     __slots__ = (  # RAM usage optimization
@@ -2466,7 +2470,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L272-L274" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L272-L274" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dimensions(self):
     &#34;Return a pair (width, height) in the unit specified to FPDF constructor&#34;
@@ -2481,7 +2485,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L269-L270" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L269-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def index(self):
     return self._index</code></pre>
@@ -2495,7 +2499,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L276-L278" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L276-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set_dimensions(self, width_pt, height_pt):
     &#34;Accepts a pair (width, height) in the unit specified to FPDF constructor&#34;
@@ -2524,7 +2528,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L281-L287" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L281-L287" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFPagesRoot(PDFObject):
     def __init__(self, count, media_box):
@@ -2559,7 +2563,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L145-L151" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L145-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFResources(PDFObject):
     def __init__(self, proc_set, font, x_object, ext_g_state):
@@ -2594,7 +2598,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L167-L206" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L167-L206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXObject(PDFContentStream):
     __slots__ = (  # RAM usage optimization
@@ -2710,7 +2714,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L160-L164" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L160-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXmpMetadata(PDFContentStream):
     def __init__(self, contents):
@@ -2742,7 +2746,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L300-L337" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L300-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFXrefAndTrailer(ContentWithoutID):
     def __init__(self, output_builder):
@@ -2797,7 +2801,7 @@ plus a few other properties on PDFPage instances</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/11a3bacaf2f22ef24c3e51dbe835e15a7b4b724a/fpdf/output.py#L309-L337" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/output.py#L309-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(self, _security_handler=None):
     builder = self.output_builder
