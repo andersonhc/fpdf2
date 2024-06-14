@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L1-L675" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L1-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;PDF Template Helpers for fpdf.py&#34;&#34;&#34;
 
@@ -34,7 +34,7 @@ __author__ = &#34;Mariano Reingart &lt;reingart@gmail.com&gt;&#34;
 __copyright__ = &#34;Copyright (C) 2010 Mariano Reingart&#34;
 __license__ = &#34;LGPL 3.0&#34;
 
-import csv, locale, warnings
+import os, csv, json, locale, warnings
 
 from .deprecation import get_stack_level
 from .errors import FPDFException
@@ -114,6 +114,7 @@ class FlexTemplate:
             &#34;priority&#34;: int,
             &#34;multiline&#34;: (bool, type(None)),
             &#34;rotate&#34;: (int, float),
+            &#34;wrapmode&#34;: (str, type(None)),
         }
 
         self.elements = elements
@@ -177,13 +178,52 @@ class FlexTemplate:
             return False
         return None
 
-    def parse_csv(self, infile, delimiter=&#34;,&#34;, decimal_sep=&#34;.&#34;, encoding=None):
+    def parse_json(self, infile: os.PathLike, encoding: str = &#34;utf-8&#34;):
+        &#34;&#34;&#34;
+        Load the template definition from a JSON file.
+        The data must be structured as an array of objects, with names and values exactly
+        equivalent to what would get supplied to load_elements(),
+
+        Arguments:
+
+            infile (string or path-like object): The filepath of the JSON file.
+
+            encoding (string): The character encoding of the file. Default is UTF-8.
+        &#34;&#34;&#34;
+        with open(infile, encoding=encoding) as f:
+            data = json.load(f)
+            for d in data:
+                fgval = d.get(&#34;foreground&#34;)
+                if fgval and isinstance(fgval, str):
+                    if fgval.lower().startswith(&#34;#&#34;):
+                        d[&#34;foreground&#34;] = int(fgval[1:], 16)
+                    else:
+                        raise ValueError(
+                            &#34;If foreground is a string, it must have the form &#39;#rrggbb&#39;.&#34;
+                        )
+                bgval = d.get(&#34;background&#34;)
+                if bgval and isinstance(bgval, str):
+                    if bgval.lower().startswith(&#34;#&#34;):
+                        d[&#34;background&#34;] = int(bgval[1:], 16)
+                    else:
+                        raise ValueError(
+                            &#34;If background is a string, it must have the form &#39;#rrggbb&#39;.&#34;
+                        )
+            self.load_elements(data)
+
+    def parse_csv(
+        self,
+        infile: os.PathLike,
+        delimiter: str = &#34;,&#34;,
+        decimal_sep: str = &#34;.&#34;,
+        encoding: str = None,
+    ):
         &#34;&#34;&#34;
         Load the template definition from a CSV file.
 
         Arguments:
 
-            infile (string): The filename of the CSV file.
+            infile (string or path-like object): The filepath of the CSV file.
 
             delimiter (single character): The character that seperates the fields in the CSV file:
                 Usually a comma, semicolon, or tab.
@@ -220,6 +260,7 @@ class FlexTemplate:
             (&#34;priority&#34;, int, False),
             (&#34;multiline&#34;, self._parse_multiline, False),
             (&#34;rotate&#34;, _varsep_float, False),
+            (&#34;wrapmode&#34;, str, False),
         )
         self.elements = []
         if encoding is None:
@@ -320,6 +361,7 @@ class FlexTemplate:
             align=element.get(&#34;align&#34;, &#34;&#34;),
             dry_run=True,
             output=&#34;LINES&#34;,
+            wrapmode=element.get(&#34;wrapmode&#34;, &#34;WORD&#34;),
         )
 
     def _text(
@@ -340,6 +382,7 @@ class FlexTemplate:
         foreground=0,
         background=None,
         multiline=None,
+        wrapmode=&#34;WORD&#34;,
         **__,
     ):
         if not text:
@@ -373,7 +416,13 @@ class FlexTemplate:
             pdf.cell(w=width, h=height, text=text, border=0, align=align, fill=fill)
         elif multiline:  # automatic word - warp
             pdf.multi_cell(
-                w=width, h=height, text=text, border=0, align=align, fill=fill
+                w=width,
+                h=height,
+                text=text,
+                border=0,
+                align=align,
+                fill=fill,
+                wrapmode=wrapmode,
             )
         else:  # trim to fit exactly the space defined
             text = pdf.multi_cell(
@@ -381,6 +430,7 @@ class FlexTemplate:
                 h=height,
                 text=text,
                 align=align,
+                wrapmode=wrapmode,
                 dry_run=True,
                 output=&#34;LINES&#34;,
             )[0]
@@ -730,7 +780,7 @@ a document in any combination.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L25-L570" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L25-L620" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FlexTemplate:
     &#34;&#34;&#34;
@@ -794,6 +844,7 @@ a document in any combination.</p>
             &#34;priority&#34;: int,
             &#34;multiline&#34;: (bool, type(None)),
             &#34;rotate&#34;: (int, float),
+            &#34;wrapmode&#34;: (str, type(None)),
         }
 
         self.elements = elements
@@ -857,13 +908,52 @@ a document in any combination.</p>
             return False
         return None
 
-    def parse_csv(self, infile, delimiter=&#34;,&#34;, decimal_sep=&#34;.&#34;, encoding=None):
+    def parse_json(self, infile: os.PathLike, encoding: str = &#34;utf-8&#34;):
+        &#34;&#34;&#34;
+        Load the template definition from a JSON file.
+        The data must be structured as an array of objects, with names and values exactly
+        equivalent to what would get supplied to load_elements(),
+
+        Arguments:
+
+            infile (string or path-like object): The filepath of the JSON file.
+
+            encoding (string): The character encoding of the file. Default is UTF-8.
+        &#34;&#34;&#34;
+        with open(infile, encoding=encoding) as f:
+            data = json.load(f)
+            for d in data:
+                fgval = d.get(&#34;foreground&#34;)
+                if fgval and isinstance(fgval, str):
+                    if fgval.lower().startswith(&#34;#&#34;):
+                        d[&#34;foreground&#34;] = int(fgval[1:], 16)
+                    else:
+                        raise ValueError(
+                            &#34;If foreground is a string, it must have the form &#39;#rrggbb&#39;.&#34;
+                        )
+                bgval = d.get(&#34;background&#34;)
+                if bgval and isinstance(bgval, str):
+                    if bgval.lower().startswith(&#34;#&#34;):
+                        d[&#34;background&#34;] = int(bgval[1:], 16)
+                    else:
+                        raise ValueError(
+                            &#34;If background is a string, it must have the form &#39;#rrggbb&#39;.&#34;
+                        )
+            self.load_elements(data)
+
+    def parse_csv(
+        self,
+        infile: os.PathLike,
+        delimiter: str = &#34;,&#34;,
+        decimal_sep: str = &#34;.&#34;,
+        encoding: str = None,
+    ):
         &#34;&#34;&#34;
         Load the template definition from a CSV file.
 
         Arguments:
 
-            infile (string): The filename of the CSV file.
+            infile (string or path-like object): The filepath of the CSV file.
 
             delimiter (single character): The character that seperates the fields in the CSV file:
                 Usually a comma, semicolon, or tab.
@@ -900,6 +990,7 @@ a document in any combination.</p>
             (&#34;priority&#34;, int, False),
             (&#34;multiline&#34;, self._parse_multiline, False),
             (&#34;rotate&#34;, _varsep_float, False),
+            (&#34;wrapmode&#34;, str, False),
         )
         self.elements = []
         if encoding is None:
@@ -1000,6 +1091,7 @@ a document in any combination.</p>
             align=element.get(&#34;align&#34;, &#34;&#34;),
             dry_run=True,
             output=&#34;LINES&#34;,
+            wrapmode=element.get(&#34;wrapmode&#34;, &#34;WORD&#34;),
         )
 
     def _text(
@@ -1020,6 +1112,7 @@ a document in any combination.</p>
         foreground=0,
         background=None,
         multiline=None,
+        wrapmode=&#34;WORD&#34;,
         **__,
     ):
         if not text:
@@ -1053,7 +1146,13 @@ a document in any combination.</p>
             pdf.cell(w=width, h=height, text=text, border=0, align=align, fill=fill)
         elif multiline:  # automatic word - warp
             pdf.multi_cell(
-                w=width, h=height, text=text, border=0, align=align, fill=fill
+                w=width,
+                h=height,
+                text=text,
+                border=0,
+                align=align,
+                fill=fill,
+                wrapmode=wrapmode,
             )
         else:  # trim to fit exactly the space defined
             text = pdf.multi_cell(
@@ -1061,6 +1160,7 @@ a document in any combination.</p>
                 h=height,
                 text=text,
                 align=align,
+                wrapmode=wrapmode,
                 dry_run=True,
                 output=&#34;LINES&#34;,
             )[0]
@@ -1295,7 +1395,7 @@ a document in any combination.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L59-L130" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L59-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load_elements(self, elements):
     &#34;&#34;&#34;
@@ -1325,6 +1425,7 @@ a document in any combination.</p>
         &#34;priority&#34;: int,
         &#34;multiline&#34;: (bool, type(None)),
         &#34;rotate&#34;: (int, float),
+        &#34;wrapmode&#34;: (str, type(None)),
     }
 
     self.elements = elements
@@ -1372,12 +1473,12 @@ a document in any combination.</p>
 </details>
 </dd>
 <dt id="fpdf.template.FlexTemplate.parse_csv"><code class="name flex">
-<span>def <span class="ident">parse_csv</span></span>(<span>self, infile, delimiter=',', decimal_sep='.', encoding=None)</span>
+<span>def <span class="ident">parse_csv</span></span>(<span>self, infile: os.PathLike, delimiter: str = ',', decimal_sep: str = '.', encoding: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load the template definition from a CSV file.</p>
 <h2 id="arguments">Arguments</h2>
-<p>infile (string): The filename of the CSV file.</p>
+<p>infile (string or path-like object): The filepath of the CSV file.</p>
 <p>delimiter (single character): The character that seperates the fields in the CSV file:
 Usually a comma, semicolon, or tab.</p>
 <p>decimal_sep (single character): The decimal separator used in the file.
@@ -1387,15 +1488,21 @@ Default is the system default encoding.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L150-L220" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L184-L261" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def parse_csv(self, infile, delimiter=&#34;,&#34;, decimal_sep=&#34;.&#34;, encoding=None):
+<pre><code class="python">def parse_csv(
+    self,
+    infile: os.PathLike,
+    delimiter: str = &#34;,&#34;,
+    decimal_sep: str = &#34;.&#34;,
+    encoding: str = None,
+):
     &#34;&#34;&#34;
     Load the template definition from a CSV file.
 
     Arguments:
 
-        infile (string): The filename of the CSV file.
+        infile (string or path-like object): The filepath of the CSV file.
 
         delimiter (single character): The character that seperates the fields in the CSV file:
             Usually a comma, semicolon, or tab.
@@ -1432,6 +1539,7 @@ Default is the system default encoding.</p></div>
         (&#34;priority&#34;, int, False),
         (&#34;multiline&#34;, self._parse_multiline, False),
         (&#34;rotate&#34;, _varsep_float, False),
+        (&#34;wrapmode&#34;, str, False),
     )
     self.elements = []
     if encoding is None:
@@ -1462,6 +1570,55 @@ Default is the system default encoding.</p></div>
     self.keys = [val[&#34;name&#34;].lower() for val in self.elements]</code></pre>
 </details>
 </dd>
+<dt id="fpdf.template.FlexTemplate.parse_json"><code class="name flex">
+<span>def <span class="ident">parse_json</span></span>(<span>self, infile: os.PathLike, encoding: str = 'utf-8')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the template definition from a JSON file.
+The data must be structured as an array of objects, with names and values exactly
+equivalent to what would get supplied to load_elements(),</p>
+<h2 id="arguments">Arguments</h2>
+<p>infile (string or path-like object): The filepath of the JSON file.</p>
+<p>encoding (string): The character encoding of the file. Default is UTF-8.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L151-L182" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def parse_json(self, infile: os.PathLike, encoding: str = &#34;utf-8&#34;):
+    &#34;&#34;&#34;
+    Load the template definition from a JSON file.
+    The data must be structured as an array of objects, with names and values exactly
+    equivalent to what would get supplied to load_elements(),
+
+    Arguments:
+
+        infile (string or path-like object): The filepath of the JSON file.
+
+        encoding (string): The character encoding of the file. Default is UTF-8.
+    &#34;&#34;&#34;
+    with open(infile, encoding=encoding) as f:
+        data = json.load(f)
+        for d in data:
+            fgval = d.get(&#34;foreground&#34;)
+            if fgval and isinstance(fgval, str):
+                if fgval.lower().startswith(&#34;#&#34;):
+                    d[&#34;foreground&#34;] = int(fgval[1:], 16)
+                else:
+                    raise ValueError(
+                        &#34;If foreground is a string, it must have the form &#39;#rrggbb&#39;.&#34;
+                    )
+            bgval = d.get(&#34;background&#34;)
+            if bgval and isinstance(bgval, str):
+                if bgval.lower().startswith(&#34;#&#34;):
+                    d[&#34;background&#34;] = int(bgval[1:], 16)
+                else:
+                    raise ValueError(
+                        &#34;If background is a string, it must have the form &#39;#rrggbb&#39;.&#34;
+                    )
+        self.load_elements(data)</code></pre>
+</details>
+</dd>
 <dt id="fpdf.template.FlexTemplate.render"><code class="name flex">
 <span>def <span class="ident">render</span></span>(<span>self, offsetx=0.0, offsety=0.0, rotate=0.0, scale=1.0)</span>
 </code></dt>
@@ -1474,7 +1631,7 @@ Default is the system default encoding.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L527-L570" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L577-L620" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(self, offsetx=0.0, offsety=0.0, rotate=0.0, scale=1.0):
     &#34;&#34;&#34;
@@ -1530,7 +1687,7 @@ Default is the system default encoding.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L222-L229" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L263-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def __setitem__(self, name, value):
     assert isinstance(
@@ -1557,7 +1714,7 @@ when rendered in the element font style and size.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L255-L293" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L296-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def split_multicell(self, text, element_name):
     &#34;&#34;&#34;
@@ -1597,6 +1754,7 @@ when rendered in the element font style and size.</p></div>
         align=element.get(&#34;align&#34;, &#34;&#34;),
         dry_run=True,
         output=&#34;LINES&#34;,
+        wrapmode=element.get(&#34;wrapmode&#34;, &#34;WORD&#34;),
     )</code></pre>
 </details>
 </dd>
@@ -1626,7 +1784,7 @@ One of "mm", "cm", "in", "pt", or a number for points per unit.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L573-L675" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L623-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Template(FlexTemplate):
     &#34;&#34;&#34;
@@ -1746,7 +1904,7 @@ One of "mm", "cm", "in", "pt", or a number for points per unit.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L647-L651" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L697-L701" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_page(self):
     &#34;&#34;&#34;Finish the current page, and proceed to the next one.&#34;&#34;&#34;
@@ -1767,7 +1925,7 @@ Alternatively, the <code>.pdf.output()</code> method can be manually called.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/caea14a7a8a0e1093f6726c7db2a0a8c55f39ad1/fpdf/template.py#L654-L675" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/template.py#L704-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(self, outfile=None, dest=None):
     &#34;&#34;&#34;
@@ -1800,6 +1958,7 @@ Alternatively, the <code>.pdf.output()</code> method can be manually called.</p>
 <ul class="hlist">
 <li><code><a title="fpdf.template.FlexTemplate.load_elements" href="#fpdf.template.FlexTemplate.load_elements">load_elements</a></code></li>
 <li><code><a title="fpdf.template.FlexTemplate.parse_csv" href="#fpdf.template.FlexTemplate.parse_csv">parse_csv</a></code></li>
+<li><code><a title="fpdf.template.FlexTemplate.parse_json" href="#fpdf.template.FlexTemplate.parse_json">parse_json</a></code></li>
 <li><code><a title="fpdf.template.FlexTemplate.split_multicell" href="#fpdf.template.FlexTemplate.split_multicell">split_multicell</a></code></li>
 </ul>
 </li>
@@ -1823,9 +1982,10 @@ Alternatively, the <code>.pdf.output()</code> method can be manually called.</p>
 <ul>
 <li>
 <h4><code><a title="fpdf.template.FlexTemplate" href="#fpdf.template.FlexTemplate">FlexTemplate</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="fpdf.template.FlexTemplate.load_elements" href="#fpdf.template.FlexTemplate.load_elements">load_elements</a></code></li>
 <li><code><a title="fpdf.template.FlexTemplate.parse_csv" href="#fpdf.template.FlexTemplate.parse_csv">parse_csv</a></code></li>
+<li><code><a title="fpdf.template.FlexTemplate.parse_json" href="#fpdf.template.FlexTemplate.parse_json">parse_json</a></code></li>
 <li><code><a title="fpdf.template.FlexTemplate.render" href="#fpdf.template.FlexTemplate.render">render</a></code></li>
 <li><code><a title="fpdf.template.FlexTemplate.set" href="#fpdf.template.FlexTemplate.set">set</a></code></li>
 <li><code><a title="fpdf.template.FlexTemplate.split_multicell" href="#fpdf.template.FlexTemplate.split_multicell">split_multicell</a></code></li>
