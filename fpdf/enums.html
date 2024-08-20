@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
 <title>fpdf.enums API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
 </head>
 <body>
 <main>
@@ -22,944 +25,6 @@
 <h1 class="title">Module <code>fpdf.enums</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L1-L932" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">from enum import Enum, IntEnum, Flag, IntFlag
-from sys import intern
-
-from .syntax import Name
-
-
-class SignatureFlag(IntEnum):
-    SIGNATURES_EXIST = 1
-    &#34;If set, the document contains at least one signature field.&#34;
-    APPEND_ONLY = 2
-    &#34;&#34;&#34;
-    If set, the document contains signatures that may be invalidated
-    if the file is saved (written) in a way that alters its previous contents,
-    as opposed to an incremental update.
-    &#34;&#34;&#34;
-
-
-class CoerciveEnum(Enum):
-    &#34;An enumeration that provides a helper to coerce strings into enumeration members.&#34;
-
-    @classmethod
-    def coerce(cls, value):
-        &#34;&#34;&#34;
-        Attempt to coerce `value` into a member of this enumeration.
-
-        If value is already a member of this enumeration it is returned unchanged.
-        Otherwise, if it is a string, attempt to convert it as an enumeration value. If
-        that fails, attempt to convert it (case insensitively, by upcasing) as an
-        enumeration name.
-
-        If all different conversion attempts fail, an exception is raised.
-
-        Args:
-            value (Enum, str): the value to be coerced.
-
-        Raises:
-            ValueError: if `value` is a string but neither a member by name nor value.
-            TypeError: if `value`&#39;s type is neither a member of the enumeration nor a
-                string.
-        &#34;&#34;&#34;
-
-        if isinstance(value, cls):
-            return value
-
-        if isinstance(value, str):
-            try:
-                return cls(value)
-            except ValueError:
-                pass
-            try:
-                return cls[value.upper()]
-            except KeyError:
-                pass
-
-            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;)
-
-        raise TypeError(f&#34;{value} cannot be converted to a {cls.__name__}&#34;)
-
-
-class CoerciveIntEnum(IntEnum):
-    &#34;&#34;&#34;
-    An enumeration that provides a helper to coerce strings and integers into
-    enumeration members.
-    &#34;&#34;&#34;
-
-    @classmethod
-    def coerce(cls, value):
-        &#34;&#34;&#34;
-        Attempt to coerce `value` into a member of this enumeration.
-
-        If value is already a member of this enumeration it is returned unchanged.
-        Otherwise, if it is a string, attempt to convert it (case insensitively, by
-        upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
-        convert it as an enumeration value.
-
-        Otherwise, an exception is raised.
-
-        Args:
-            value (IntEnum, str, int): the value to be coerced.
-
-        Raises:
-            ValueError: if `value` is an int but not a member of this enumeration.
-            ValueError: if `value` is a string but not a member by name.
-            TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
-                int or a string.
-        &#34;&#34;&#34;
-        if isinstance(value, cls):
-            return value
-
-        if isinstance(value, str):
-            try:
-                return cls[value.upper()]
-            except KeyError:
-                raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
-
-        if isinstance(value, int):
-            return cls(value)
-
-        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)
-
-
-class CoerciveIntFlag(IntFlag):
-    &#34;&#34;&#34;
-    Enumerated constants that can be combined using the bitwise operators,
-    with a helper to coerce strings and integers into enumeration members.
-    &#34;&#34;&#34;
-
-    @classmethod
-    def coerce(cls, value):
-        &#34;&#34;&#34;
-        Attempt to coerce `value` into a member of this enumeration.
-
-        If value is already a member of this enumeration it is returned unchanged.
-        Otherwise, if it is a string, attempt to convert it (case insensitively, by
-        upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
-        convert it as an enumeration value.
-        Otherwise, an exception is raised.
-
-        Args:
-            value (IntEnum, str, int): the value to be coerced.
-
-        Raises:
-            ValueError: if `value` is an int but not a member of this enumeration.
-            ValueError: if `value` is a string but not a member by name.
-            TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
-                int or a string.
-        &#34;&#34;&#34;
-        if isinstance(value, cls):
-            return value
-
-        if isinstance(value, str):
-            try:
-                return cls[value.upper()]
-            except KeyError:
-                pass
-            try:
-                flags = cls[value[0].upper()]
-                for char in value[1:]:
-                    flags = flags | cls[char.upper()]
-                return flags
-            except KeyError:
-                raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
-
-        if isinstance(value, int):
-            return cls(value)
-
-        raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)
-
-
-class WrapMode(CoerciveEnum):
-    &#34;Defines how to break and wrap lines in multi-line text.&#34;
-    WORD = intern(&#34;WORD&#34;)
-    &#34;Wrap by word&#34;
-
-    CHAR = intern(&#34;CHAR&#34;)
-    &#34;Wrap by character&#34;
-
-
-class CharVPos(CoerciveEnum):
-    &#34;Defines the vertical position of text relative to the line.&#34;
-    SUP = intern(&#34;SUP&#34;)
-    &#34;Superscript&#34;
-
-    SUB = intern(&#34;SUB&#34;)
-    &#34;Subscript&#34;
-
-    NOM = intern(&#34;NOM&#34;)
-    &#34;Nominator of a fraction&#34;
-
-    DENOM = intern(&#34;DENOM&#34;)
-    &#34;Denominator of a fraction&#34;
-
-    LINE = intern(&#34;LINE&#34;)
-    &#34;Default line position&#34;
-
-
-class Align(CoerciveEnum):
-    &#34;Defines how to render text in a cell&#34;
-
-    C = intern(&#34;CENTER&#34;)
-    &#34;Center text horizontally&#34;
-
-    X = intern(&#34;X_CENTER&#34;)
-    &#34;Center text horizontally around current x position&#34;
-
-    L = intern(&#34;LEFT&#34;)
-    &#34;Left-align text&#34;
-
-    R = intern(&#34;RIGHT&#34;)
-    &#34;Right-align text&#34;
-
-    J = intern(&#34;JUSTIFY&#34;)
-    &#34;Justify text&#34;
-
-    @classmethod
-    def coerce(cls, value):
-        if value == &#34;&#34;:
-            return cls.L
-        return super(cls, cls).coerce(value)
-
-
-class VAlign(CoerciveEnum):
-    &#34;&#34;&#34;Defines how to vertically render text in a cell.
-    Default value is MIDDLE&#34;&#34;&#34;
-
-    M = intern(&#34;MIDDLE&#34;)
-    &#34;Center text vertically&#34;
-
-    T = intern(&#34;TOP&#34;)
-    &#34;Place text at the top of the cell, but obey the cells padding&#34;
-
-    B = intern(&#34;BOTTOM&#34;)
-    &#34;Place text at the bottom of the cell, but obey the cells padding&#34;
-
-    @classmethod
-    def coerce(cls, value):
-        if value == &#34;&#34;:
-            return cls.M
-        return super(cls, cls).coerce(value)
-
-
-class TextEmphasis(CoerciveIntFlag):
-    &#34;&#34;&#34;
-    Indicates use of bold / italics / underline.
-
-    This enum values can be combined with &amp; and | operators:
-        style = B | I
-    &#34;&#34;&#34;
-
-    NONE = 0
-    &#34;No emphasis&#34;
-
-    B = 1
-    &#34;Bold&#34;
-
-    I = 2
-    &#34;Italics&#34;
-
-    U = 4
-    &#34;Underline&#34;
-
-    @property
-    def style(self):
-        return &#34;&#34;.join(
-            name for name, value in self.__class__.__members__.items() if value &amp; self
-        )
-
-    @classmethod
-    def coerce(cls, value):
-        if isinstance(value, str):
-            if value == &#34;&#34;:
-                return cls.NONE
-            if value.upper() == &#34;BOLD&#34;:
-                return cls.B
-            if value.upper() == &#34;ITALICS&#34;:
-                return cls.I
-            if value.upper() == &#34;UNDERLINE&#34;:
-                return cls.U
-        return super(cls, cls).coerce(value)
-
-
-class MethodReturnValue(CoerciveIntFlag):
-    &#34;&#34;&#34;
-    Defines the return value(s) of a FPDF content-rendering method.
-
-    This enum values can be combined with &amp; and | operators:
-        PAGE_BREAK | LINES
-    &#34;&#34;&#34;
-
-    PAGE_BREAK = 1
-    &#34;The method will return a boolean indicating if a page break occured&#34;
-
-    LINES = 2
-    &#34;The method will return a multi-lines array of strings, after performing word-wrapping&#34;
-
-    HEIGHT = 4
-    &#34;The method will return how much vertical space was used&#34;
-
-
-class TableBordersLayout(CoerciveEnum):
-    &#34;Defines how to render table borders&#34;
-
-    ALL = intern(&#34;ALL&#34;)
-    &#34;Draw all table cells borders&#34;
-
-    NONE = intern(&#34;NONE&#34;)
-    &#34;Draw zero cells border&#34;
-
-    INTERNAL = intern(&#34;INTERNAL&#34;)
-    &#34;Draw only internal horizontal &amp; vertical borders&#34;
-
-    MINIMAL = intern(&#34;MINIMAL&#34;)
-    &#34;Draw only the top horizontal border, below the headings, and internal vertical borders&#34;
-
-    HORIZONTAL_LINES = intern(&#34;HORIZONTAL_LINES&#34;)
-    &#34;Draw only horizontal lines&#34;
-
-    NO_HORIZONTAL_LINES = intern(&#34;NO_HORIZONTAL_LINES&#34;)
-    &#34;Draw all cells border except horizontal lines, after the headings&#34;
-
-    SINGLE_TOP_LINE = intern(&#34;SINGLE_TOP_LINE&#34;)
-    &#34;Draw only the top horizontal border, below the headings&#34;
-
-
-class TableCellFillMode(CoerciveEnum):
-    &#34;Defines which table cells to fill&#34;
-
-    NONE = intern(&#34;NONE&#34;)
-    &#34;Fill zero table cell&#34;
-
-    ALL = intern(&#34;ALL&#34;)
-    &#34;Fill all table cells&#34;
-
-    ROWS = intern(&#34;ROWS&#34;)
-    &#34;Fill only table cells in odd rows&#34;
-
-    COLUMNS = intern(&#34;COLUMNS&#34;)
-    &#34;Fill only table cells in odd columns&#34;
-
-    EVEN_ROWS = intern(&#34;EVEN_ROWS&#34;)
-    &#34;Fill only table cells in even rows&#34;
-
-    EVEN_COLUMNS = intern(&#34;EVEN_COLUMNS&#34;)
-    &#34;Fill only table cells in even columns&#34;
-
-    @classmethod
-    def coerce(cls, value):
-        &#34;Any class that has a .should_fill_cell() method is considered a valid &#39;TableCellFillMode&#39; (duck-typing)&#34;
-        if callable(getattr(value, &#34;should_fill_cell&#34;, None)):
-            return value
-        return super().coerce(value)
-
-    def should_fill_cell(self, i, j):
-        if self is self.NONE:
-            return False
-        if self is self.ALL:
-            return True
-        if self is self.ROWS:
-            return i % 2 == 1
-        if self is self.COLUMNS:
-            return j % 2 == 1
-        if self is self.EVEN_ROWS:
-            return i % 2 == 0
-        if self is self.EVEN_COLUMNS:
-            return j % 2 == 0
-        raise NotImplementedError
-
-
-class TableSpan(CoerciveEnum):
-    ROW = intern(&#34;ROW&#34;)
-    &#34;Mark this cell as a continuation of the previous row&#34;
-
-    COL = intern(&#34;COL&#34;)
-    &#34;Mark this cell as a continuation of the previous column&#34;
-
-
-class TableHeadingsDisplay(CoerciveIntEnum):
-    &#34;Defines how the table headings should be displayed&#34;
-
-    NONE = 0
-    &#34;0: Only render the table headings at the beginning of the table&#34;
-
-    ON_TOP_OF_EVERY_PAGE = 1
-    &#34;1: When a page break occurs, repeat the table headings at the top of every table fragment&#34;
-
-
-class RenderStyle(CoerciveEnum):
-    &#34;Defines how to render shapes&#34;
-
-    D = intern(&#34;DRAW&#34;)
-    &#34;&#34;&#34;
-    Draw lines.
-    Line color can be controlled with `fpdf.fpdf.FPDF.set_draw_color()`.
-    Line thickness can be controlled with `fpdf.fpdf.FPDF.set_line_width()`.
-    &#34;&#34;&#34;
-
-    F = intern(&#34;FILL&#34;)
-    &#34;&#34;&#34;
-    Fill areas.
-    Filling color can be controlled with `fpdf.fpdf.FPDF.set_fill_color()`.
-    &#34;&#34;&#34;
-
-    DF = intern(&#34;DRAW_FILL&#34;)
-    &#34;Draw lines and fill areas&#34;
-
-    @property
-    def operator(self):
-        return {self.D: &#34;S&#34;, self.F: &#34;f&#34;, self.DF: &#34;B&#34;}[self]
-
-    @property
-    def is_draw(self):
-        return self in (self.D, self.DF)
-
-    @property
-    def is_fill(self):
-        return self in (self.F, self.DF)
-
-    @classmethod
-    def coerce(cls, value):
-        if not value:
-            return cls.D
-        if value == &#34;FD&#34;:
-            value = &#34;DF&#34;
-        return super(cls, cls).coerce(value)
-
-
-class TextMode(CoerciveIntEnum):
-    &#34;Values described in PDF spec section &#39;Text Rendering Mode&#39;&#34;
-    FILL = 0
-    STROKE = 1
-    FILL_STROKE = 2
-    INVISIBLE = 3
-    FILL_CLIP = 4
-    STROKE_CLIP = 5
-    FILL_STROKE_CLIP = 6
-    CLIP = 7
-
-
-class XPos(CoerciveEnum):
-    &#34;Positional values in horizontal direction for use after printing text.&#34;
-
-    LEFT = intern(&#34;LEFT&#34;)  # self.x
-    &#34;left end of the cell&#34;
-
-    RIGHT = intern(&#34;RIGHT&#34;)  # self.x + w
-    &#34;right end of the cell (default)&#34;
-
-    START = intern(&#34;START&#34;)
-    &#34;left start of actual text&#34;
-
-    END = intern(&#34;END&#34;)
-    &#34;right end of actual text&#34;
-
-    WCONT = intern(&#34;WCONT&#34;)
-    &#34;for write() to continue next (slightly left of END)&#34;
-
-    CENTER = intern(&#34;CENTER&#34;)
-    &#34;center of actual text&#34;
-
-    LMARGIN = intern(&#34;LMARGIN&#34;)  # self.l_margin
-    &#34;left page margin (start of printable area)&#34;
-
-    RMARGIN = intern(&#34;RMARGIN&#34;)  # self.w - self.r_margin
-    &#34;right page margin (end of printable area)&#34;
-
-
-class YPos(CoerciveEnum):
-    &#34;Positional values in vertical direction for use after printing text&#34;
-
-    TOP = intern(&#34;TOP&#34;)  # self.y
-    &#34;top of the first line (default)&#34;
-
-    LAST = intern(&#34;LAST&#34;)
-    &#34;top of the last line (same as TOP for single-line text)&#34;
-
-    NEXT = intern(&#34;NEXT&#34;)  # LAST + h
-    &#34;top of next line (bottom of current text)&#34;
-
-    TMARGIN = intern(&#34;TMARGIN&#34;)  # self.t_margin
-    &#34;top page margin (start of printable area)&#34;
-
-    BMARGIN = intern(&#34;BMARGIN&#34;)  # self.h - self.b_margin
-    &#34;bottom page margin (end of printable area)&#34;
-
-
-class Angle(CoerciveIntEnum):
-    &#34;Direction values used for mirror transformations specifying the angle of mirror line&#34;
-    NORTH = 90
-    EAST = 0
-    SOUTH = 270
-    WEST = 180
-    NORTHEAST = 45
-    SOUTHEAST = 315
-    SOUTHWEST = 225
-    NORTHWEST = 135
-
-
-class PageLayout(CoerciveEnum):
-    &#34;Specify the page layout shall be used when the document is opened&#34;
-
-    SINGLE_PAGE = Name(&#34;SinglePage&#34;)
-    &#34;Display one page at a time&#34;
-
-    ONE_COLUMN = Name(&#34;OneColumn&#34;)
-    &#34;Display the pages in one column&#34;
-
-    TWO_COLUMN_LEFT = Name(&#34;TwoColumnLeft&#34;)
-    &#34;Display the pages in two columns, with odd-numbered pages on the left&#34;
-
-    TWO_COLUMN_RIGHT = Name(&#34;TwoColumnRight&#34;)
-    &#34;Display the pages in two columns, with odd-numbered pages on the right&#34;
-
-    TWO_PAGE_LEFT = Name(&#34;TwoPageLeft&#34;)
-    &#34;Display the pages two at a time, with odd-numbered pages on the left&#34;
-
-    TWO_PAGE_RIGHT = Name(&#34;TwoPageRight&#34;)
-    &#34;Display the pages two at a time, with odd-numbered pages on the right&#34;
-
-
-class PageMode(CoerciveEnum):
-    &#34;Specifying how to display the document on exiting full-screen mode&#34;
-
-    USE_NONE = Name(&#34;UseNone&#34;)
-    &#34;Neither document outline nor thumbnail images visible&#34;
-
-    USE_OUTLINES = Name(&#34;UseOutlines&#34;)
-    &#34;Document outline visible&#34;
-
-    USE_THUMBS = Name(&#34;UseThumbs&#34;)
-    &#34;Thumbnail images visible&#34;
-
-    FULL_SCREEN = Name(&#34;FullScreen&#34;)
-    &#34;Full-screen mode, with no menu bar, window controls, or any other window visible&#34;
-
-    USE_OC = Name(&#34;UseOC&#34;)
-    &#34;Optional content group panel visible&#34;
-
-    USE_ATTACHMENTS = Name(&#34;UseAttachments&#34;)
-    &#34;Attachments panel visible&#34;
-
-
-class TextMarkupType(CoerciveEnum):
-    &#34;Subtype of a text markup annotation&#34;
-
-    HIGHLIGHT = Name(&#34;Highlight&#34;)
-
-    UNDERLINE = Name(&#34;Underline&#34;)
-
-    SQUIGGLY = Name(&#34;Squiggly&#34;)
-
-    STRIKE_OUT = Name(&#34;StrikeOut&#34;)
-
-
-class BlendMode(CoerciveEnum):
-    &#34;An enumeration of the named standard named blend functions supported by PDF.&#34;
-
-    NORMAL = Name(&#34;Normal&#34;)
-    &#39;&#39;&#39;&#34;Selects the source color, ignoring the backdrop.&#34;&#39;&#39;&#39;
-    MULTIPLY = Name(&#34;Multiply&#34;)
-    &#39;&#39;&#39;&#34;Multiplies the backdrop and source color values.&#34;&#39;&#39;&#39;
-    SCREEN = Name(&#34;Screen&#34;)
-    &#34;&#34;&#34;
-    &#34;Multiplies the complements of the backdrop and source color values, then
-    complements the result.&#34;
-    &#34;&#34;&#34;
-    OVERLAY = Name(&#34;Overlay&#34;)
-    &#34;&#34;&#34;
-    &#34;Multiplies or screens the colors, depending on the backdrop color value. Source
-    colors overlay the backdrop while preserving its highlights and shadows. The
-    backdrop color is not replaced but is mixed with the source color to reflect the
-    lightness or darkness of the backdrop.&#34;
-    &#34;&#34;&#34;
-    DARKEN = Name(&#34;Darken&#34;)
-    &#39;&#39;&#39;&#34;Selects the darker of the backdrop and source colors.&#34;&#39;&#39;&#39;
-    LIGHTEN = Name(&#34;Lighten&#34;)
-    &#39;&#39;&#39;&#34;Selects the lighter of the backdrop and source colors.&#34;&#39;&#39;&#39;
-    COLOR_DODGE = Name(&#34;ColorDodge&#34;)
-    &#34;&#34;&#34;
-    &#34;Brightens the backdrop color to reflect the source color. Painting with black
-     produces no changes.&#34;
-    &#34;&#34;&#34;
-    COLOR_BURN = Name(&#34;ColorBurn&#34;)
-    &#34;&#34;&#34;
-    &#34;Darkens the backdrop color to reflect the source color. Painting with white
-     produces no change.&#34;
-    &#34;&#34;&#34;
-    HARD_LIGHT = Name(&#34;HardLight&#34;)
-    &#34;&#34;&#34;
-    &#34;Multiplies or screens the colors, depending on the source color value. The effect
-    is similar to shining a harsh spotlight on the backdrop.&#34;
-    &#34;&#34;&#34;
-    SOFT_LIGHT = Name(&#34;SoftLight&#34;)
-    &#34;&#34;&#34;
-    &#34;Darkens or lightens the colors, depending on the source color value. The effect is
-    similar to shining a diffused spotlight on the backdrop.&#34;
-    &#34;&#34;&#34;
-    DIFFERENCE = Name(&#34;Difference&#34;)
-    &#39;&#39;&#39;&#34;Subtracts the darker of the two constituent colors from the lighter color.&#34;&#39;&#39;&#39;
-    EXCLUSION = Name(&#34;Exclusion&#34;)
-    &#34;&#34;&#34;
-    &#34;Produces an effect similar to that of the Difference mode but lower in contrast.
-    Painting with white inverts the backdrop color; painting with black produces no
-    change.&#34;
-    &#34;&#34;&#34;
-    HUE = Name(&#34;Hue&#34;)
-    &#34;&#34;&#34;
-    &#34;Creates a color with the hue of the source color and the saturation and luminosity
-    of the backdrop color.&#34;
-    &#34;&#34;&#34;
-    SATURATION = Name(&#34;Saturation&#34;)
-    &#34;&#34;&#34;
-    &#34;Creates a color with the saturation of the source color and the hue and luminosity
-    of the backdrop color. Painting with this mode in an area of the backdrop that is
-    a pure gray (no saturation) produces no change.&#34;
-    &#34;&#34;&#34;
-    COLOR = Name(&#34;Color&#34;)
-    &#34;&#34;&#34;
-    &#34;Creates a color with the hue and saturation of the source color and the luminosity
-    of the backdrop color. This preserves the gray levels of the backdrop and is
-    useful for coloring monochrome images or tinting color images.&#34;
-    &#34;&#34;&#34;
-    LUMINOSITY = Name(&#34;Luminosity&#34;)
-    &#34;&#34;&#34;
-    &#34;Creates a color with the luminosity of the source color and the hue and saturation
-    of the backdrop color. This produces an inverse effect to that of the Color mode.&#34;
-    &#34;&#34;&#34;
-
-
-class AnnotationFlag(CoerciveIntEnum):
-    INVISIBLE = 1
-    &#34;&#34;&#34;
-    If set, do not display the annotation if it does not belong to one of the
-    standard annotation types and no annotation handler is available.
-    &#34;&#34;&#34;
-    HIDDEN = 2
-    &#34;If set, do not display or print the annotation or allow it to interact with the user&#34;
-    PRINT = 4
-    &#34;If set, print the annotation when the page is printed.&#34;
-    NO_ZOOM = 8
-    &#34;If set, do not scale the annotation’s appearance to match the magnification of the page.&#34;
-    NO_ROTATE = 16
-    &#34;If set, do not rotate the annotation’s appearance to match the rotation of the page.&#34;
-    NO_VIEW = 32
-    &#34;If set, do not display the annotation on the screen or allow it to interact with the user&#34;
-    READ_ONLY = 64
-    &#34;&#34;&#34;
-    If set, do not allow the annotation to interact with the user.
-    The annotation may be displayed or printed but should not respond to mouse clicks.
-    &#34;&#34;&#34;
-    LOCKED = 128
-    &#34;&#34;&#34;
-    If set, do not allow the annotation to be deleted or its properties
-    (including position and size) to be modified by the user.
-    &#34;&#34;&#34;
-    TOGGLE_NO_VIEW = 256
-    &#34;If set, invert the interpretation of the NoView flag for certain events.&#34;
-    LOCKED_CONTENTS = 512
-    &#34;If set, do not allow the contents of the annotation to be modified by the user.&#34;
-
-
-class AnnotationName(CoerciveEnum):
-    &#34;The name of an icon that shall be used in displaying the annotation&#34;
-
-    NOTE = Name(&#34;Note&#34;)
-    COMMENT = Name(&#34;Comment&#34;)
-    HELP = Name(&#34;Help&#34;)
-    PARAGRAPH = Name(&#34;Paragraph&#34;)
-    NEW_PARAGRAPH = Name(&#34;NewParagraph&#34;)
-    INSERT = Name(&#34;Insert&#34;)
-
-
-class FileAttachmentAnnotationName(CoerciveEnum):
-    &#34;The name of an icon that shall be used in displaying the annotation&#34;
-
-    PUSH_PIN = Name(&#34;PushPin&#34;)
-    GRAPH_PUSH_PIN = Name(&#34;GraphPushPin&#34;)
-    PAPERCLIP_TAG = Name(&#34;PaperclipTag&#34;)
-
-
-class IntersectionRule(CoerciveEnum):
-    &#34;&#34;&#34;
-    An enumeration representing the two possible PDF intersection rules.
-
-    The intersection rule is used by the renderer to determine which points are
-    considered to be inside the path and which points are outside the path. This
-    primarily affects fill rendering and clipping paths.
-    &#34;&#34;&#34;
-
-    NONZERO = &#34;nonzero&#34;
-    &#34;&#34;&#34;
-    &#34;The nonzero winding number rule determines whether a given point is inside a path
-    by conceptually drawing a ray from that point to infinity in any direction and
-    then examining the places where a segment of the path crosses the ray. Starting
-    with a count of 0, the rule adds 1 each time a path segment crosses the ray from
-    left to right and subtracts 1 each time a segment crosses from right to left.
-    After counting all the crossings, if the result is 0, the point is outside the
-    path; otherwise, it is inside.&#34;
-    &#34;&#34;&#34;
-    EVENODD = &#34;evenodd&#34;
-    &#34;&#34;&#34;
-    &#34;An alternative to the nonzero winding number rule is the even-odd rule. This rule
-    determines whether a point is inside a path by drawing a ray from that point in
-    any direction and simply counting the number of path segments that cross the ray,
-    regardless of direction. If this number is odd, the point is inside; if even, the
-    point is outside. This yields the same results as the nonzero winding number rule
-    for paths with simple shapes, but produces different results for more complex
-    shapes.&#34;
-    &#34;&#34;&#34;
-
-
-class PathPaintRule(CoerciveEnum):
-    &#34;&#34;&#34;
-    An enumeration of the PDF drawing directives that determine how the renderer should
-    paint a given path.
-    &#34;&#34;&#34;
-
-    # the auto-close paint rules are omitted here because it&#39;s easier to just emit
-    # close operators when appropriate, programmatically
-    STROKE = &#34;S&#34;
-    &#39;&#39;&#39;&#34;Stroke the path.&#34;&#39;&#39;&#39;
-
-    FILL_NONZERO = &#34;f&#34;
-    &#34;&#34;&#34;
-    &#34;Fill the path, using the nonzero winding number rule to determine the region to
-    fill. Any subpaths that are open are implicitly closed before being filled.&#34;
-    &#34;&#34;&#34;
-
-    FILL_EVENODD = &#34;f*&#34;
-    &#34;&#34;&#34;
-    &#34;Fill the path, using the even-odd rule to determine the region to fill. Any
-    subpaths that are open are implicitly closed before being filled.&#34;
-    &#34;&#34;&#34;
-
-    STROKE_FILL_NONZERO = &#34;B&#34;
-    &#34;&#34;&#34;
-    &#34;Fill and then stroke the path, using the nonzero winding number rule to determine
-    the region to fill. This operator produces the same result as constructing two
-    identical path objects, painting the first with `FILL_NONZERO` and the second with
-    `STROKE`.&#34;
-    &#34;&#34;&#34;
-
-    STROKE_FILL_EVENODD = &#34;B*&#34;
-    &#34;&#34;&#34;
-    &#34;Fill and then stroke the path, using the even-odd rule to determine the region to
-    fill. This operator produces the same result as `STROKE_FILL_NONZERO`, except that
-    the path is filled as if with `FILL_EVENODD` instead of `FILL_NONZERO`.&#34;
-    &#34;&#34;&#34;
-
-    DONT_PAINT = &#34;n&#34;
-    &#34;&#34;&#34;
-    &#34;End the path object without filling or stroking it. This operator is a
-    path-painting no-op, used primarily for the side effect of changing the current
-    clipping path.&#34;
-    &#34;&#34;&#34;
-
-    AUTO = &#34;auto&#34;
-    &#34;&#34;&#34;
-    Automatically determine which `PathPaintRule` should be used.
-
-    PaintedPath will select one of the above `PathPaintRule`s based on the resolved
-    set/inherited values of its style property.
-    &#34;&#34;&#34;
-
-
-class ClippingPathIntersectionRule(CoerciveEnum):
-    &#34;An enumeration of the PDF drawing directives that define a path as a clipping path.&#34;
-
-    NONZERO = &#34;W&#34;
-    &#34;&#34;&#34;
-    &#34;The nonzero winding number rule determines whether a given point is inside a path
-    by conceptually drawing a ray from that point to infinity in any direction and
-    then examining the places where a segment of the path crosses the ray. Starting
-    with a count of 0, the rule adds 1 each time a path segment crosses the ray from
-    left to right and subtracts 1 each time a segment crosses from right to left.
-    After counting all the crossings, if the result is 0, the point is outside the
-    path; otherwise, it is inside.&#34;
-    &#34;&#34;&#34;
-    EVENODD = &#34;W*&#34;
-    &#34;&#34;&#34;
-    &#34;An alternative to the nonzero winding number rule is the even-odd rule. This rule
-    determines whether a point is inside a path by drawing a ray from that point in
-    any direction and simply counting the number of path segments that cross the ray,
-    regardless of direction. If this number is odd, the point is inside; if even, the
-    point is outside. This yields the same results as the nonzero winding number rule
-    for paths with simple shapes, but produces different results for more complex
-    shapes.&#34;&#34;&#34;
-
-
-class StrokeCapStyle(CoerciveIntEnum):
-    &#34;&#34;&#34;
-    An enumeration of values defining how the end of a stroke should be rendered.
-
-    This affects the ends of the segments of dashed strokes, as well.
-    &#34;&#34;&#34;
-
-    BUTT = 0
-    &#34;&#34;&#34;
-    &#34;The stroke is squared off at the endpoint of the path. There is no projection
-    beyond the end of the path.&#34;
-    &#34;&#34;&#34;
-    ROUND = 1
-    &#34;&#34;&#34;
-    &#34;A semicircular arc with a diameter equal to the line width is drawn around the
-    endpoint and filled in.&#34;
-    &#34;&#34;&#34;
-    SQUARE = 2
-    &#34;&#34;&#34;
-    &#34;The stroke continues beyond the endpoint of the path for a distance equal to half
-    the line width and is squared off.&#34;
-    &#34;&#34;&#34;
-
-
-class StrokeJoinStyle(CoerciveIntEnum):
-    &#34;&#34;&#34;
-    An enumeration of values defining how the corner joining two path components should
-    be rendered.
-    &#34;&#34;&#34;
-
-    MITER = 0
-    &#34;&#34;&#34;
-    &#34;The outer edges of the strokes for the two segments are extended until they meet at
-    an angle, as in a picture frame. If the segments meet at too sharp an angle
-    (as defined by the miter limit parameter), a bevel join is used instead.&#34;
-    &#34;&#34;&#34;
-    ROUND = 1
-    &#34;&#34;&#34;
-    &#34;An arc of a circle with a diameter equal to the line width is drawn around the
-    point where the two segments meet, connecting the outer edges of the strokes for
-    the two segments. This pieslice-shaped figure is filled in, pro- ducing a rounded
-    corner.&#34;
-    &#34;&#34;&#34;
-    BEVEL = 2
-    &#34;&#34;&#34;
-    &#34;The two segments are finished with butt caps and the resulting notch beyond the
-    ends of the segments is filled with a triangle.&#34;
-    &#34;&#34;&#34;
-
-
-class PDFStyleKeys(Enum):
-    &#34;An enumeration of the graphics state parameter dictionary keys.&#34;
-
-    FILL_ALPHA = Name(&#34;ca&#34;)
-    BLEND_MODE = Name(&#34;BM&#34;)  # shared between stroke and fill
-    STROKE_ALPHA = Name(&#34;CA&#34;)
-    STROKE_ADJUSTMENT = Name(&#34;SA&#34;)
-    STROKE_WIDTH = Name(&#34;LW&#34;)
-    STROKE_CAP_STYLE = Name(&#34;LC&#34;)
-    STROKE_JOIN_STYLE = Name(&#34;LJ&#34;)
-    STROKE_MITER_LIMIT = Name(&#34;ML&#34;)
-    STROKE_DASH_PATTERN = Name(&#34;D&#34;)  # array of array, number, e.g. [[1 1] 0]
-
-
-class Corner(CoerciveEnum):
-    TOP_RIGHT = &#34;TOP_RIGHT&#34;
-    TOP_LEFT = &#34;TOP_LEFT&#34;
-    BOTTOM_RIGHT = &#34;BOTTOM_RIGHT&#34;
-    BOTTOM_LEFT = &#34;BOTTOM_LEFT&#34;
-
-
-class FontDescriptorFlags(Flag):
-    &#34;&#34;&#34;An enumeration of the flags for the unsigned 32-bit integer entry in the font descriptor specifying various
-    characteristics of the font. Bit positions are numbered from 1 (low-order) to 32 (high-order).
-    &#34;&#34;&#34;
-
-    FIXED_PITCH = 0x0000001
-    &#34;&#34;&#34;
-    &#34;All glyphs have the same width (as opposed to proportional or
-    variable-pitch fonts, which have different widths.&#34;
-    &#34;&#34;&#34;
-
-    SYMBOLIC = 0x0000004
-    &#34;&#34;&#34;
-    &#34;Font contains glyphs outside the Adobe standard Latin character set.
-    This flag and the Nonsymbolic flag shall not both be set or both be clear.&#34;
-    &#34;&#34;&#34;
-
-    ITALIC = 0x0000040
-    &#34;&#34;&#34;
-    &#34;Glyphs have dominant vertical strokes that are slanted.&#34;
-    &#34;&#34;&#34;
-
-    FORCE_BOLD = 0x0040000
-    &#34;&#34;&#34;
-    &#34;The flag shall determine whether bold glyphs shall be painted with extra pixels even at very
-    small text sizes by a conforming reader. If set, features of bold glyphs may be thickened at
-    small text sizes.&#34;
-    &#34;&#34;&#34;
-
-
-class AccessPermission(IntFlag):
-    &#34;Permission flags will translate as an integer on the encryption dictionary&#34;
-
-    PRINT_LOW_RES = 0b000000000100
-    &#34;Print the document&#34;
-
-    MODIFY = 0b000000001000
-    &#34;Modify the contents of the document&#34;
-
-    COPY = 0b000000010000
-    &#34;Copy or extract text and graphics from the document&#34;
-
-    ANNOTATION = 0b000000100000
-    &#34;Add or modify text annotations&#34;
-
-    FILL_FORMS = 0b000100000000
-    &#34;Fill in existing interactive form fields&#34;
-
-    COPY_FOR_ACCESSIBILITY = 0b001000000000
-    &#34;Extract text and graphics in support of accessibility to users with disabilities&#34;
-
-    ASSEMBLE = 0b010000000000
-    &#34;Insert, rotate or delete pages and create bookmarks or thumbnail images&#34;
-
-    PRINT_HIGH_RES = 0b100000000000
-    &#34;Print document at the highest resolution&#34;
-
-    @classmethod
-    def all(cls):
-        &#34;All flags enabled&#34;
-        result = 0
-        for permission in list(AccessPermission):
-            result = result | permission
-        return result
-
-    @classmethod
-    def none(cls):
-        &#34;All flags disabled&#34;
-        return 0
-
-
-class EncryptionMethod(Enum):
-    &#34;Algorithm to be used to encrypt the document&#34;
-
-    NO_ENCRYPTION = 0
-    RC4 = 1
-    AES_128 = 2
-    AES_256 = 3
-
-
-class TextDirection(CoerciveEnum):
-    &#34;Text rendering direction for text shaping&#34;
-    LTR = intern(&#34;LTR&#34;)
-    &#34;left to right&#34;
-
-    RTL = intern(&#34;RTL&#34;)
-    &#34;right to left&#34;
-
-    TTB = intern(&#34;TTB&#34;)
-    &#34;top to bottom&#34;
-
-    BTT = intern(&#34;BTT&#34;)
-    &#34;bottom to top&#34;</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -979,7 +44,7 @@ class TextDirection(CoerciveEnum):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L870-L908" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L878-L916" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AccessPermission(IntFlag):
     &#34;Permission flags will translate as an integer on the encryption dictionary&#34;
@@ -1071,35 +136,12 @@ class TextDirection(CoerciveEnum):
 </code></dt>
 <dd>
 <div class="desc"><p>All flags enabled</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L897-L903" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@classmethod
-def all(cls):
-    &#34;All flags enabled&#34;
-    result = 0
-    for permission in list(AccessPermission):
-        result = result | permission
-    return result</code></pre>
-</details>
 </dd>
 <dt id="fpdf.enums.AccessPermission.none"><code class="name flex">
 <span>def <span class="ident">none</span></span>(<span>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>All flags disabled</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L905-L908" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@classmethod
-def none(cls):
-    &#34;All flags disabled&#34;
-    return 0</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1112,7 +154,7 @@ def none(cls):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L177-L199" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L177-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Align(CoerciveEnum):
     &#34;Defines how to render text in a cell&#34;
@@ -1184,7 +226,7 @@ def none(cls):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L466-L475" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L474-L483" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Angle(CoerciveIntEnum):
     &#34;Direction values used for mirror transformations specifying the angle of mirror line&#34;
@@ -1259,7 +301,7 @@ enumeration members.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L609-L638" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L617-L646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AnnotationFlag(CoerciveIntEnum):
     INVISIBLE = 1
@@ -1364,7 +406,7 @@ The annotation may be displayed or printed but should not respond to mouse click
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L641-L649" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L649-L657" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AnnotationName(CoerciveEnum):
     &#34;The name of an icon that shall be used in displaying the annotation&#34;
@@ -1426,7 +468,7 @@ The annotation may be displayed or printed but should not respond to mouse click
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L534-L606" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L542-L614" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class BlendMode(CoerciveEnum):
     &#34;An enumeration of the named standard named blend functions supported by PDF.&#34;
@@ -1608,7 +650,7 @@ similar to shining a diffused spotlight on the backdrop."</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L159-L174" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L159-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CharVPos(CoerciveEnum):
     &#34;Defines the vertical position of text relative to the line.&#34;
@@ -1673,7 +715,7 @@ similar to shining a diffused spotlight on the backdrop."</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L745-L766" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L753-L774" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ClippingPathIntersectionRule(CoerciveEnum):
     &#34;An enumeration of the PDF drawing directives that define a path as a clipping path.&#34;
@@ -1744,7 +786,7 @@ path; otherwise, it is inside."</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L18-L57" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L18-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoerciveEnum(Enum):
     &#34;An enumeration that provides a helper to coerce strings into enumeration members.&#34;
@@ -1840,49 +882,6 @@ enumeration name.</p>
 <dd>if <code>value</code>'s type is neither a member of the enumeration nor a
 string.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L21-L57" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@classmethod
-def coerce(cls, value):
-    &#34;&#34;&#34;
-    Attempt to coerce `value` into a member of this enumeration.
-
-    If value is already a member of this enumeration it is returned unchanged.
-    Otherwise, if it is a string, attempt to convert it as an enumeration value. If
-    that fails, attempt to convert it (case insensitively, by upcasing) as an
-    enumeration name.
-
-    If all different conversion attempts fail, an exception is raised.
-
-    Args:
-        value (Enum, str): the value to be coerced.
-
-    Raises:
-        ValueError: if `value` is a string but neither a member by name nor value.
-        TypeError: if `value`&#39;s type is neither a member of the enumeration nor a
-            string.
-    &#34;&#34;&#34;
-
-    if isinstance(value, cls):
-        return value
-
-    if isinstance(value, str):
-        try:
-            return cls(value)
-        except ValueError:
-            pass
-        try:
-            return cls[value.upper()]
-        except KeyError:
-            pass
-
-        raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;)
-
-    raise TypeError(f&#34;{value} cannot be converted to a {cls.__name__}&#34;)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1896,7 +895,7 @@ enumeration members.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L60-L99" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L60-L99" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoerciveIntEnum(IntEnum):
     &#34;&#34;&#34;
@@ -1982,46 +981,6 @@ convert it as an enumeration value.</p>
 <dd>if <code>value</code>'s type is neither a member of the enumeration nor an
 int or a string.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L66-L99" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@classmethod
-def coerce(cls, value):
-    &#34;&#34;&#34;
-    Attempt to coerce `value` into a member of this enumeration.
-
-    If value is already a member of this enumeration it is returned unchanged.
-    Otherwise, if it is a string, attempt to convert it (case insensitively, by
-    upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
-    convert it as an enumeration value.
-
-    Otherwise, an exception is raised.
-
-    Args:
-        value (IntEnum, str, int): the value to be coerced.
-
-    Raises:
-        ValueError: if `value` is an int but not a member of this enumeration.
-        ValueError: if `value` is a string but not a member by name.
-        TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
-            int or a string.
-    &#34;&#34;&#34;
-    if isinstance(value, cls):
-        return value
-
-    if isinstance(value, str):
-        try:
-            return cls[value.upper()]
-        except KeyError:
-            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
-
-    if isinstance(value, int):
-        return cls(value)
-
-    raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -2035,7 +994,7 @@ with a helper to coerce strings and integers into enumeration members.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L102-L147" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L102-L147" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CoerciveIntFlag(IntFlag):
     &#34;&#34;&#34;
@@ -2124,52 +1083,6 @@ Otherwise, an exception is raised.</p>
 <dd>if <code>value</code>'s type is neither a member of the enumeration nor an
 int or a string.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L108-L147" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@classmethod
-def coerce(cls, value):
-    &#34;&#34;&#34;
-    Attempt to coerce `value` into a member of this enumeration.
-
-    If value is already a member of this enumeration it is returned unchanged.
-    Otherwise, if it is a string, attempt to convert it (case insensitively, by
-    upcasing) as an enumeration name. Otherwise, if it is an int, attempt to
-    convert it as an enumeration value.
-    Otherwise, an exception is raised.
-
-    Args:
-        value (IntEnum, str, int): the value to be coerced.
-
-    Raises:
-        ValueError: if `value` is an int but not a member of this enumeration.
-        ValueError: if `value` is a string but not a member by name.
-        TypeError: if `value`&#39;s type is neither a member of the enumeration nor an
-            int or a string.
-    &#34;&#34;&#34;
-    if isinstance(value, cls):
-        return value
-
-    if isinstance(value, str):
-        try:
-            return cls[value.upper()]
-        except KeyError:
-            pass
-        try:
-            flags = cls[value[0].upper()]
-            for char in value[1:]:
-                flags = flags | cls[char.upper()]
-            return flags
-        except KeyError:
-            raise ValueError(f&#34;{value} is not a valid {cls.__name__}&#34;) from None
-
-    if isinstance(value, int):
-        return cls(value)
-
-    raise TypeError(f&#34;{value} cannot convert to a {cls.__name__}&#34;)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -2182,7 +1095,7 @@ def coerce(cls, value):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L833-L837" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L841-L845" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corner(CoerciveEnum):
     TOP_RIGHT = &#34;TOP_RIGHT&#34;
@@ -2232,7 +1145,7 @@ def coerce(cls, value):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L911-L917" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L919-L925" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EncryptionMethod(Enum):
     &#34;Algorithm to be used to encrypt the document&#34;
@@ -2275,7 +1188,7 @@ def coerce(cls, value):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L652-L657" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L660-L665" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FileAttachmentAnnotationName(CoerciveEnum):
     &#34;The name of an icon that shall be used in displaying the annotation&#34;
@@ -2323,7 +1236,7 @@ characteristics of the font. Bit positions are numbered from 1 (low-order) to 32
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L840-L867" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L848-L875" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FontDescriptorFlags(Flag):
     &#34;&#34;&#34;An enumeration of the flags for the unsigned 32-bit integer entry in the font descriptor specifying various
@@ -2395,7 +1308,7 @@ primarily affects fill rendering and clipping paths.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L660-L688" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L668-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class IntersectionRule(CoerciveEnum):
     &#34;&#34;&#34;
@@ -2475,7 +1388,7 @@ PAGE_BREAK | LINES</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L262-L277" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L270-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MethodReturnValue(CoerciveIntFlag):
     &#34;&#34;&#34;
@@ -2536,7 +1449,7 @@ PAGE_BREAK | LINES</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L819-L830" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L827-L838" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PDFStyleKeys(Enum):
     &#34;An enumeration of the graphics state parameter dictionary keys.&#34;
@@ -2604,7 +1517,7 @@ PAGE_BREAK | LINES</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L478-L497" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L486-L505" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageLayout(CoerciveEnum):
     &#34;Specify the page layout shall be used when the document is opened&#34;
@@ -2677,7 +1590,7 @@ PAGE_BREAK | LINES</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L500-L519" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L508-L527" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageMode(CoerciveEnum):
     &#34;Specifying how to display the document on exiting full-screen mode&#34;
@@ -2751,7 +1664,7 @@ paint a given path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L691-L742" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L699-L750" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PathPaintRule(CoerciveEnum):
     &#34;&#34;&#34;
@@ -2871,7 +1784,7 @@ identical path objects, painting the first with <code>FILL_NONZERO</code> and th
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L367-L404" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L375-L412" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RenderStyle(CoerciveEnum):
     &#34;Defines how to render shapes&#34;
@@ -2937,39 +1850,36 @@ Filling color can be controlled with <code><a title="fpdf.fpdf.FPDF.set_fill_col
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="fpdf.enums.RenderStyle.is_draw"><code class="name">var <span class="ident">is_draw</span></code></dt>
+<dt id="fpdf.enums.RenderStyle.is_draw"><code class="name">prop <span class="ident">is_draw</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L390-L392" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def is_draw(self):
     return self in (self.D, self.DF)</code></pre>
 </details>
 </dd>
-<dt id="fpdf.enums.RenderStyle.is_fill"><code class="name">var <span class="ident">is_fill</span></code></dt>
+<dt id="fpdf.enums.RenderStyle.is_fill"><code class="name">prop <span class="ident">is_fill</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L394-L396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def is_fill(self):
     return self in (self.F, self.DF)</code></pre>
 </details>
 </dd>
-<dt id="fpdf.enums.RenderStyle.operator"><code class="name">var <span class="ident">operator</span></code></dt>
+<dt id="fpdf.enums.RenderStyle.operator"><code class="name">prop <span class="ident">operator</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L386-L388" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def operator(self):
@@ -2995,7 +1905,7 @@ def operator(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L7-L15" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L7-L15" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SignatureFlag(IntEnum):
     SIGNATURES_EXIST = 1
@@ -3038,7 +1948,7 @@ as opposed to an incremental update.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L769-L790" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L777-L798" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StrokeCapStyle(CoerciveIntEnum):
     &#34;&#34;&#34;
@@ -3108,7 +2018,7 @@ be rendered.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L793-L816" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L801-L824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class StrokeJoinStyle(CoerciveIntEnum):
     &#34;&#34;&#34;
@@ -3182,7 +2092,7 @@ corner."</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L280-L302" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L288-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TableBordersLayout(CoerciveEnum):
     &#34;Defines how to render table borders&#34;
@@ -3262,7 +2172,7 @@ corner."</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L305-L346" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L313-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TableCellFillMode(CoerciveEnum):
     &#34;Defines which table cells to fill&#34;
@@ -3346,18 +2256,6 @@ corner."</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Any class that has a .should_fill_cell() method is considered a valid 'TableCellFillMode' (duck-typing)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L326-L331" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@classmethod
-def coerce(cls, value):
-    &#34;Any class that has a .should_fill_cell() method is considered a valid &#39;TableCellFillMode&#39; (duck-typing)&#34;
-    if callable(getattr(value, &#34;should_fill_cell&#34;, None)):
-        return value
-    return super().coerce(value)</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -3367,26 +2265,6 @@ def coerce(cls, value):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L333-L346" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def should_fill_cell(self, i, j):
-    if self is self.NONE:
-        return False
-    if self is self.ALL:
-        return True
-    if self is self.ROWS:
-        return i % 2 == 1
-    if self is self.COLUMNS:
-        return j % 2 == 1
-    if self is self.EVEN_ROWS:
-        return i % 2 == 0
-    if self is self.EVEN_COLUMNS:
-        return j % 2 == 0
-    raise NotImplementedError</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -3399,7 +2277,7 @@ def coerce(cls, value):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L357-L364" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L365-L372" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TableHeadingsDisplay(CoerciveIntEnum):
     &#34;Defines how the table headings should be displayed&#34;
@@ -3447,7 +2325,7 @@ def coerce(cls, value):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L349-L354" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L357-L362" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TableSpan(CoerciveEnum):
     ROW = intern(&#34;ROW&#34;)
@@ -3490,7 +2368,7 @@ def coerce(cls, value):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L920-L932" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L928-L940" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextDirection(CoerciveEnum):
     &#34;Text rendering direction for text shaping&#34;
@@ -3550,7 +2428,7 @@ style = B | I</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L222-L259" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L222-L267" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextEmphasis(CoerciveIntFlag):
     &#34;&#34;&#34;
@@ -3576,6 +2454,14 @@ style = B | I</p></div>
     def style(self):
         return &#34;&#34;.join(
             name for name, value in self.__class__.__members__.items() if value &amp; self
+        )
+
+    def add(self, value: &#34;TextEmphasis&#34;):
+        return self | value
+
+    def remove(self, value: &#34;TextEmphasis&#34;):
+        return TextEmphasis.coerce(
+            &#34;&#34;.join(s for s in self.style if s not in value.style)
         )
 
     @classmethod
@@ -3621,13 +2507,12 @@ style = B | I</p></div>
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="fpdf.enums.TextEmphasis.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="fpdf.enums.TextEmphasis.style"><code class="name">prop <span class="ident">style</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L242-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@property
 def style(self):
@@ -3635,6 +2520,21 @@ def style(self):
         name for name, value in self.__class__.__members__.items() if value &amp; self
     )</code></pre>
 </details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fpdf.enums.TextEmphasis.add"><code class="name flex">
+<span>def <span class="ident">add</span></span>(<span>self, value: <a title="fpdf.enums.TextEmphasis" href="#fpdf.enums.TextEmphasis">TextEmphasis</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fpdf.enums.TextEmphasis.remove"><code class="name flex">
+<span>def <span class="ident">remove</span></span>(<span>self, value: <a title="fpdf.enums.TextEmphasis" href="#fpdf.enums.TextEmphasis">TextEmphasis</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -3655,7 +2555,7 @@ def style(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L522-L531" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L530-L539" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextMarkupType(CoerciveEnum):
     &#34;Subtype of a text markup annotation&#34;
@@ -3710,7 +2610,7 @@ def style(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L407-L416" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L415-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextMode(CoerciveIntEnum):
     &#34;Values described in PDF spec section &#39;Text Rendering Mode&#39;&#34;
@@ -3785,7 +2685,7 @@ Default value is MIDDLE</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L202-L219" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L202-L219" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class VAlign(CoerciveEnum):
     &#34;&#34;&#34;Defines how to vertically render text in a cell.
@@ -3844,7 +2744,7 @@ Default value is MIDDLE</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L150-L156" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L150-L156" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WrapMode(CoerciveEnum):
     &#34;Defines how to break and wrap lines in multi-line text.&#34;
@@ -3888,7 +2788,7 @@ Default value is MIDDLE</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L419-L444" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L427-L452" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XPos(CoerciveEnum):
     &#34;Positional values in horizontal direction for use after printing text.&#34;
@@ -3975,7 +2875,7 @@ Default value is MIDDLE</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/fbbb3f701fd35abaff1cf0b04a8576fe45e204e2/fpdf/enums.py#L447-L463" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/8e3857d46e647ab3184512938fbd08e4a91327ff/fpdf/enums.py#L455-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class YPos(CoerciveEnum):
     &#34;Positional values in vertical direction for use after printing text&#34;
@@ -4036,7 +2936,6 @@ Default value is MIDDLE</p></div>
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -4350,11 +3249,13 @@ Default value is MIDDLE</p></div>
 </li>
 <li>
 <h4><code><a title="fpdf.enums.TextEmphasis" href="#fpdf.enums.TextEmphasis">TextEmphasis</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="fpdf.enums.TextEmphasis.B" href="#fpdf.enums.TextEmphasis.B">B</a></code></li>
 <li><code><a title="fpdf.enums.TextEmphasis.I" href="#fpdf.enums.TextEmphasis.I">I</a></code></li>
 <li><code><a title="fpdf.enums.TextEmphasis.NONE" href="#fpdf.enums.TextEmphasis.NONE">NONE</a></code></li>
 <li><code><a title="fpdf.enums.TextEmphasis.U" href="#fpdf.enums.TextEmphasis.U">U</a></code></li>
+<li><code><a title="fpdf.enums.TextEmphasis.add" href="#fpdf.enums.TextEmphasis.add">add</a></code></li>
+<li><code><a title="fpdf.enums.TextEmphasis.remove" href="#fpdf.enums.TextEmphasis.remove">remove</a></code></li>
 <li><code><a title="fpdf.enums.TextEmphasis.style" href="#fpdf.enums.TextEmphasis.style">style</a></code></li>
 </ul>
 </li>
@@ -4424,7 +3325,7 @@ Default value is MIDDLE</p></div>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>
