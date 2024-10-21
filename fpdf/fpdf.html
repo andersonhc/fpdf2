@@ -91,7 +91,7 @@ Default to "mm".</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/fpdf.py#L202-L5254" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/fpdf.py#L202-L5268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FPDF(GraphicsStateMixin, TextRegionMixin):
     &#34;PDF Generation class&#34;
@@ -247,7 +247,7 @@ Default to "mm".</dd>
         permissions=AccessPermission.all(),
         encrypt_metadata=False,
     ):
-        &#34;&#34;&#34; &#34;
+        &#34;&#34;&#34;
         Activate encryption of the document content.
 
         Args:
@@ -294,7 +294,7 @@ Default to "mm".</dd>
             pre_code_font (str): [**DEPRECATED since v2.7.9**]
                 font to use for `&lt;pre&gt;` &amp; `&lt;code&gt;` blocks - Set `tag_styles` instead
             warn_on_tags_not_matching (bool): control warnings production for unmatched HTML tags. Defaults to `True`.
-            tag_indents (dict): [**DEPRECATED since v2.7.10**]
+            tag_indents (dict): [**DEPRECATED since v2.8.0**]
                 mapping of HTML tag names to numeric values representing their horizontal left identation. - Set `tag_styles` instead
             tag_styles (dict[str, fpdf.fonts.TextStyle]): mapping of HTML tag names to `fpdf.TextStyle` or `fpdf.FontFace` instances
         &#34;&#34;&#34;
@@ -470,8 +470,6 @@ Default to "mm".</dd>
             raise FPDFException(f&#34;Incorrect zoom display mode: {zoom}&#34;)
         self.page_layout = LAYOUT_ALIASES.get(layout, layout)
 
-    # Disabling this check - importing outside toplevel to check module is present
-    # pylint: disable=import-outside-toplevel, unused-import
     def set_text_shaping(
         self,
         use_shaping_engine: bool = True,
@@ -495,16 +493,18 @@ Default to "mm".</dd>
             script: a valid OpenType script tag like &#34;arab&#34; or &#34;latn&#34;
             language: a valid OpenType language tag like &#34;eng&#34; or &#34;fra&#34;
         &#34;&#34;&#34;
-        if use_shaping_engine:
-            try:
-                import uharfbuzz
-            except ImportError as exc:
-                raise FPDFException(
-                    &#34;The uharfbuzz package could not be imported, but is required for text shaping. Try: pip install uharfbuzz&#34;
-                ) from exc
-        else:
+        if not use_shaping_engine:
             self.text_shaping = None
             return
+
+        try:
+            # pylint: disable=import-outside-toplevel, unused-import
+            import uharfbuzz
+        except ImportError as exc:
+            raise FPDFException(
+                &#34;The uharfbuzz package could not be imported, but is required for text shaping. Try: pip install uharfbuzz&#34;
+            ) from exc
+
         #
         # Features must be a dictionary contaning opentype features and a boolean flag
         # stating whether the feature should be enabled or disabled.
@@ -1432,22 +1432,24 @@ Default to "mm".</dd>
         )
 
     @check_page
-    def circle(self, x, y, r, style=None):
+    def circle(self, x, y, radius, style=None):
         &#34;&#34;&#34;
         Outputs a circle.
         It can be drawn (border only), filled (with no border) or both.
 
+        WARNING: This method changed parameters in [release 2.8.0](https://github.com/py-pdf/fpdf2/releases/tag/2.8.0)
+
         Args:
             x (float): Abscissa of upper-left bounding box.
             y (float): Ordinate of upper-left bounding box.
-            r (float): Radius of the circle.
+            radius (float): Radius of the circle.
             style (str): Style of rendering. Possible values are:
 
             * `D` or None: draw border. This is the default value.
             * `F`: fill
             * `DF` or `FD`: draw and fill
         &#34;&#34;&#34;
-        self.ellipse(x, y, r, r, style)
+        self.ellipse(x - radius, y - radius, 2 * radius, 2 * radius, style)
 
     @check_page
     def regular_polygon(self, x, y, numSides, polyWidth, rotateDegrees=0, style=None):
@@ -1782,7 +1784,7 @@ Default to "mm".</dd>
         Args:
             family (str): optional name of the font family. Used as a reference for `FPDF.set_font()`.
                 If not provided, use the base name of the `fname` font path, without extension.
-            style (str): font style. &#34;B&#34; for bold, &#34;I&#34; for italic.
+            style (str): font style. &#34;&#34; for regular, include &#39;B&#39; for bold, and/or &#39;I&#39; for italic.
             fname (str): font file name. You can specify a relative or full path.
                 If the file is not found, it will be searched in `FPDF_FONT_DIR`.
             uni (bool): [**DEPRECATED since 2.5.1**] unused
@@ -2445,6 +2447,12 @@ Default to "mm".</dd>
             y (float): ordinate of the origin
             text (str): string to print
             txt (str): [**DEPRECATED since v2.7.6**] string to print
+
+        Notes
+        -----
+
+        `text()` lacks many of the features available in `FPDF.write()`,
+        `FPDF.cell()` and `FPDF.multi_cell()` like markdown and text shaping.
         &#34;&#34;&#34;
         if not self.font_family:
             raise FPDFException(&#34;No font set, you need to call set_font() beforehand&#34;)
@@ -2625,39 +2633,42 @@ Default to "mm".</dd>
                 draw_some_stuff()
 
         The affected settings are those controlled by GraphicsStateMixin and drawing.GraphicsStyle:
-            allow_transparency
-            auto_close
-            blend_mode
-            char_vpos
-            char_spacing
-            dash_pattern
-            denom_lift
-            denom_scale
-            draw_color
-            fill_color
-            fill_opacity
-            font_family
-            font_size
-            font_size_pt
-            font_style
-            font_stretching
-            intersection_rule
-            line_width
-            nom_lift
-            nom_scale
-            paint_rule
-            stroke_cap_style
-            stroke_join_style
-            stroke_miter_limit
-            stroke_opacity
-            sub_lift
-            sub_scale
-            sup_lift
-            sup_scale
-            text_color
-            text_mode
-            text_shaping
-            underline
+
+        * allow_transparency
+        * auto_close
+        * blend_mode
+        * char_vpos
+        * char_spacing
+        * dash_pattern
+        * denom_lift
+        * denom_scale
+        * draw_color
+        * fill_color
+        * fill_opacity
+        * font_family
+        * font_size
+        * font_size_pt
+        * font_style
+        * font_stretching
+        * intersection_rule
+        * line_width
+        * nom_lift
+        * nom_scale
+        * paint_rule
+        * stroke_cap_style
+        * stroke_join_style
+        * stroke_miter_limit
+        * stroke_opacity
+        * sub_lift
+        * sub_scale
+        * sup_lift
+        * sup_scale
+        * text_color
+        * text_mode
+        * text_shaping
+        * underline
+
+        Font size can be specified in document units with `font_size` or in points with `font_size_pt`.
 
         Args:
             **kwargs: key-values settings to set at the beggining of this context.
@@ -3471,6 +3482,9 @@ Default to "mm".</dd>
         return False
 
     def _perform_page_break(self):
+        # Defensive check, this should have tested by a previous call to .will_page_break():
+        if not self.accept_page_break or self.in_footer:
+            return
         x = self.x
         # If we are in a .local_context(), we need to temporarily leave it,
         # by popping out every GraphicsState:
@@ -4029,8 +4043,8 @@ Default to "mm".</dd>
                 bytes, an io.BytesIO, or a instance of `PIL.Image.Image`
             x (float, fpdf.enums.Align): optional horizontal position where to put the image on the page.
                 If not specified or equal to None, the current abscissa is used.
-                `Align.C` can also be passed to center the image horizontally;
-                and `Align.R` to place it along the right page margin
+                `fpdf.enums.Align.C` can also be passed to center the image horizontally;
+                and `fpdf.enums.Align.R` to place it along the right page margin
             y (float): optional vertical position where to put the image on the page.
                 If not specified or equal to None, the current ordinate is used.
                 After the call, the current ordinate is moved to the bottom of the image
@@ -5369,7 +5383,7 @@ for later calls to the <code><a title="fpdf.fpdf.FPDF.set_font" href="#fpdf.fpdf
 <dd>optional name of the font family. Used as a reference for <code><a title="fpdf.fpdf.FPDF.set_font" href="#fpdf.fpdf.FPDF.set_font">FPDF.set_font()</a></code>.
 If not provided, use the base name of the <code>fname</code> font path, without extension.</dd>
 <dt><strong><code>style</code></strong> :&ensp;<code>str</code></dt>
-<dd>font style. "B" for bold, "I" for italic.</dd>
+<dd>font style. "" for regular, include 'B' for bold, and/or 'I' for italic.</dd>
 <dt><strong><code>fname</code></strong> :&ensp;<code>str</code></dt>
 <dd>font file name. You can specify a relative or full path.
 If the file is not found, it will be searched in <code>FPDF_FONT_DIR</code>.</dd>
@@ -5596,18 +5610,19 @@ of text as bold / italics / underlined. Supports <code>\</code> as escape charac
 <p>Returns: a boolean indicating if page break was triggered</p></div>
 </dd>
 <dt id="fpdf.fpdf.FPDF.circle"><code class="name flex">
-<span>def <span class="ident">circle</span></span>(<span>self, x, y, r, style=None)</span>
+<span>def <span class="ident">circle</span></span>(<span>self, x, y, radius, style=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Outputs a circle.
 It can be drawn (border only), filled (with no border) or both.</p>
+<p>WARNING: This method changed parameters in <a href="https://github.com/py-pdf/fpdf2/releases/tag/2.8.0">release 2.8.0</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>x</code></strong> :&ensp;<code>float</code></dt>
 <dd>Abscissa of upper-left bounding box.</dd>
 <dt><strong><code>y</code></strong> :&ensp;<code>float</code></dt>
 <dd>Ordinate of upper-left bounding box.</dd>
-<dt><strong><code>r</code></strong> :&ensp;<code>float</code></dt>
+<dt><strong><code>radius</code></strong> :&ensp;<code>float</code></dt>
 <dd>Radius of the circle.</dd>
 <dt><strong><code>style</code></strong> :&ensp;<code>str</code></dt>
 <dd>Style of rendering. Possible values are:</dd>
@@ -5921,8 +5936,8 @@ bytes, an io.BytesIO, or a instance of <code>PIL.Image.Image</code></dd>
 <dt><strong><code>x</code></strong> :&ensp;<code>float, <a title="fpdf.enums.Align" href="enums.html#fpdf.enums.Align">Align</a></code></dt>
 <dd>optional horizontal position where to put the image on the page.
 If not specified or equal to None, the current abscissa is used.
-<code>Align.C</code> can also be passed to center the image horizontally;
-and <code>Align.R</code> to place it along the right page margin</dd>
+<code><a title="fpdf.enums.Align.C" href="enums.html#fpdf.enums.Align.C">Align.C</a></code> can also be passed to center the image horizontally;
+and <code><a title="fpdf.enums.Align.R" href="enums.html#fpdf.enums.Align.R">Align.R</a></code> to place it along the right page margin</dd>
 <dt><strong><code>y</code></strong> :&ensp;<code>float</code></dt>
 <dd>optional vertical position where to put the image on the page.
 If not specified or equal to None, the current ordinate is used.
@@ -6075,40 +6090,43 @@ This method must be used as a context manager using <code>with</code>:</p>
     set_some_state()
     draw_some_stuff()
 </code></pre>
-<p>The affected settings are those controlled by GraphicsStateMixin and drawing.GraphicsStyle:
-allow_transparency
-auto_close
-blend_mode
-char_vpos
-char_spacing
-dash_pattern
-denom_lift
-denom_scale
-draw_color
-fill_color
-fill_opacity
-font_family
-font_size
-font_size_pt
-font_style
-font_stretching
-intersection_rule
-line_width
-nom_lift
-nom_scale
-paint_rule
-stroke_cap_style
-stroke_join_style
-stroke_miter_limit
-stroke_opacity
-sub_lift
-sub_scale
-sup_lift
-sup_scale
-text_color
-text_mode
-text_shaping
-underline</p>
+<p>The affected settings are those controlled by GraphicsStateMixin and drawing.GraphicsStyle:</p>
+<ul>
+<li>allow_transparency</li>
+<li>auto_close</li>
+<li>blend_mode</li>
+<li>char_vpos</li>
+<li>char_spacing</li>
+<li>dash_pattern</li>
+<li>denom_lift</li>
+<li>denom_scale</li>
+<li>draw_color</li>
+<li>fill_color</li>
+<li>fill_opacity</li>
+<li>font_family</li>
+<li>font_size</li>
+<li>font_size_pt</li>
+<li>font_style</li>
+<li>font_stretching</li>
+<li>intersection_rule</li>
+<li>line_width</li>
+<li>nom_lift</li>
+<li>nom_scale</li>
+<li>paint_rule</li>
+<li>stroke_cap_style</li>
+<li>stroke_join_style</li>
+<li>stroke_miter_limit</li>
+<li>stroke_opacity</li>
+<li>sub_lift</li>
+<li>sub_scale</li>
+<li>sup_lift</li>
+<li>sup_scale</li>
+<li>text_color</li>
+<li>text_mode</li>
+<li>text_shaping</li>
+<li>underline</li>
+</ul>
+<p>Font size can be specified in document units with <code>font_size</code> or in points with <code>font_size_pt</code>.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>**kwargs</code></strong></dt>
@@ -6612,8 +6630,7 @@ Else, this indicates the grey level. The value must be between 0 and 255.</dd>
 <span>def <span class="ident">set_encryption</span></span>(<span>self, owner_password, user_password=None, encryption_method=EncryptionMethod.RC4, permissions=3900, encrypt_metadata=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>"
-Activate encryption of the document content.</p>
+<div class="desc"><p>Activate encryption of the document content.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>owner_password</code></strong> :&ensp;<code>str</code></dt>
@@ -7248,7 +7265,10 @@ but it is usually easier to use the <code><a title="fpdf.fpdf.FPDF.cell" href="#
 <dd>string to print</dd>
 <dt><strong><code>txt</code></strong> :&ensp;<code>str</code></dt>
 <dd>[<strong>DEPRECATED since v2.7.6</strong>] string to print</dd>
-</dl></div>
+</dl>
+<h2 id="notes">Notes</h2>
+<p><code>text()</code> lacks many of the features available in <code><a title="fpdf.fpdf.FPDF.write" href="#fpdf.fpdf.FPDF.write">FPDF.write()</a></code>,
+<code><a title="fpdf.fpdf.FPDF.cell" href="#fpdf.fpdf.FPDF.cell">FPDF.cell()</a></code> and <code><a title="fpdf.fpdf.FPDF.multi_cell" href="#fpdf.fpdf.FPDF.multi_cell">FPDF.multi_cell()</a></code> like markdown and text shaping.</p></div>
 </dd>
 <dt id="fpdf.fpdf.FPDF.text_annotation"><code class="name flex">
 <span>def <span class="ident">text_annotation</span></span>(<span>self, x, y, text, w=1, h=1, name=None, flags=(&lt;AnnotationFlag.PRINT: 4&gt;,))</span>
@@ -7409,7 +7429,7 @@ font to use for <code>&lt;pre&gt;</code> &amp; <code>&lt;code&gt;</code> blocks 
 <dt><strong><code>warn_on_tags_not_matching</code></strong> :&ensp;<code>bool</code></dt>
 <dd>control warnings production for unmatched HTML tags. Defaults to <code>True</code>.</dd>
 <dt><strong><code>tag_indents</code></strong> :&ensp;<code>dict</code></dt>
-<dd>[<strong>DEPRECATED since v2.7.10</strong>]
+<dd>[<strong>DEPRECATED since v2.8.0</strong>]
 mapping of HTML tag names to numeric values representing their horizontal left identation. - Set <code>tag_styles</code> instead</dd>
 <dt><strong><code>tag_styles</code></strong> :&ensp;<code>dict[str, <a title="fpdf.fonts.TextStyle" href="fonts.html#fpdf.fonts.TextStyle">TextStyle</a>]</code></dt>
 <dd>mapping of HTML tag names to <code>fpdf.TextStyle</code> or <code>fpdf.FontFace</code> instances</dd>
@@ -7450,7 +7470,7 @@ We subclass this to distinguish between raster and vector images.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/image_datastructures.py#L5-L49" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/image_datastructures.py#L5-L49" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ImageInfo(dict):
     &#34;&#34;&#34;Information about an image used in the PDF document (base class).
@@ -7582,7 +7602,7 @@ In the reduced dimension it will be centered within the available space.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/image_datastructures.py#L52-L63" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/image_datastructures.py#L52-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class RasterImageInfo(ImageInfo):
     &#34;Information about a raster image used in the PDF document&#34;
@@ -7633,7 +7653,7 @@ In the reduced dimension it will be centered within the available space.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/enums.py#L415-L424" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/enums.py#L415-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TextMode(CoerciveIntEnum):
     &#34;Values described in PDF spec section &#39;Text Rendering Mode&#39;&#34;
@@ -7707,13 +7727,13 @@ In the reduced dimension it will be centered within the available space.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/fonts.py#L172-L182" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/fonts.py#L172-L182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TitleStyle(TextStyle):
     def __init__(self, *args, **kwargs):
         warnings.warn(
             (
-                &#34;fpdf.TitleStyle is deprecated since 2.7.10.&#34;
+                &#34;fpdf.TitleStyle is deprecated since 2.8.0.&#34;
                 &#34; It has been replaced by fpdf.TextStyle.&#34;
             ),
             DeprecationWarning,
@@ -7745,7 +7765,7 @@ In the reduced dimension it will be centered within the available space.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/image_datastructures.py#L66-L68" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/image_datastructures.py#L66-L68" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class VectorImageInfo(ImageInfo):
     &#34;Information about a vector image used in the PDF document&#34;
@@ -7778,7 +7798,7 @@ In the reduced dimension it will be centered within the available space.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/enums.py#L427-L452" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/enums.py#L427-L452" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XPos(CoerciveEnum):
     &#34;Positional values in horizontal direction for use after printing text.&#34;
@@ -7865,7 +7885,7 @@ In the reduced dimension it will be centered within the available space.</p></di
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/enums.py#L455-L471" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/enums.py#L455-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class YPos(CoerciveEnum):
     &#34;Positional values in vertical direction for use after printing text&#34;

@@ -102,7 +102,7 @@ font to use for <code>&lt;pre&gt;</code> &amp; <code>&lt;code&gt;</code> blocks 
 <dt><strong><code>warn_on_tags_not_matching</code></strong> :&ensp;<code>bool</code></dt>
 <dd>control warnings production for unmatched HTML tags. Defaults to <code>True</code>.</dd>
 <dt><strong><code>tag_indents</code></strong> :&ensp;<code>dict</code></dt>
-<dd>[<strong>DEPRECATED since v2.7.10</strong>]
+<dd>[<strong>DEPRECATED since v2.8.0</strong>]
 mapping of HTML tag names to numeric values representing their horizontal left identation. - Set <code>tag_styles</code> instead</dd>
 <dt><strong><code>tag_styles</code></strong> :&ensp;<code>dict[str, <a title="fpdf.fonts.TextStyle" href="fonts.html#fpdf.fonts.TextStyle">TextStyle</a>]</code></dt>
 <dd>mapping of HTML tag names to <code>fpdf.TextStyle</code> or <code>fpdf.FontFace</code> instances</dd>
@@ -112,7 +112,7 @@ mapping of HTML tag names to numeric values representing their horizontal left i
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/html.py#L298-L1165" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/html.py#L298-L1154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HTML2FPDF(HTMLParser):
     &#34;Render basic HTML to FPDF&#34;
@@ -154,7 +154,7 @@ mapping of HTML tag names to numeric values representing their horizontal left i
             pre_code_font (str): [**DEPRECATED since v2.7.9**]
                 font to use for `&lt;pre&gt;` &amp; `&lt;code&gt;` blocks - Set `tag_styles` instead
             warn_on_tags_not_matching (bool): control warnings production for unmatched HTML tags. Defaults to `True`.
-            tag_indents (dict): [**DEPRECATED since v2.7.10**]
+            tag_indents (dict): [**DEPRECATED since v2.8.0**]
                 mapping of HTML tag names to numeric values representing their horizontal left identation. - Set `tag_styles` instead
             tag_styles (dict[str, fpdf.fonts.TextStyle]): mapping of HTML tag names to `fpdf.TextStyle` or `fpdf.FontFace` instances
             font_family (str): optional font family. Default to Times.
@@ -166,22 +166,24 @@ mapping of HTML tag names to numeric values representing their horizontal left i
         self.li_prefix_color = (
             color_as_decimal(li_prefix_color)
             if isinstance(li_prefix_color, str)
-            else convert_to_device_color(li_prefix_color).colors255
+            else convert_to_device_color(li_prefix_color)
         )
         self.warn_on_tags_not_matching = warn_on_tags_not_matching
-
-        # We operate in a local context and will only temporarily switch to the outer one for rendering.
-        # This is necessary because of the deferred execution of text region writes. Changing fonts and
-        # colors in here must not affect the output and/or interfere with the settings during rendering.
-        # The TOC gets rendered outside of our scope, so we need to set a font first, in order to
-        # ensure that the TOC has one available.
-        # If a font was defined previously, we reinstate that seperately after we&#39;re finished here.
-        # In this case the TOC will be rendered with that font and not ours. But adding a TOC tag only
-        # makes sense if the whole document gets converted from HTML, so this should be acceptable.
+        # The following 4 attributes are there to serve as &#34;temporary state&#34;,
+        # so that changes to those settings are saved,
+        # but not reflected onto self.pdf yet,
+        # and only &#34;effectively&#34; applied when self._write_paragraph() is called.
+        # This way, we often avoid useless operators in the PDF content stream.
         self.font_family = pdf.font_family or font_family
         self.font_size_pt = pdf.font_size_pt
-        self.set_font(
-            family=self.font_family, emphasis=TextEmphasis.NONE, set_default=True
+        self.font_emphasis = TextEmphasis.NONE
+        self.font_color = pdf.text_color
+        # For historical / backward-compatibility reasons,
+        # write_html() sets an active font (Times by default):
+        self.pdf.set_font(
+            family=self.font_family,
+            size=self.font_size_pt,
+            style=self.font_emphasis.style,
         )
         self.style_stack = []  # list of FontFace
         self.h = pdf.font_size_pt / pdf.k
@@ -197,7 +199,6 @@ mapping of HTML tag names to numeric values representing their horizontal left i
         self.line_height_stack = []
         self.ol_type = []  # when inside a &lt;ol&gt; tag, can be &#34;a&#34;, &#34;A&#34;, &#34;i&#34;, &#34;I&#34; or &#34;1&#34;
         self.bullet = []
-        self.font_color = pdf.text_color.colors255
         self.heading_level = None
         self._tags_stack = []
         self._column = self.pdf.text_columns(skip_leading_spaces=True)
@@ -294,7 +295,7 @@ mapping of HTML tag names to numeric values representing their horizontal left i
         if tag_indents:
             warnings.warn(
                 (
-                    &#34;The tag_indents parameter is deprecated since v2.7.10 &#34;
+                    &#34;The tag_indents parameter is deprecated since v2.8.0 &#34;
                     &#34;and will be removed in a future release. &#34;
                     &#34;Set the `tag_styles` parameter instead.&#34;
                 ),
@@ -337,22 +338,41 @@ mapping of HTML tag names to numeric values representing their horizontal left i
 
     def _end_paragraph(self):
         self.align = &#34;&#34;
-        if self._paragraph:
-            self._column.end_paragraph()
-            self._column.render()
-            self._paragraph = None
-            self.follows_trailing_space = True
-            if self._page_break_after_paragraph:
-                # pylint: disable=protected-access
-                self.pdf._perform_page_break()
-                self._page_break_after_paragraph = False
+        if not self._paragraph:
+            return
+        self._column.end_paragraph()
+        self._column.render()
+        self._paragraph = None
+        self.follows_trailing_space = True
+        if self._page_break_after_paragraph:
+            # pylint: disable=protected-access
+            self.pdf._perform_page_break()
+            self._page_break_after_paragraph = False
 
     def _write_paragraph(self, text, link=None):
         if not text:
             return
         if not self._paragraph:
             self._new_paragraph()
+        # The following local stack is required
+        # in order for FPDF._get_current_graphics_state()
+        # to properly capture the current graphics state,
+        # and then to be able to drop those temporary changes,
+        # because they will only be &#34;effectively&#34; applied in .end_paragraph().
+        # pylint: disable=protected-access
+        self.pdf._push_local_stack()
+        prev_page = self.pdf.page
+        self.pdf.page = 0
+        self.pdf.set_font(
+            family=self.font_family,
+            size=self.font_size_pt,
+            style=self.font_emphasis.style,
+        )
+        if self.font_color != self.pdf.text_color:
+            self.pdf.set_text_color(self.font_color)
         self._paragraph.write(text, link=link)
+        self.pdf.page = prev_page
+        self.pdf._pop_local_stack()
 
     def _ln(self, h=None):
         if self._paragraph:
@@ -481,6 +501,14 @@ mapping of HTML tag names to numeric values representing their horizontal left i
             )
             self._write_paragraph(&#34;\n&#34;)
         if tag == &#34;p&#34;:
+            self.style_stack.append(
+                FontFace(
+                    family=self.font_family,
+                    emphasis=self.font_emphasis,
+                    size_pt=self.font_size_pt,
+                    color=self.font_color,
+                )
+            )
             align = None
             if &#34;align&#34; in attrs:
                 align = attrs.get(&#34;align&#34;)[0].upper()
@@ -508,7 +536,7 @@ mapping of HTML tag names to numeric values representing their horizontal left i
             self.style_stack.append(
                 FontFace(
                     family=self.font_family,
-                    emphasis=self.pdf.emphasis,
+                    emphasis=self.font_emphasis,
                     size_pt=self.font_size_pt,
                     color=self.font_color,
                 )
@@ -528,22 +556,18 @@ mapping of HTML tag names to numeric values representing their horizontal left i
                 bottom_margin=tag_style.b_margin * hsize,
                 indent=tag_style.l_margin,
             )
-            color = None
             if &#34;color&#34; in css_style:
-                color = color_as_decimal(css_style[&#34;color&#34;])
+                self.font_color = color_as_decimal(css_style[&#34;color&#34;])
             elif &#34;color&#34; in attrs:
                 # &#34;color&#34; attributes are not valid in HTML,
                 # but we support it for backward compatibility:
-                color = color_as_decimal(attrs[&#34;color&#34;])
+                self.font_color = color_as_decimal(attrs[&#34;color&#34;])
             elif tag_style.color:
-                color = tag_style.color.colors255
-            if color:
-                self.set_text_color(*color)
-            self.set_font(
-                family=tag_style.family or self.font_family,
-                size=tag_style.size_pt or self.font_size_pt,
-                extra_emphasis=tag_style.emphasis,
-            )
+                self.font_color = tag_style.color
+            self.font_family = tag_style.family or self.font_family
+            self.font_size_pt = tag_style.size_pt or self.font_size_pt
+            if tag_style.emphasis:
+                self.font_emphasis |= tag_style.emphasis
         if tag in (
             &#34;b&#34;,
             &#34;blockquote&#34;,
@@ -562,19 +586,18 @@ mapping of HTML tag names to numeric values representing their horizontal left i
             self.style_stack.append(
                 FontFace(
                     family=self.font_family,
-                    emphasis=self.pdf.emphasis,
+                    emphasis=self.font_emphasis,
                     size_pt=self.font_size_pt,
                     color=self.font_color,
                 )
             )
             tag_style = self.tag_styles[tag]
             if tag_style.color:
-                self.set_text_color(*tag_style.color.colors255)
-            self.set_font(
-                family=tag_style.family or self.font_family,
-                size=tag_style.size_pt or self.font_size_pt,
-                extra_emphasis=tag_style.emphasis,
-            )
+                self.font_color = tag_style.color
+            self.font_family = tag_style.family or self.font_family
+            self.font_size_pt = tag_style.size_pt or self.font_size_pt
+            if tag_style.emphasis:
+                self.font_emphasis |= tag_style.emphasis
             if tag == &#34;pre&#34;:
                 self._pre_formatted = True
                 self._pre_started = True
@@ -648,7 +671,8 @@ mapping of HTML tag names to numeric values representing their horizontal left i
                 self._write_paragraph(&#34;\u00a0&#34;)
             self._end_paragraph()
         if tag == &#34;li&#34;:
-            self.set_text_color(*self.li_prefix_color)
+            prev_text_color = self.pdf.text_color
+            self.pdf.text_color = self.li_prefix_color
             if self.bullet:
                 bullet = self.bullet[self.indent - 1]
             else:
@@ -669,31 +693,24 @@ mapping of HTML tag names to numeric values representing their horizontal left i
                 bottom_margin=tag_style.b_margin,
                 bullet=bullet,
             )
-            self.set_text_color(*self.font_color)
+            self.pdf.text_color = prev_text_color
         if tag == &#34;font&#34;:
-            # save previous font state:
             self.style_stack.append(
                 FontFace(
                     family=self.font_family,
-                    emphasis=self.pdf.emphasis,
+                    emphasis=self.font_emphasis,
                     size_pt=self.font_size_pt,
                     color=self.font_color,
                 )
             )
             if &#34;color&#34; in attrs:
-                color = color_as_decimal(attrs[&#34;color&#34;])
-                self.font_color = color
-            if &#34;face&#34; in attrs:
-                face = attrs.get(&#34;face&#34;).lower()
-                # This may result in a FPDFException &#34;font not found&#34;.
-                self.set_font(face)
-                self.font_family = face
+                self.font_color = color_as_decimal(attrs[&#34;color&#34;])
             if &#34;font-size&#34; in css_style:
                 self.font_size_pt = int(css_style.get(&#34;font-size&#34;))
             elif &#34;size&#34; in attrs:
                 self.font_size_pt = int(attrs.get(&#34;size&#34;))
-            self.set_font()
-            self.set_text_color(*self.font_color)
+            if &#34;face&#34; in attrs:
+                self.font_family = attrs.get(&#34;face&#34;).lower()
         if tag == &#34;table&#34;:
             width = css_style.get(&#34;width&#34;, attrs.get(&#34;width&#34;))
             if width:
@@ -827,15 +844,22 @@ mapping of HTML tag names to numeric values representing their horizontal left i
         if tag == &#34;a&#34;:
             self.href = &#34;&#34;
         if tag == &#34;p&#34;:
+            if self.style_stack:
+                font_face = self.style_stack.pop()
+                self.font_family = font_face.family or self.font_family
+                self.font_size_pt = font_face.size_pt or self.font_size_pt
+                self.font_emphasis = font_face.emphasis
+                self.font_color = font_face.color
             self._end_paragraph()
             self.align = &#34;&#34;
         if tag in HEADING_TAGS:
             self.heading_level = None
-            font_face = self.style_stack.pop()
-            self.set_font(
-                font_face.family, font_face.size_pt, emphasis=font_face.emphasis
-            )
-            self.set_text_color(*font_face.color.colors255)
+            if self.style_stack:
+                font_face = self.style_stack.pop()
+                self.font_family = font_face.family or self.font_family
+                self.font_size_pt = font_face.size_pt or self.font_size_pt
+                self.font_emphasis = font_face.emphasis
+                self.font_color = font_face.color
             self._end_paragraph()
             self.follows_heading = True  # We don&#39;t want extra space below a heading.
         if tag in (
@@ -851,11 +875,12 @@ mapping of HTML tag names to numeric values representing their horizontal left i
             &#34;strong&#34;,
             &#34;u&#34;,
         ):
-            font_face = self.style_stack.pop()
-            self.set_font(
-                font_face.family, font_face.size_pt, emphasis=font_face.emphasis
-            )
-            self.set_text_color(*font_face.color.colors255)
+            if self.style_stack:
+                font_face = self.style_stack.pop()
+                self.font_family = font_face.family or self.font_family
+                self.font_size_pt = font_face.size_pt or self.font_size_pt
+                self.font_emphasis = font_face.emphasis
+                self.font_color = font_face.color
             if tag == &#34;pre&#34;:
                 self._pre_formatted = False
                 self._pre_started = False
@@ -885,13 +910,12 @@ mapping of HTML tag names to numeric values representing their horizontal left i
                 self.table_row.cell(text=&#34;&#34;, style=style)
             self.td_th = None
         if tag == &#34;font&#34;:
-            # recover last font state
-            font_face = self.style_stack.pop()
-            self.font_color = font_face.color.colors255
-            self.set_font(
-                font_face.family, font_face.size_pt, emphasis=font_face.emphasis
-            )
-            self.set_text_color(*font_face.color.colors255)
+            if self.style_stack:
+                font_face = self.style_stack.pop()
+                self.font_family = font_face.family or self.font_family
+                self.font_size_pt = font_face.size_pt or self.font_size_pt
+                self.font_emphasis = font_face.emphasis
+                self.font_color = font_face.color
         if tag == &#34;sup&#34;:
             self.pdf.char_vpos = &#34;LINE&#34;
         if tag == &#34;sub&#34;:
@@ -905,62 +929,27 @@ mapping of HTML tag names to numeric values representing their horizontal left i
         if self._tags_stack and self.warn_on_tags_not_matching:
             LOGGER.warning(&#34;Missing HTML end tag for &lt;%s&gt;&#34;, self._tags_stack[-1])
 
-    def set_font(
-        self,
-        family=None,
-        size=None,
-        emphasis=None,
-        extra_emphasis=None,
-        set_default=False,
-    ):
-        pdf = self.pdf
-        if emphasis is None:
-            emphasis = pdf.emphasis
-        if extra_emphasis:
-            emphasis |= extra_emphasis
-        if family:
-            self.font_family = family
-        if size:
-            self.font_size_pt = size
-            self.h = size / pdf.k
-        prev_page = pdf.page
-        if not set_default:  # make sure there&#39;s at least one font defined in the PDF.
-            pdf.page = 0
-        if (self.font_family, emphasis) != (pdf.font_family, pdf.emphasis):
-            pdf.set_font(self.font_family, emphasis.style, self.font_size_pt)
-            assert pdf.emphasis == emphasis
-        if self.font_size_pt != pdf.font_size:
-            pdf.set_font_size(self.font_size_pt)
-        pdf.page = prev_page
-
-    def set_text_color(self, r=None, g=0, b=0):
-        prev_page = self.pdf.page
-        self.pdf.page = 0
-        self.pdf.set_text_color(r, g, b)
-        self.pdf.page = prev_page
-
     def put_link(self, text):
         &#34;Put a hyperlink&#34;
         prev_style = FontFace(
             family=self.font_family,
-            emphasis=self.pdf.emphasis,
+            emphasis=self.font_emphasis,
             size_pt=self.font_size_pt,
             color=self.font_color,
         )
         tag_style = self.tag_styles[&#34;a&#34;]
         if tag_style.color:
-            self.set_text_color(*tag_style.color.colors255)
-        self.set_font(
-            family=tag_style.family or self.font_family,
-            size=tag_style.size_pt or self.font_size_pt,
-            extra_emphasis=tag_style.emphasis,
-        )
+            self.font_color = tag_style.color
+        self.font_family = tag_style.family or self.font_family
+        self.font_size_pt = tag_style.size_pt or self.font_size_pt
+        if tag_style.emphasis:
+            self.font_emphasis |= tag_style.emphasis
         self._write_paragraph(text, link=self.href)
         # Restore previous style:
-        self.set_font(
-            prev_style.family, prev_style.size_pt, emphasis=prev_style.emphasis
-        )
-        self.set_text_color(*prev_style.color.colors255)
+        self.font_family = prev_style.family or self.font_family
+        self.font_size_pt = prev_style.size_pt or self.font_size_pt
+        self.font_emphasis |= prev_style.emphasis
+        self.font_color = prev_style.color
 
     # pylint: disable=no-self-use
     def render_toc(self, pdf, outline):
@@ -1045,18 +1034,6 @@ as you want (may include '\n').</p></div>
 <dd>
 <div class="desc"><p>This method can be overriden by subclasses to customize the Table of Contents style.</p></div>
 </dd>
-<dt id="fpdf.html.HTML2FPDF.set_font"><code class="name flex">
-<span>def <span class="ident">set_font</span></span>(<span>self, family=None, size=None, emphasis=None, extra_emphasis=None, set_default=False)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="fpdf.html.HTML2FPDF.set_text_color"><code class="name flex">
-<span>def <span class="ident">set_text_color</span></span>(<span>self, r=None, g=0, b=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 </dl>
 </dd>
 <dt id="fpdf.html.HTMLMixin"><code class="flex name class">
@@ -1069,7 +1046,7 @@ You can now directly use the <code>FPDF.write_html()</code> method</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/9e71e0576f3718eb4a38a1472cc71ca6d251c79e/fpdf/html.py#L1207-L1222" class="git-link">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/26dfb934b332aac3543be36e1507c2f6e1c7f829/fpdf/html.py#L1196-L1211" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class HTMLMixin:
     &#34;&#34;&#34;
@@ -1124,8 +1101,6 @@ You can now directly use the <code>FPDF.write_html()</code> method</p></div>
 <li><code><a title="fpdf.html.HTML2FPDF.handle_starttag" href="#fpdf.html.HTML2FPDF.handle_starttag">handle_starttag</a></code></li>
 <li><code><a title="fpdf.html.HTML2FPDF.put_link" href="#fpdf.html.HTML2FPDF.put_link">put_link</a></code></li>
 <li><code><a title="fpdf.html.HTML2FPDF.render_toc" href="#fpdf.html.HTML2FPDF.render_toc">render_toc</a></code></li>
-<li><code><a title="fpdf.html.HTML2FPDF.set_font" href="#fpdf.html.HTML2FPDF.set_font">set_font</a></code></li>
-<li><code><a title="fpdf.html.HTML2FPDF.set_text_color" href="#fpdf.html.HTML2FPDF.set_text_color">set_text_color</a></code></li>
 </ul>
 </li>
 <li>
