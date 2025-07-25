@@ -1439,6 +1439,7 @@ class PDFStyleKeys(Enum):
     STROKE_JOIN_STYLE = Name("LJ")
     STROKE_MITER_LIMIT = Name("ML")
     STROKE_DASH_PATTERN = Name("D")  # array of array, number, e.g. [[1 1] 0]
+    SOFT_MASK = Name("SMask")
 
 
 class Corner(CoerciveEnum):

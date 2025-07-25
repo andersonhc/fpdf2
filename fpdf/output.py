@@ -9,6 +9,7 @@ in non-backward-compatible ways.
 
 # pylint: disable=protected-access
 import logging
+import re
 from collections import OrderedDict, defaultdict
 from contextlib import contextmanager
 from io import BytesIO
@@ -526,9 +527,13 @@ class OutputIntentDictionary:
 class ResourceCatalog:
     "Manage the indexing of resources and association to the pages they are used"
 
+    GS_REGEX = re.compile(r"/(GS\d+) gs")
+    IMG_REGEX = re.compile(r"/I(\d+) Do")
+
     def __init__(self):
         self.resources = defaultdict(dict)
         self.resources_per_page = defaultdict(set)
+        self.graphics_styles = OrderedDict()
 
     def add(self, resource_type: PDFResourceType, resource, page_number: int):
         if resource_type in (PDFResourceType.PATTERN, PDFResourceType.SHADDING):
@@ -543,6 +548,24 @@ class ResourceCatalog:
             return registry[resource]
         self.resources_per_page[(page_number, resource_type)].add(resource)
         return None
+
+    def register_graphics_style(self, style):
+        """
+        Graphics style can be added without associating to a page number right away,
+        like when rendering a svg image.
+        The method that adds image to the page will call the add method for the page association.
+        """
+        style_dict = style.serialize()
+        if not style_dict:  # empty style does not need an entry
+            return None
+
+        if style_dict not in self.graphics_styles:
+            name = Name(
+                f"{self._get_prefix(PDFResourceType.EXT_G_STATE)}{len(self.graphics_styles)}"
+            )
+            self.graphics_styles[style_dict] = name
+
+        return self.graphics_styles[style_dict]
 
     def get_items(self, resource_type: PDFResourceType):
         return self.resources[resource_type].items()
@@ -559,6 +582,8 @@ class ResourceCatalog:
 
     @classmethod
     def _get_prefix(cls, resource_type: PDFResourceType):
+        if resource_type == PDFResourceType.EXT_G_STATE:
+            return "GS"
         if resource_type == PDFResourceType.PATTERN:
             return "P"
         if resource_type == PDFResourceType.SHADDING:
@@ -1035,7 +1060,7 @@ class OutputProducer:
 
     def _add_gfxstates(self):
         gfxstate_objs_per_name = OrderedDict()
-        for state_dict, name in self.fpdf._drawing_graphics_state_registry.items():
+        for state_dict, name in self.fpdf._resource_catalog.graphics_styles.items():
             gfxstate_obj = PDFExtGState(state_dict)
             self._add_pdf_obj(gfxstate_obj, "gfxstate")
             gfxstate_objs_per_name[name] = gfxstate_obj
@@ -1446,3 +1471,15 @@ def _sizeof_fmt(num, suffix="B"):
             return f"{num:3.1f}{unit}{suffix}"
         num /= 1024
     return f"{num:.1f}Yi{suffix}"
+
+
+def soft_mask_path_to_xobject(path, fpdf: "FPDF"):
+    """
+    Converts a PaintedSoftMask into a PDF XObject Form suitable for use as a soft mask.
+    """
+    xobject = PDFContentStream(contents=path.render(fpdf._resource_catalog))
+    xobject.type = Name("XObject")
+    xobject.subtype = Name("Form")
+    xobject.b_box = PDFArray(path.get_bounding_box())
+    xobject.group = "<</S /Transparency /CS /DeviceGray>>"
+    return xobject
