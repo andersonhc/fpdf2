@@ -61,7 +61,6 @@ from .deprecation import (
 from .drawing import (
     DeviceRGB,
     DrawingContext,
-    GraphicsStateDictRegistry,
     GraphicsStyle,
     PaintedPath,
     Point,
@@ -374,7 +373,6 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
         self._fallback_font_exact_match = False
 
         self._current_draw_context = None
-        self._drawing_graphics_state_registry = GraphicsStateDictRegistry()
         # map page numbers to a set of GraphicsState names:
         self._record_text_quad_points = False
         self._resource_catalog = ResourceCatalog()
@@ -1335,7 +1333,7 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
 
         starting_style = self._current_graphic_style()
         render_args = (
-            self._drawing_graphics_state_registry,
+            self._resource_catalog,
             Point(self.x, self.y),
             self.k,
             self.h,
@@ -3089,7 +3087,7 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
             else:
                 raise ValueError(f"Unsupported setting: {key}")
         if gs:
-            gs_name = self._drawing_graphics_state_registry.register_style(gs)
+            gs_name = self._resource_catalog.register_graphics_style(gs)
             self._resource_catalog.add(PDFResourceType.EXT_G_STATE, gs_name, self.page)
             self._out(f"q /{gs_name} gs")
         else:
