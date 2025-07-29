@@ -9,6 +9,7 @@ in non-backward-compatible ways.
 
 # pylint: disable=protected-access
 import logging
+import re
 from collections import OrderedDict, defaultdict
 from contextlib import contextmanager
 from io import BytesIO
@@ -525,6 +526,9 @@ class OutputIntentDictionary:
 
 class ResourceCatalog:
     "Manage the indexing of resources and association to the pages they are used"
+
+    GS_REGEX = re.compile(r"/(GS\d+) gs")
+    IMG_REGEX = re.compile(r"/I(\d+) Do")
 
     def __init__(self):
         self.resources = defaultdict(dict)
@@ -1467,3 +1471,15 @@ def _sizeof_fmt(num, suffix="B"):
             return f"{num:3.1f}{unit}{suffix}"
         num /= 1024
     return f"{num:.1f}Yi{suffix}"
+
+
+def soft_mask_path_to_xobject(path, fpdf: "FPDF"):
+    """
+    Converts a PaintedSoftMask into a PDF XObject Form suitable for use as a soft mask.
+    """
+    xobject = PDFContentStream(contents=path.render(fpdf._resource_catalog))
+    xobject.type = Name("XObject")
+    xobject.subtype = Name("Form")
+    xobject.b_box = PDFArray(path.get_bounding_box())
+    xobject.group = "<</S /Transparency /CS /DeviceGray>>"
+    return xobject

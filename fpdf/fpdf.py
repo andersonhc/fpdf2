@@ -233,8 +233,6 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
     MARKDOWN_LINK_REGEX = re.compile(r"^\[([^][]+)\]\(([^()]+)\)(.*)$", re.DOTALL)
     MARKDOWN_LINK_COLOR = None
     MARKDOWN_LINK_UNDERLINE = True
-    _GS_REGEX = re.compile(r"/(GS\d+) gs")
-    _IMG_REGEX = re.compile(r"/I(\d+) Do")
 
     HTML2FPDF_CLASS = HTML2FPDF
 
@@ -1347,12 +1345,12 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
         else:
             rendered = context.render(*render_args)
 
-        for match in self._GS_REGEX.finditer(rendered):
+        for match in self._resource_catalog.GS_REGEX.finditer(rendered):
             self._resource_catalog.add(
                 PDFResourceType.EXT_G_STATE, match.group(1), self.page
             )
         # Registering raster images embedded in the vector graphics:
-        for match in self._IMG_REGEX.finditer(rendered):
+        for match in self._resource_catalog.IMG_REGEX.finditer(rendered):
             self._resource_catalog.add(
                 PDFResourceType.X_OBJECT, int(match.group(1)), self.page
             )

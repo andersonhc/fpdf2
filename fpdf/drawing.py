@@ -1058,6 +1058,76 @@ __pdoc__["Transform.e"] = False
 __pdoc__["Transform.f"] = False
 
 
+class BoundingBox:
+    """Represents a bounding box, with utility methods for creating and manipulating them."""
+
+    def __init__(self, x0: float, y0: float, x1: float, y1: float):
+        """Initialize a BoundingBox, automatically correcting min/max order if needed."""
+        self.x0 = float(x0)
+        self.y0 = float(y0)
+        self.x1 = float(x1)
+        self.y1 = float(y1)
+
+    @classmethod
+    def empty(cls) -> "BoundingBox":
+        """
+        Return an 'empty' bounding box with extreme values that collapse on merge.
+        """
+        return cls(float("inf"), float("inf"), float("-inf"), float("-inf"))
+
+    def is_valid(self) -> bool:
+        """Return True if the bounding box is not empty."""
+        return self.x0 <= self.x1 and self.y0 <= self.y1
+
+    @classmethod
+    def from_points(cls, points: list[Point]) -> "BoundingBox":
+        """Given a list of points, create a bounding box that encloses them all."""
+        xs = [float(p.x) for p in points]
+        ys = [float(p.y) for p in points]
+        return cls(min(xs), min(ys), max(xs), max(ys))
+
+    def merge(self, other: "BoundingBox") -> "BoundingBox":
+        """Expand this bounding box to include another one."""
+        if not self.is_valid():
+            return other
+        if not other.is_valid():
+            return self
+        return BoundingBox(
+            min(self.x0, other.x0),
+            min(self.y0, other.y0),
+            max(self.x1, other.x1),
+            max(self.y1, other.y1),
+        )
+
+    def transformed(self, tf: Transform) -> "BoundingBox":
+        """
+        Return a new bounding box resulting from applying a transform to this one.
+        """
+        corners = [
+            Point(self.x0, self.y0),
+            Point(self.x1, self.y0),
+            Point(self.x0, self.y1),
+            Point(self.x1, self.y1),
+        ]
+        transformed_points = [pt @ tf for pt in corners]
+        return BoundingBox.from_points(transformed_points)
+
+    def to_tuple(self) -> tuple[float, float, float, float]:
+        """Convert bounding box to a 4-tuple."""
+        return (self.x0, self.y0, self.x1, self.y1)
+
+    def width(self) -> float:
+        """Return the width of the bounding box."""
+        return self.x1 - self.x0
+
+    def height(self) -> float:
+        """Return the height of the bounding box."""
+        return self.y1 - self.y0
+
+    def __str__(self):
+        return f"BoundingBox({self.x0}, {self.y0}, {self.x1}, {self.y1})"
+
+
 class GraphicsStyle:
     """
     A class representing various style attributes that determine drawing appearance.
@@ -1533,6 +1603,10 @@ class Move(NamedTuple):
         """The end point of this path element."""
         return self.pt
 
+    def bounding_box(self, _) -> tuple[BoundingBox, Point]:
+        bbox = BoundingBox.from_points([self.pt])
+        return bbox, self.pt
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -1595,6 +1669,10 @@ class RelativeMove(NamedTuple):
 
     pt: Point
     """The offset by which to move."""
+
+    def bounding_box(self, start: Point) -> tuple[None, Point]:
+        """RelativeMove doesn't draw anything, so it has no bounding box."""
+        return None, start + self.pt
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -1666,6 +1744,10 @@ class Line(NamedTuple):
         """The end point of this path element."""
         return self.pt
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of a line from the start point to the end point."""
+        return BoundingBox.from_points([start, self.pt]), self.pt
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -1730,6 +1812,10 @@ class RelativeLine(NamedTuple):
     pt: Point
     """The endpoint of the line relative to the previous path element."""
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of a relative line from the start point to the new end point."""
+        return BoundingBox.from_points([start, start + self.pt]), start + self.pt
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -1791,6 +1877,11 @@ class HorizontalLine(NamedTuple):
 
     x: Number
     """The abscissa of the horizontal line's end point."""
+
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of a horizontal line from the start point to the new x."""
+        end = Point(self.x, start.y)
+        return BoundingBox.from_points([start, end]), end
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -1858,6 +1949,12 @@ class RelativeHorizontalLine(NamedTuple):
     previous path element.
     """
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of a relative horizontal line."""
+        end = Point(float(start.x) + float(self.x), start.y)
+        bbox = BoundingBox.from_points([start, end])
+        return bbox, end
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -1919,6 +2016,12 @@ class VerticalLine(NamedTuple):
 
     y: Number
     """The ordinate of the vertical line's end point."""
+
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of this vertical line."""
+        end = Point(start.x, self.y)
+        bbox = BoundingBox.from_points([start, end])
+        return bbox, end
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -1985,6 +2088,12 @@ class RelativeVerticalLine(NamedTuple):
     The ordinate of the vertical line's end point relative to the ordinate of the
     previous path element.
     """
+
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of this relative vertical line."""
+        end = Point(start.x, float(start.y) + float(self.y))
+        bbox = BoundingBox.from_points([start, end])
+        return bbox, end
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -2060,6 +2169,52 @@ class BezierCurve(NamedTuple):
         """The end point of this path element."""
         return self.end
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of this cubic Bézier curve."""
+
+        def bezier(t: float, p0: float, p1: float, p2: float, p3: float) -> float:
+            """Evaluate cubic Bézier at t for a single dimension."""
+            return (
+                (1 - t) ** 3 * p0
+                + 3 * (1 - t) ** 2 * t * p1
+                + 3 * (1 - t) * t**2 * p2
+                + t**3 * p3
+            )
+
+        def bezier_extrema(p0, p1, p2, p3) -> list[float]:
+            """Return all t values (0 < t < 1) where extrema may occur in a Bézier curve."""
+            a = -3 * p0 + 9 * p1 - 9 * p2 + 3 * p3
+            b = 6 * p0 - 12 * p1 + 6 * p2
+            c = -3 * p0 + 3 * p1
+
+            extrema = []
+            if abs(a) < 1e-12:  # Prevent division by near-zero
+                if abs(b) > 1e-12:
+                    t = -c / b
+                    if 0 < t < 1:
+                        extrema.append(t)
+            else:
+                disc = b * b - 4 * a * c
+                if disc >= 0:
+                    sqrt_disc = disc**0.5
+                    for t in [(-b + sqrt_disc) / (2 * a), (-b - sqrt_disc) / (2 * a)]:
+                        if 0 < t < 1:
+                            extrema.append(t)
+            return extrema
+
+        # Evaluate all candidate t values (endpoints + extrema) for both axes
+        px = [start.x, self.c1.x, self.c2.x, self.end.x]
+        py = [start.y, self.c1.y, self.c2.y, self.end.y]
+
+        tx = [0, 1] + bezier_extrema(*px)
+        ty = [0, 1] + bezier_extrema(*py)
+
+        xs = [bezier(t, *px) for t in tx]
+        ys = [bezier(t, *py) for t in ty]
+
+        bbox = BoundingBox(min(xs), min(ys), max(xs), max(ys))
+        return bbox, self.end
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -2128,6 +2283,62 @@ class RelativeBezierCurve(NamedTuple):
     """
     end: Point
     """The curve's end point relative to the end of the previous path element."""
+
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """
+        Compute the bounding box of this relative cubic Bézier curve.
+
+        Args:
+            start (Point): The starting point of the curve (i.e., the end of the previous path element).
+
+        Returns:
+            A tuple containing:
+                - BoundingBox: the axis-aligned bounding box containing the entire curve.
+                - Point: the end point of the curve.
+        """
+        # Resolve absolute coordinates
+        p0 = start
+        p1 = start + self.c1
+        p2 = start + self.c2
+        p3 = start + self.end
+
+        # Reuse the same logic as in BezierCurve
+        def bezier(t: float, a: float, b: float, c: float, d: float) -> float:
+            return (
+                (1 - t) ** 3 * a
+                + 3 * (1 - t) ** 2 * t * b
+                + 3 * (1 - t) * t**2 * c
+                + t**3 * d
+            )
+
+        def bezier_extrema(p0, p1, p2, p3) -> list[float]:
+            a = -3 * p0 + 9 * p1 - 9 * p2 + 3 * p3
+            b = 6 * p0 - 12 * p1 + 6 * p2
+            c = -3 * p0 + 3 * p1
+
+            extrema = []
+            if abs(a) < 1e-12:
+                if abs(b) > 1e-12:
+                    t = -c / b
+                    if 0 < t < 1:
+                        extrema.append(t)
+            else:
+                disc = b * b - 4 * a * c
+                if disc >= 0:
+                    sqrt_disc = disc**0.5
+                    for t in [(-b + sqrt_disc) / (2 * a), (-b - sqrt_disc) / (2 * a)]:
+                        if 0 < t < 1:
+                            extrema.append(t)
+            return extrema
+
+        tx = [0, 1] + bezier_extrema(p0.x, p1.x, p2.x, p3.x)
+        ty = [0, 1] + bezier_extrema(p0.y, p1.y, p2.y, p3.y)
+
+        xs = [bezier(t, float(p0.x), float(p1.x), float(p2.x), float(p3.x)) for t in tx]
+        ys = [bezier(t, float(p0.y), float(p1.y), float(p2.y), float(p3.y)) for t in ty]
+
+        bbox = BoundingBox(min(xs), min(ys), max(xs), max(ys))
+        return bbox, p3
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -2225,6 +2436,11 @@ class QuadraticBezierCurve(NamedTuple):
 
         return BezierCurve(ctrl1, ctrl2, end)
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of this quadratic Bézier curve by converting it to a cubic Bézier."""
+        cubic = self.to_cubic_curve(start)
+        return cubic.bounding_box(start)
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -2294,6 +2510,12 @@ class RelativeQuadraticBezierCurve(NamedTuple):
     """The curve's control point relative to the end of the previous path element."""
     end: Point
     """The curve's end point relative to the end of the previous path element."""
+
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of this relative quadratic Bézier curve."""
+        ctrl = start + self.ctrl
+        end = start + self.end
+        return QuadraticBezierCurve(ctrl=ctrl, end=end).bounding_box(start)
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -2497,6 +2719,21 @@ class Arc(NamedTuple):
 
         return curves
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """
+        Compute the bounding box of this arc by approximating it with a series of
+        Bezier curves and aggregating their bounding boxes.
+        """
+        bbox = BoundingBox.empty()
+        prev = Move(start)
+
+        for curve in self._approximate_arc(prev):
+            segment_bbox, _ = curve.bounding_box(prev.end_point)
+            bbox = bbox.merge(segment_bbox)
+            prev = curve
+
+        return bbox, self.end
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -2596,6 +2833,18 @@ class RelativeArc(NamedTuple):
     end: Point
     """The end point of the arc relative to the end of the previous path element."""
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of the resolved arc from the given start point."""
+        end_point = start + self.end
+        arc = Arc(
+            radii=self.radii,
+            rotation=self.rotation,
+            large=self.large,
+            sweep=self.sweep,
+            end=end_point,
+        )
+        return arc.bounding_box(start)
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -2664,6 +2913,22 @@ class Rectangle(NamedTuple):
     """The top-left corner of the rectangle."""
     size: Point
     """The width and height of the rectangle."""
+
+    def bounding_box(self, _) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of this rectangle."""
+        x0, y0 = self.org.x, self.org.y
+        x1 = float(x0) + float(self.size.x)
+        y1 = float(y0) + float(self.size.y)
+
+        bbox = BoundingBox.from_points(
+            [
+                Point(x0, y0),
+                Point(x1, y0),
+                Point(x0, y1),
+                Point(x1, y1),
+            ]
+        )
+        return bbox, self.org
 
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
@@ -2776,6 +3041,20 @@ class RoundedRectangle(NamedTuple):
 
         return items
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """
+        Compute the bounding box of this rounded rectangle by decomposing into primitives
+        and merging their individual bounding boxes.
+        """
+        bbox = BoundingBox.empty()
+        current_point = start
+
+        for item in self._decompose():
+            b, current_point = item.bounding_box(current_point)
+            bbox = bbox.merge(b)
+
+        return bbox, self.org
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -2886,6 +3165,20 @@ class Ellipse(NamedTuple):
 
         return items
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """
+        Compute the bounding box of this ellipse by decomposing it and merging the bounding boxes
+        of its components.
+        """
+        bbox = BoundingBox.empty()
+        current_point = start
+
+        for item in self._decompose():
+            b, current_point = item.bounding_box(current_point)
+            bbox = bbox.merge(b)
+
+        return bbox, self.center
+
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -2970,6 +3263,11 @@ class ImplicitClose(NamedTuple):
     """
 
     # pylint: disable=no-self-use
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Return an empty bounding box; Close does not affect the geometry."""
+        return BoundingBox.empty(), start
+
+    # pylint: disable=no-self-use
     @force_nodocument
     def render(self, resource_registry, style, last_item, initial_point):
         """
@@ -3033,6 +3331,11 @@ class Close(NamedTuple):
 
     See: `PaintedPath.close`
     """
+
+    # pylint: disable=no-self-use
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Return an empty bounding box; Close does not affect the geometry."""
+        return BoundingBox.empty(), start
 
     # pylint: disable=no-self-use
     @force_nodocument
@@ -3787,6 +4090,12 @@ class PaintedPath:
             self._close_context = self._graphics_context
             self._closed = True
 
+    def bounding_box(self, start: Point) -> BoundingBox:
+        """Compute the bounding box of this painted path, including nested contexts and transformations."""
+        current_point = start
+        bbox, current_point = self._root_graphics_context.bounding_box(current_point)
+        return bbox.transformed(self.transform or Transform.identity())
+
     def render(
         self,
         resource_registry,
@@ -4190,6 +4499,23 @@ class GraphicsContext:
 
         return render_list, last_item, initial_point
 
+    def bounding_box(self, start: Point) -> tuple[BoundingBox, Point]:
+        """Compute the bounding box of all path items in this context."""
+        bbox = BoundingBox.empty()
+        current_point = start
+        tf = self.transform or Transform.identity()
+
+        for item in self.path_items:
+            if hasattr(item, "bounding_box"):
+                item_bbox, end_point = item.bounding_box(current_point)
+                bbox = bbox.merge(item_bbox.transformed(tf))
+                current_point = end_point
+            elif isinstance(item, GraphicsContext):
+                child_bbox, end_point = item.bounding_box(current_point)
+                bbox = bbox.merge(child_bbox.transformed(tf))
+                current_point = end_point
+        return bbox, current_point
+
     def render(
         self,
         resource_registry,
@@ -4234,12 +4560,35 @@ class GraphicsContext:
 
 
 class PaintSoftMask:
-    def __init__(self, mask_path: PaintedPath):
+    def __init__(
+        self, mask_path: PaintedPath, fill_color="#000000", stroke_color="#000000"
+    ):
         self.mask_path = deepcopy(mask_path)
-        self.mask_object_id = 0
+
+        # Force opaque grayscale style
+        self.mask_path.style.fill_opacity = 1
+        self.mask_path.style.stroke_opacity = 1
+        self.mask_path.style.fill_color = fill_color
+        self.mask_path.style.stroke_color = stroke_color
+        self.mask_path.style.allow_transparency = False
+
+        self.object_id = 0
 
     def serialize(self):
-        return f"<</S /Alpha /G {self.mask_object_id} 0 R>>"
+        return f"<</S /Alpha /G {self.object_id} 0 R>>"
+
+    def get_bounding_box(self) -> tuple[float, float, float, float]:
+        bbox = self.mask_path.bounding_box(Point(0, 0))
+        return bbox.to_tuple()
+
+    def render(self, resource_registry):
+        stream, _, _ = self.mask_path.render(
+            resource_registry,
+            style=GraphicsStyle(),
+            last_item=None,
+            initial_point=Point(0, 0),
+        )
+        return stream
 
 
 class PaintComposite:
