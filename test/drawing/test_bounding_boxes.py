@@ -614,3 +614,86 @@ def test_shape_bounding_box(test_id, shape, start, expected_bbox, tmp_path):
             / f"generated_pdf/bounding_box_{shape.__class__.__name__.lower()}_{test_id}_{name}.pdf",
             tmp_path=tmp_path,
         )
+
+
+def simple_path_absolute_relative():
+    path = PaintedPath()
+    path.move_to(10, 10)
+    path.line_to(100, 10)
+    path.line_relative(0, 40)
+    path.line_to(10, 50)
+    path.close()
+    return path
+
+
+def circle_and_rectangle():
+    path = PaintedPath()
+    path.circle(60, 60, 30)
+    path.rectangle(20, 20, 40, 40)
+    return path
+
+
+def mixed_curves_and_lines():
+    path = PaintedPath()
+    path.move_to(0, 0)
+    path.curve_to(30, 60, 60, 90, 100, 100)
+    path.quadratic_curve_relative(20, -100, 50, 0)
+    path.line_to(0, 0)
+    path.close()
+    return path
+
+
+def arc_and_line():
+    path = PaintedPath()
+    path.move_to(50, 50)
+    path.arc_relative(25, 25, 0, False, True, 50, 50)
+    path.line_to(25, 75)
+    return path
+
+
+@pytest.mark.parametrize(
+    "test_id, path_builder, expected_bbox",
+    [
+        (
+            "simple_path_absolute_relative",
+            simple_path_absolute_relative,
+            BoundingBox(10, 10, 100, 50),
+        ),
+        ("circle_and_rectangle", circle_and_rectangle, BoundingBox(20, 20, 90, 90)),
+        ("mixed_curves_and_lines", mixed_curves_and_lines, BoundingBox(0, 0, 150, 100)),
+        (
+            "arc_and_line",
+            arc_and_line,
+            BoundingBox(
+                25.0, 39.64466094591647, 110.35533905932736, 100.00000004195078
+            ),
+        ),
+    ],
+)
+def test_composite_painted_path(test_id, path_builder, expected_bbox, tmp_path):
+    path = path_builder()
+    bbox, _ = path.bounding_box(Point(0, 0))
+    assert bbox == expected_bbox
+
+    pdf = FPDF()
+    pdf.add_page()
+
+    with pdf.drawing_context() as gc:
+        path.style.stroke_color = "#0000ff"
+        path.style.fill_color = "#a0c0ff"
+        path.style.fill_opacity = 0.5
+        gc.add_item(path)
+
+        # Draw bounding box in red
+        bbox_path = PaintedPath()
+        bbox_path.rectangle(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0)
+        bbox_path.style.stroke_color = "#ff0000"
+        bbox_path.style.stroke_width = 0.1
+        bbox_path.style.fill_color = None
+        gc.add_item(bbox_path)
+
+    assert_pdf_equal(
+        pdf,
+        HERE / f"generated_pdf/bounding_box_painted_path_{test_id}.pdf",
+        tmp_path,
+    )
