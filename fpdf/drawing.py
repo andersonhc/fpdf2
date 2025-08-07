@@ -19,6 +19,7 @@ from typing import Optional, NamedTuple, Union
 from .enums import (
     BlendMode,
     ClippingPathIntersectionRule,
+    CompositingOperation,
     IntersectionRule,
     PathPaintRule,
     StrokeCapStyle,
@@ -4599,9 +4600,8 @@ class PaintSoftMask:
         return f"<</S /Alpha /G {self.object_id} 0 R>>"
 
     def get_bounding_box(self) -> tuple[float, float, float, float]:
-        bbox = self.mask_path.bounding_box(Point(0, 0))
-        return bbox.to_tuple()
-
+        return self.mask_path.bounding_box(Point(0, 0))
+        
     def render(self, resource_registry):
         stream, _, _ = self.mask_path.render(
             resource_registry,
@@ -4619,17 +4619,17 @@ class PaintComposite:
     For now, only "SRC_OVER" is supported, which renders the source path over the backdrop.
     """
 
-    def __init__(self, backdrop, source, mode="SRC_OVER"):
+    def __init__(self, backdrop, source, operation: CompositingOperation):
         if not isinstance(backdrop, PaintedPath) or not isinstance(source, PaintedPath):
             raise TypeError("PaintComposite requires two PaintedPath instances.")
 
         self.backdrop = deepcopy(backdrop)
         self.source = deepcopy(source)
-        self.mode = mode.upper()
+        self.mode = operation
 
-        if self.mode != "SRC_OVER":
+        if self.mode not in (CompositingOperation.SOURCE_OVER, CompositingOperation.DESTINATION_OVER):
             raise NotImplementedError(
-                f"Compositing mode '{self.mode}' is not yet supported."
+                f"Compositing mode '{self.mode.value}' is not yet supported."
             )
 
     def render(
@@ -4641,18 +4641,21 @@ class PaintComposite:
         debug_stream=None,
         pfx=None,
     ):
-        # First render the backdrop
-        backdrop_stream, last_item, initial_point = self.backdrop.render(
+        if self.mode == CompositingOperation.SOURCE_OVER:
+            first, second = self.backdrop, self.source
+        elif self.mode == CompositingOperation.DESTINATION_OVER:
+            first, second = self.source, self.backdrop
+        else:
+            raise NotImplementedError(f"Unsupported mode: {self.mode}")
+
+        stream_1, last_item, initial_point = first.render(
+            resource_registry, style, last_item, initial_point, debug_stream, pfx
+        )
+        stream_2, last_item, initial_point = second.render(
             resource_registry, style, last_item, initial_point, debug_stream, pfx
         )
 
-        # Then render the source (on top)
-        source_stream, last_item, initial_point = self.source.render(
-            resource_registry, style, last_item, initial_point, debug_stream, pfx
-        )
-
-        # Combine them: backdrop first, then source
-        combined = f"{backdrop_stream} {source_stream}"
+        combined = f"{stream_1} {stream_2}"
         return combined, last_item, initial_point
 
     def render_debug(
