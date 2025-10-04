@@ -10,6 +10,7 @@ different color font technologies, including:
 """
 
 import logging
+import math
 from io import BytesIO
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
@@ -27,8 +28,14 @@ from .drawing import (
     PaintComposite,
     PaintedPath,
 )
-from .enums import BlendMode, CompositingOperation, GradientUnits, PathPaintRule
-from .pattern import shape_linear_gradient, shape_radial_gradient
+from .enums import (
+    BlendMode,
+    CompositingOperation,
+    GradientSpreadMethod,
+    GradientUnits,
+    PathPaintRule,
+)
+from .pattern import SweepGradient, shape_linear_gradient, shape_radial_gradient
 
 if TYPE_CHECKING:
     from .fonts import TTFFont
@@ -338,8 +345,18 @@ class COLRFont(Type3Font):
                 (stop.StopOffset, self.get_color(stop.PaletteIndex, stop.Alpha))
                 for stop in paint.ColorLine.ColorStop
             ]
+            if paint.ColorLine.Extend == 2:  # REFLECT
+                spread_method = GradientSpreadMethod.REFLECT
+            elif paint.ColorLine.Extend == 1:  # REPEAT
+                spread_method = GradientSpreadMethod.REPEAT
+            else:  # PAD
+                spread_method = GradientSpreadMethod.PAD
             gradient = shape_linear_gradient(
-                paint.x0, paint.y0, paint.x1, paint.y1, stops
+                paint.x0,
+                paint.y0,
+                paint.x1,
+                paint.y1,
+                stops,
             )
             target_path = target_path or self.get_paint_surface()
             target_path.style.fill_color = GradientPaint(
@@ -347,6 +364,7 @@ class COLRFont(Type3Font):
                 units=GradientUnits.USER_SPACE_ON_USE,
                 gradient_transform=ctm,
                 apply_page_ctm=False,
+                spread_method=spread_method,
             )
             target_path.style.stroke_color = None
             target_path.style.paint_rule = PathPaintRule.FILL_NONZERO
@@ -366,8 +384,20 @@ class COLRFont(Type3Font):
             (cx, cy) = _lerp_pt(c0, c1, t_max)
             fr = max(_lerp(r0, r1, t_min), 0.0)
             r = max(_lerp(r0, r1, t_max), 1e-6)
+            if paint.ColorLine.Extend == 2:  # REFLECT
+                spread_method = GradientSpreadMethod.REFLECT
+            elif paint.ColorLine.Extend == 1:  # REPEAT
+                spread_method = GradientSpreadMethod.REPEAT
+            else:  # PAD
+                spread_method = GradientSpreadMethod.PAD
             gradient = shape_radial_gradient(
-                cx=cx, cy=cy, r=r, fx=fx, fy=fy, fr=fr, stops=norm_stops
+                cx=cx,
+                cy=cy,
+                r=r,
+                fx=fx,
+                fy=fy,
+                fr=fr,
+                stops=norm_stops,
             )
             target_path = target_path or self.get_paint_surface()
             target_path.style.fill_color = GradientPaint(
@@ -375,15 +405,64 @@ class COLRFont(Type3Font):
                 units=GradientUnits.USER_SPACE_ON_USE,
                 gradient_transform=ctm,
                 apply_page_ctm=False,
+                spread_method=spread_method,
             )
             target_path.style.stroke_color = None
             target_path.style.paint_rule = PathPaintRule.FILL_NONZERO
             return parent, target_path
 
         if paint.Format == PaintFormat.PaintSweepGradient:  # 8
-            raise NotImplementedError("Sweep gradients are not yet supported.")
+            stops = [
+                (cs.StopOffset, self.get_color(cs.PaletteIndex, cs.Alpha))
+                for cs in paint.ColorLine.ColorStop
+            ]
 
-        if paint.Format == PaintFormat.PaintGlyph:
+            if paint.ColorLine.Extend == 2:  # REFLECT
+                spread_method = GradientSpreadMethod.REFLECT
+            elif paint.ColorLine.Extend == 1:  # REPEAT
+                spread_method = GradientSpreadMethod.REPEAT
+            else:
+                spread_method = GradientSpreadMethod.PAD
+
+            cx = paint.centerX
+            cy = paint.centerY
+
+            # COLRv1 defines sweep angles clockwise from the positive X axis.
+            # Internally we operate in mathematical (counter-clockwise) radians,
+            # so convert by negating and swapping start/end.
+            def _to_internal(deg: float) -> float:
+                rad = math.radians(-deg)
+                tau = 2.0 * math.pi
+                return rad % tau
+
+            start_angle = _to_internal(paint.endAngle)
+            end_angle = _to_internal(paint.startAngle)
+
+            # Build a lazy sweep gradient object (bbox-resolved at emit time)
+            gradient = SweepGradient(
+                cx=cx,
+                cy=cy,
+                start_angle=start_angle,
+                end_angle=end_angle,
+                stops=stops,
+                spread_method=spread_method,
+                segments=None,
+                inner_radius_factor=0.002,
+            )
+
+            target_path = target_path or self.get_paint_surface()
+            target_path.style.fill_color = GradientPaint(
+                gradient=gradient,
+                units=GradientUnits.USER_SPACE_ON_USE,
+                gradient_transform=ctm,
+                apply_page_ctm=False,
+                spread_method=spread_method,
+            )
+            target_path.style.stroke_color = None
+            target_path.style.paint_rule = PathPaintRule.FILL_NONZERO
+            return parent, target_path
+
+        if paint.Format == PaintFormat.PaintGlyph:  # 10
             glyph_set = self.base_font.ttfont.getGlyphSet()
             clipping_path = ClippingPath()
             glyph_set[paint.Glyph].draw(GlyphPathPen(clipping_path, glyphSet=glyph_set))
@@ -489,7 +568,7 @@ class COLRFont(Type3Font):
                 )
                 parent.add_item(item=composite_node, _copy=False)
             else:
-                raise ValueError(""" Composite operation not supported """)
+                raise ValueError("Composite operation not supported - {composite_type}")
             return parent, None
 
         raise NotImplementedError(f"Unknown PaintFormat: {paint.Format}")
@@ -515,11 +594,8 @@ class COLRFont(Type3Font):
             PaintFormat.PaintScaleAroundCenter,
             PaintFormat.PaintVarScaleAroundCenter,
         ):
-            cx, cy = paint.centerX, paint.centerY
-            return (
-                Transform.translation(cx, cy)
-                .scale(paint.scaleX, paint.scaleY)
-                .translate(-cx, -cy)
+            return Transform.scaling(paint.scaleX, paint.scaleY).about(
+                paint.centerX, paint.centerY
             )
         if paint_format in (
             PaintFormat.PaintScaleUniform,
@@ -530,11 +606,8 @@ class COLRFont(Type3Font):
             PaintFormat.PaintScaleUniformAroundCenter,
             PaintFormat.PaintVarScaleUniformAroundCenter,
         ):
-            cx, cy = paint.centerX, paint.centerY
-            return (
-                Transform.translation(cx, cy)
-                .scale(paint.scale, paint.scale)
-                .translate(-cx, -cy)
+            return Transform.scaling(paint.scale, paint.scale).about(
+                paint.centerX, paint.centerY
             )
         if paint_format in (PaintFormat.PaintRotate, PaintFormat.PaintVarRotate):
             return Transform.rotation_d(paint.angle)
@@ -542,21 +615,15 @@ class COLRFont(Type3Font):
             PaintFormat.PaintRotateAroundCenter,
             PaintFormat.PaintVarRotateAroundCenter,
         ):
-            cx, cy = paint.centerX, paint.centerY
-            return (
-                Transform.translation(cx, cy).rotate_d(paint.angle).translate(-cx, -cy)
-            )
+            return Transform.rotation_d(paint.angle).about(paint.centerX, paint.centerY)
         if paint_format in (PaintFormat.PaintSkew, PaintFormat.PaintVarSkew):
-            return Transform.skewing_d(paint.angleX, paint.angleY)
+            return Transform.skewing_d(-paint.xSkewAngle, paint.ySkewAngle)
         if paint_format in (
             PaintFormat.PaintSkewAroundCenter,
             PaintFormat.PaintVarSkewAroundCenter,
         ):
-            cx, cy = paint.centerX, paint.centerY
-            return (
-                Transform.translation(cx, cy)
-                .skew_d(paint.angleX, paint.angleY)
-                .translate(-cx, -cy)
+            return Transform.skewing_d(-paint.xSkewAngle, paint.ySkewAngle).about(
+                paint.centerX, paint.centerY
             )
         raise NotImplementedError(f"Transform not implemented for {format}")
 
