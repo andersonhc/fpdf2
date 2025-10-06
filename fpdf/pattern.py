@@ -61,44 +61,140 @@ def pick_colorspace_and_promote(colors: List[Color]) -> Tuple[str, List[Color]]:
 def normalize_stops(
     stops: List[Tuple[float, Union[Color, str]]],
     coerce_to_device: bool = True,
-) -> Tuple[str, List[Tuple[float, Color]]]:
+    *,
+    return_raw: bool = False,
+) -> Union[
+    Tuple[str, List[Tuple[float, Color]]],
+    Tuple[str, List[Tuple[float, Color]], List[Tuple[float, Color]]],
+]:
     """
     Clamp/sort/merge, ensure endpoints at 0 and 1, coerce to single Device* colorspace.
-    Returns (color_space_name, [(u, Device*)...]).
+
+    When ``return_raw`` is true, also returns a list of the original stop positions
+    (prior to clamping to [0,1]) converted to the same device colorspace. The raw
+    offsets are sorted and merged (last stop wins for near-duplicates) but no
+    implicit 0/1 endpoints are synthesized.
     """
+
     if not stops:
         raise ValueError("At least one stop is required")
 
-    tmp: List[Tuple[float, Color]] = []
+    raw_entries: List[Tuple[float, Color]] = []
     for off, col in stops:
-        u = 0.0 if off < 0.0 else 1.0 if off > 1.0 else float(off)
+        raw_u = float(off)
         c = (
             convert_to_device_color(col)
             if (coerce_to_device and not hasattr(col, "colors"))
             else col
         )
-        tmp.append((u, c))  # type: ignore[arg-type]
-    tmp.sort(key=lambda t: t[0])
+        raw_entries.append((raw_u, c))  # type: ignore[arg-type]
+    raw_entries.sort(key=lambda t: t[0])
 
-    merged: List[Tuple[float, Color]] = []
-    for u, c in tmp:
-        if merged and abs(merged[-1][0] - u) <= TOLERANCE:
-            merged[-1] = (u, c)  # last wins
+    merged_raw: List[Tuple[float, Color]] = []
+    for raw_u, color in raw_entries:
+        if merged_raw and abs(merged_raw[-1][0] - raw_u) <= TOLERANCE:
+            merged_raw[-1] = (raw_u, color)
         else:
-            merged.append((u, c))
+            merged_raw.append((raw_u, color))
 
-    if len(merged) == 1:
-        u, c = merged[0]
-        merged = [(0.0, c), (1.0, c)]
-    if abs(merged[0][0] - 0.0) > TOLERANCE:
-        merged.insert(0, (0.0, merged[0][1]))
-    if abs(merged[-1][0] - 1.0) > TOLERANCE:
-        merged.append((1.0, merged[-1][1]))
+    def _lerp_color(c0: Color, c1: Color, t: float) -> Color:
+        comps0 = c0.colors
+        comps1 = c1.colors
+        blended = lerp_tuple(comps0, comps1, t)
+        a0 = getattr(c0, "a", None)
+        a1 = getattr(c1, "a", None)
+        alpha = None
+        if a0 is not None or a1 is not None:
+            alpha = lerp(
+                1.0 if a0 is None else float(a0), 1.0 if a1 is None else float(a1), t
+            )
 
-    # colorspace normalization
-    space_name, palette = pick_colorspace_and_promote([c for _, c in merged])
-    normalized = [(u, p) for (u, _), p in zip(merged, palette)]
-    return space_name, normalized
+        if isinstance(c0, DeviceGray):
+            return DeviceGray(blended[0], alpha)
+        if isinstance(c0, DeviceRGB):
+            return DeviceRGB(blended[0], blended[1], blended[2], alpha)
+        if isinstance(c0, DeviceCMYK):
+            return DeviceCMYK(blended[0], blended[1], blended[2], blended[3], alpha)
+        return c0
+
+    def _ensure_stop(target: float) -> None:
+        if not merged_raw:
+            return
+        if (
+            target < merged_raw[0][0] - TOLERANCE
+            or target > merged_raw[-1][0] + TOLERANCE
+        ):
+            return
+        for u, _ in merged_raw:
+            if abs(u - target) <= TOLERANCE:
+                return
+        for idx in range(1, len(merged_raw)):
+            u0, c0 = merged_raw[idx - 1]
+            u1, c1 = merged_raw[idx]
+            if u0 - TOLERANCE <= target <= u1 + TOLERANCE:
+                span = max(u1 - u0, TOLERANCE)
+                t = (target - u0) / span
+                merged_raw.insert(idx, (target, _lerp_color(c0, c1, t)))
+                return
+
+    _ensure_stop(0.0)
+    _ensure_stop(1.0)
+
+    clamped_entries: List[Tuple[float, Color]] = []
+    for raw_u, color in merged_raw:
+        if raw_u < 0.0:
+            u = 0.0
+        elif raw_u > 1.0:
+            u = 1.0
+        else:
+            u = raw_u
+        clamped_entries.append((u, color))
+
+    clamped_entries.sort(key=lambda t: t[0])
+
+    merged_clamped: List[Tuple[float, Color]] = []
+    for u, color in clamped_entries:
+        if merged_clamped and abs(merged_clamped[-1][0] - u) <= TOLERANCE:
+            merged_clamped[-1] = (u, color)
+        else:
+            merged_clamped.append((u, color))
+
+    if len(merged_clamped) == 1:
+        u, color = merged_clamped[0]
+        merged_clamped = [(0.0, color), (1.0, color)]
+    else:
+        if abs(merged_clamped[0][0] - 0.0) > TOLERANCE:
+            merged_clamped.insert(0, (0.0, merged_clamped[0][1]))
+        else:
+            merged_clamped[0] = (0.0, merged_clamped[0][1])
+        if abs(merged_clamped[-1][0] - 1.0) > TOLERANCE:
+            merged_clamped.append((1.0, merged_clamped[-1][1]))
+        else:
+            merged_clamped[-1] = (1.0, merged_clamped[-1][1])
+
+    space_name, palette = pick_colorspace_and_promote([c for _, c in merged_clamped])
+    normalized = [(u, p) for (u, _), p in zip(merged_clamped, palette)]
+
+    if not return_raw:
+        return space_name, normalized, None
+
+    def promote_raw(color: Color) -> Color:
+        if space_name == "DeviceGray":
+            if isinstance(color, DeviceGray):
+                return color
+            if isinstance(color, DeviceRGB):
+                return color.to_gray()
+            if isinstance(color, DeviceCMYK):
+                raise ValueError("Can't mix CMYK with non-CMYK gradients")
+        if space_name == "DeviceRGB":
+            if isinstance(color, DeviceRGB):
+                return color
+            if isinstance(color, DeviceGray):
+                return DeviceRGB(color.g, color.g, color.g)
+        return color
+
+    raw_promoted = [(u, promote_raw(color)) for (u, color) in merged_raw]
+    return space_name, normalized, raw_promoted
 
 
 def merge_near_duplicates(
@@ -107,7 +203,25 @@ def merge_near_duplicates(
     out: List[Tuple[float, Union[Color, str]]] = []
     for u, col in pairs:
         if out and abs(out[-1][0] - u) <= TOLERANCE:
-            out[-1] = (u, col)
+            prev_u, prev_col = out[-1]
+            if prev_col == col:
+                # identical color: keep the newest sample
+                out[-1] = (u, col)
+                continue
+
+            step = max(TOLERANCE * 10, 1e-6)
+            nudged_prev = prev_u - step
+            if nudged_prev >= -TOLERANCE:
+                out[-1] = (nudged_prev, prev_col)
+                out.append((u, col))
+            else:
+                nudged = u + step
+                if nudged > 1.0:
+                    nudged = 1.0
+                    out[-1] = (max(0.0, min(prev_u, nudged - step)), prev_col)
+                else:
+                    out[-1] = (prev_u, prev_col)
+                out.append((nudged, col))
         else:
             out.append((u, col))
     return out
@@ -397,11 +511,13 @@ class Gradient(ABC):
                 format_number(value) if isinstance(value, (int, float)) else value
                 for value in self.coords
             ]
+            if len(coords) > 1:
+                coords = PDFArray(coords)
             self._shading_object = Shading(
                 shading_type=self.shading_type,
                 background=self.background,
                 color_space=self.color_space,
-                coords=PDFArray(coords),
+                coords=coords,
                 functions=self.functions,
                 extend_before=self.extend_before,
                 extend_after=self.extend_after,
@@ -432,11 +548,19 @@ class Gradient(ABC):
         if not self.has_alpha():
             return None
         if not self._alpha_shading_object:
+            if (
+                self.coords is not None
+                and isinstance(self.coords, list)
+                and len(self.coords) > 1
+            ):
+                coords = PDFArray(self.coords)
+            else:
+                coords = self.coords
             self._alpha_shading_object = Shading(
                 shading_type=self.shading_type,
                 background=None,  # mask content should be pure coverage, no bg
                 color_space="DeviceGray",
-                coords=PDFArray(self.coords),
+                coords=coords,
                 functions=self._generate_alpha_functions(),
                 extend_before=False,
                 extend_after=False,
@@ -587,21 +711,20 @@ class MeshShading(PDFContentStream):
         self.anti_alias = anti_alias
         self._comp_count = comp_count
 
-        # Fixed bit depths (simple encoder):
+        # Fixed bit depths (simple encoder): use 16-bit components to reduce banding
         self.bits_per_coordinate = 16
-        self.bits_per_component = 8
+        self.bits_per_component = 16
         self.bits_per_flag = 8
 
         # Decode = [xmin xmax ymin ymax  0 1 (per component)]
-        self.decode = PDFArray(
-            [
-                format_number(bbox.x0),
-                format_number(bbox.x1),
-                format_number(bbox.y0),
-                format_number(bbox.y1),
-                *([0.0, 1.0] * comp_count),
-            ]
-        )
+        decode_values = [
+            bbox.x0,
+            bbox.x1,
+            bbox.y0,
+            bbox.y1,
+            *([0.0, 1.0] * comp_count),
+        ]
+        self.decode = PDFArray([format_number(value) for value in decode_values])
 
         super().__init__(contents=self._encode_stream_raw(), compress=True)
 
@@ -615,21 +738,23 @@ class MeshShading(PDFContentStream):
         maxc = (1 << self.bits_per_coordinate) - 1
         sx = maxc / max(xmax - xmin, TOLERANCE)
         sy = maxc / max(ymax - ymin, TOLERANCE)
+        max_comp = (1 << self.bits_per_component) - 1
 
         def q16(u, umin, scale):
             ui = int(round((u - umin) * scale))
             return 0 if ui < 0 else maxc if ui > maxc else ui
 
-        def q8(v):
-            iv = int(round(float(v) * 255.0))
-            return 0 if iv < 0 else 255 if iv > 255 else iv
+        def q_component(v):
+            iv = int(round(float(v) * max_comp))
+            return 0 if iv < 0 else max_comp if iv > max_comp else iv
 
-        vertex_fmt = ">BHH" + ("B" * self._comp_count)
+        comp_fmt = "H" if self.bits_per_component > 8 else "B"
+        vertex_fmt = ">BHH" + (comp_fmt * self._comp_count)
         out = bytearray()
         for (v0, v1, v2), (c0, c1, c2) in zip(self._triangles, self._triangle_colors):
             for (x, y), comps in ((v0, c0), (v1, c1), (v2, c2)):
                 component_bytes = [
-                    q8(comps[i]) if i < len(comps) else 0
+                    q_component(comps[i]) if i < len(comps) else 0
                     for i in range(self._comp_count)
                 ]
                 out += struct.pack(
@@ -737,7 +862,7 @@ class SweepGradient(PDFObject):
             return None
 
         # Normalize color stops once, then extract alpha
-        _, stops01 = normalize_stops(self.stops)
+        _, stops01, _ = normalize_stops(self.stops)
         alpha01 = extract_alpha_stops(stops01)
         gray_stops = [(u, DeviceGray(a)) for (u, a) in alpha01]
 
@@ -791,7 +916,7 @@ def shape_sweep_gradient_as_mesh(
     We build a full 0..2π fan so PAD/REPEAT/REFLECT outside [0,1] are respected.
     Angles are expected in radians.
     """
-    _, norm_stops = normalize_stops(stops)
+    _, norm_stops, _ = normalize_stops(stops)
     first_c = norm_stops[0][1]
     if isinstance(first_c, DeviceGray):
         color_space = "DeviceGray"
@@ -998,15 +1123,15 @@ def shape_sweep_gradient_as_mesh(
 
     theta_prev, color_prev = samples[0]
     x_prev_inner = cx + r_inner * math.cos(theta_prev)
-    y_prev_inner = cy - r_inner * math.sin(theta_prev)
+    y_prev_inner = cy + r_inner * math.sin(theta_prev)
     x_prev_outer = cx + r_outer * math.cos(theta_prev)
-    y_prev_outer = cy - r_outer * math.sin(theta_prev)
+    y_prev_outer = cy + r_outer * math.sin(theta_prev)
 
     for theta_next, color_next in samples[1:]:
         x_next_inner = cx + r_inner * math.cos(theta_next)
-        y_next_inner = cy - r_inner * math.sin(theta_next)
+        y_next_inner = cy + r_inner * math.sin(theta_next)
         x_next_outer = cx + r_outer * math.cos(theta_next)
-        y_next_outer = cy - r_outer * math.sin(theta_next)
+        y_next_outer = cy + r_outer * math.sin(theta_next)
 
         triangles.append(
             (
@@ -1059,7 +1184,7 @@ def shape_linear_gradient(
 
     spread_method = GradientSpreadMethod.coerce(spread_method)
 
-    _, normalized_stops = normalize_stops(stops)
+    _, normalized_stops, raw_stops = normalize_stops(stops, return_raw=True)
 
     if spread_method == GradientSpreadMethod.PAD or bbox is None:
         # if the spread_method is PAD this is the final gradient
@@ -1069,7 +1194,7 @@ def shape_linear_gradient(
         colors = [color for _, color in normalized_stops]
         bounds = [offset for offset, _ in normalized_stops[1:-1]]
 
-        return LinearGradient(
+        gradient = LinearGradient(
             from_x=x1,
             from_y=y1,
             to_x=x2,
@@ -1079,8 +1204,26 @@ def shape_linear_gradient(
             extend_before=True,
             extend_after=True,
         )
+        gradient.raw_stops = raw_stops
+        return gradient
 
     # 5) Expand for REPEAT / REFLECT
+
+    use_raw_period = (
+        spread_method != GradientSpreadMethod.PAD
+        and raw_stops is not None
+        and len(raw_stops) >= 2
+    )
+
+    tile_stops = raw_stops if use_raw_period else normalized_stops
+    base_start = tile_stops[0][0]
+    base_end = tile_stops[-1][0]
+    base_span = max(base_end - base_start, TOLERANCE)
+    if base_span <= TOLERANCE:
+        base_start = 0.0
+        base_span = 1.0
+        tile_stops = normalized_stops
+
     tmin, tmax, L = bbox.project_interval_on_axis(x1, y1, x2, y2)
     if L <= TOLERANCE:
         # Degenerate axis: synthesize flat
@@ -1096,23 +1239,29 @@ def shape_linear_gradient(
             extend_after=False,
         )
 
-    start_tile = math.floor(tmin / L) - 1
-    end_tile = math.ceil(tmax / L) + 1
+    tmin_norm = tmin / L
+    tmax_norm = tmax / L
+
+    start_tile = math.floor((tmin_norm - base_start) / base_span) - 1
+    end_tile = math.ceil((tmax_norm - base_start) / base_span) + 1
 
     expanded: List[Tuple[float, Union[Color, str]]] = []
     for k in range(start_tile, end_tile + 1):
+        shift = k * base_span
         if spread_method == GradientSpreadMethod.REPEAT or (k & 1) == 0:
             # even tiles for REFLECT behave like REPEAT
-            for u, col in normalized_stops:
-                expanded.append((k + u, col))
+            for u, col in tile_stops:
+                expanded.append((shift + u, col))
         else:
             # REFLECT on odd tiles: reverse order + mirrored u
-            for u, col in reversed(normalized_stops):
-                expanded.append((k + (1.0 - u), col))
+            for u, col in reversed(tile_stops):
+                mirrored = shift + base_start + base_span - (u - base_start)
+                expanded.append((mirrored, col))
 
     # Clip a bit beyond bbox for compactness
-    a = (tmin / L) - 1.0
-    b = (tmax / L) + 1.0
+    margin = max(base_span, 1.0)
+    a = tmin_norm - margin
+    b = tmax_norm + margin
     clipped = [
         (s, c) for (s, c) in expanded if a - TOLERANCE <= s <= b + TOLERANCE
     ] or expanded
@@ -1137,7 +1286,7 @@ def shape_linear_gradient(
     colors = [c for _, c in merged]
     bounds = [o for o, _ in merged[1:-1]]
 
-    return LinearGradient(
+    gradient = LinearGradient(
         from_x=nx1,
         from_y=ny1,
         to_x=nx2,
@@ -1147,6 +1296,8 @@ def shape_linear_gradient(
         extend_before=False,
         extend_after=False,
     )
+    gradient.raw_stops = raw_stops
+    return gradient
 
 
 def shape_radial_gradient(
@@ -1171,7 +1322,7 @@ def shape_radial_gradient(
 
     spread_method = GradientSpreadMethod.coerce(spread_method)
 
-    _, normalized_stops = normalize_stops(stops)
+    _, normalized_stops, raw_stops = normalize_stops(stops, return_raw=True)
 
     if r < 0:
         raise ValueError("Outer radius r must be >= 0")
@@ -1193,7 +1344,7 @@ def shape_radial_gradient(
         colors = [color for _, color in normalized_stops]
         bounds = [offset for offset, _ in normalized_stops[1:-1]]
 
-        return RadialGradient(
+        gradient = RadialGradient(
             start_circle_x=fx,
             start_circle_y=fy,
             start_circle_radius=fr,
@@ -1205,28 +1356,97 @@ def shape_radial_gradient(
             extend_before=True,
             extend_after=True,
         )
+        gradient.raw_stops = raw_stops
+        return gradient
 
     # 5) Expand for REPEAT / REFLECT across rings
-    period = max(r - fr, TOLERANCE)
-    maxR = bbox.max_distance_to_point(cx, cy)
-    tiles_needed = max(0, math.ceil((maxR - fr) / period)) + 1
+    use_raw_period = (
+        spread_method != GradientSpreadMethod.PAD
+        and raw_stops is not None
+        and len(raw_stops) >= 2
+    )
+
+    tile_stops = raw_stops if use_raw_period else normalized_stops
+    base_start = tile_stops[0][0]
+    base_end = tile_stops[-1][0]
+    base_span = max(base_end - base_start, TOLERANCE)
+    if base_span <= TOLERANCE:
+        base_start = 0.0
+        base_span = 1.0
+        tile_stops = normalized_stops
+
+    # Degenerate gradients with no radial growth can't be meaningfully repeated
+    if abs(r - fr) <= TOLERANCE:
+        colors = [color for _, color in normalized_stops]
+        bounds = [offset for offset, _ in normalized_stops[1:-1]]
+        gradient = RadialGradient(
+            start_circle_x=fx,
+            start_circle_y=fy,
+            start_circle_radius=fr,
+            end_circle_x=cx,
+            end_circle_y=cy,
+            end_circle_radius=r,
+            colors=colors,
+            bounds=bounds,
+            extend_before=True,
+            extend_after=True,
+        )
+        gradient.raw_stops = raw_stops
+        return gradient
+
+    def sigma_to_lambda(sigma: float) -> float:
+        return (sigma - base_start) / base_span
+
+    def circle_at(lam: float) -> Tuple[float, float, float]:
+        return (
+            lerp(fx, cx, lam),
+            lerp(fy, cy, lam),
+            lerp(fr, r, lam),
+        )
+
+    target_sigma = base_end
+    if bbox is not None:
+        max_tiles = 256
+        for _ in range(max_tiles):
+            lam = sigma_to_lambda(target_sigma)
+            cx_lam, cy_lam, r_lam = circle_at(lam)
+            if bbox.max_distance_to_point(cx_lam, cy_lam) <= r_lam + 1e-6:
+                break
+            target_sigma += base_span
+        else:
+            target_sigma = base_end + max_tiles * base_span
+
+    tiles_needed = 0
+    if target_sigma > base_end:
+        tiles_needed = math.ceil((target_sigma - base_end) / base_span)
 
     expanded: List[Tuple[float, Union[Color, str]]] = []
     for k in range(tiles_needed + 1):
+        shift = k * base_span
         if spread_method == GradientSpreadMethod.REPEAT or (k & 1) == 0:
-            for u, col in normalized_stops:
-                expanded.append((k + u, col))
+            for u, col in tile_stops:
+                expanded.append((shift + u, col))
         else:
-            for u, col in reversed(normalized_stops):
-                expanded.append((k + (1.0 - u), col))
+            for u, col in reversed(tile_stops):
+                mirrored = shift + base_start + base_span - (u - base_start)
+                expanded.append((mirrored, col))
+
+    if not expanded:
+        expanded = tile_stops[:]
+
+    # Clip a little beyond the target span to keep the list tight while preserving continuity
+    clip_limit = target_sigma + base_span + 1e-6
+    expanded = [pair for pair in expanded if pair[0] <= clip_limit]
 
     s0 = expanded[0][0]
     sN = expanded[-1][0]
     span = max(sN - s0, TOLERANCE)
     renorm = [((s - s0) / span, c) for (s, c) in expanded]
 
-    new_fr = fr
-    new_r = fr + span * period
+    lam0 = sigma_to_lambda(s0)
+    lam1 = sigma_to_lambda(sN)
+    sx, sy, sr = circle_at(lam0)
+    ex, ey, er = circle_at(lam1)
 
     # Merge identical offsets after math
     merged = merge_near_duplicates(renorm)
@@ -1234,15 +1454,17 @@ def shape_radial_gradient(
     colors = [c for _, c in merged]
     bounds = [o for o, _ in merged[1:-1]]
 
-    return RadialGradient(
-        start_circle_x=fx,
-        start_circle_y=fy,
-        start_circle_radius=new_fr,
-        end_circle_x=cx,
-        end_circle_y=cy,
-        end_circle_radius=new_r,
+    gradient = RadialGradient(
+        start_circle_x=sx,
+        start_circle_y=sy,
+        start_circle_radius=sr,
+        end_circle_x=ex,
+        end_circle_y=ey,
+        end_circle_radius=er,
         colors=colors,
         bounds=bounds,
         extend_before=False,
         extend_after=False,
     )
+    gradient.raw_stops = raw_stops
+    return gradient

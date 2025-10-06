@@ -223,7 +223,12 @@ class COLRFont(Type3Font):
         if colr_table.version == 0:
             self.colrv0_glyphs = colr_table.ColorLayers
         else:
-            self.colrv0_glyphs = colr_table._decompileColorLayersV0(colr_table.table)
+            try:
+                self.colrv0_glyphs = (
+                    colr_table._decompileColorLayersV0(colr_table.table) or {}
+                )
+            except (KeyError, AttributeError, TypeError, ValueError):
+                self.colrv0_glyphs = {}
             self.colrv1_glyphs = {
                 glyph.BaseGlyph: glyph
                 for glyph in colr_table.table.BaseGlyphList.BaseGlyphPaintRecord
@@ -259,9 +264,13 @@ class COLRFont(Type3Font):
     def load_glyph_image(self, glyph: Type3FontGlyph) -> None:
         w = round(self.base_font.ttfont["hmtx"].metrics[glyph.glyph_name][0] + 0.001)
         if glyph.glyph_name in self.colrv0_glyphs:
-            glyph_layers = self.base_font.ttfont["COLR"].ColorLayers[glyph.glyph_name]
+            glyph_layers = self.colrv0_glyphs[glyph.glyph_name]
             img = self.draw_glyph_colrv0(glyph_layers)
         else:
+            if self.version < 1 or glyph.glyph_name not in self.colrv1_glyphs:
+                raise NotImplementedError(
+                    f"No COLRv0 layers and no COLRv1 paint found for '{glyph.glyph_name}'."
+                )
             img = self.draw_glyph_colrv1(glyph.glyph_name)
         img.transform = Transform.scaling(self.scale, -self.scale)
         output_stream = self.fpdf.draw_vector_glyph(img, self)
@@ -296,7 +305,9 @@ class COLRFont(Type3Font):
     def draw_glyph_colrv1(self, glyph_name):
         gc = GraphicsContext()
         glyph = self.colrv1_glyphs[glyph_name]
-        self.draw_colrv1_paint(glyph.Paint, gc, None, Transform.identity())
+        self.draw_colrv1_paint(
+            glyph.Paint, gc, None, Transform.identity(), visited_glyphs=set(glyph_name)
+        )
         return gc
 
     # pylint: disable=too-many-return-statements
@@ -306,6 +317,7 @@ class COLRFont(Type3Font):
         parent: GraphicsContext,
         target_path: Optional[PaintedPath] = None,
         ctm: Optional[Transform] = None,
+        visited_glyphs: Optional[set] = None,
     ) -> Tuple[GraphicsContext, Optional[PaintedPath]]:
         """
         Draw a COLRv1 Paint object into the given GraphicsContext.
@@ -313,6 +325,9 @@ class COLRFont(Type3Font):
         https://learn.microsoft.com/en-us/typography/opentype/spec/colr#colr-version-1-rendering-algorithm
         """
         ctm: Transform = ctm or Transform.identity()
+
+        if visited_glyphs is None:
+            visited_glyphs = set()
 
         if paint.Format == PaintFormat.PaintColrLayers:
             layer_list = self.base_font.ttfont["COLR"].table.LayerList
@@ -324,6 +339,7 @@ class COLRFont(Type3Font):
                     paint=layer_list.Paint[layer],
                     parent=group,
                     ctm=ctm,
+                    visited_glyphs=visited_glyphs,
                 )
             parent.add_item(item=group, _copy=False)
             return parent, target_path
@@ -480,6 +496,7 @@ class COLRFont(Type3Font):
                 paint=paint.Paint,
                 parent=group,
                 ctm=Transform.identity(),
+                visited_glyphs=visited_glyphs,
             )
             if surface_path is not None:
                 group.add_item(item=surface_path, _copy=False)
@@ -492,13 +509,27 @@ class COLRFont(Type3Font):
                 ref_name = self.base_font.ttfont.getGlyphName(ref)
             else:
                 ref_name = ref
+            if ref_name in visited_glyphs:
+                LOGGER.warning(
+                    "Skipping recursive COLR glyph reference '%s'", ref_name
+                )
+                return parent, target_path  # nothing to draw
             rec = self.colrv1_glyphs.get(ref_name)
             if rec is None or getattr(rec, "Paint", None) is None:
                 return parent, target_path  # nothing to draw
 
-            group = GraphicsContext()
-            self.draw_colrv1_paint(paint=rec.Paint, parent=group, ctm=ctm)
-            parent.add_item(item=group, _copy=False)
+            visited_glyphs.add(ref_name)
+            try:
+                group = GraphicsContext()
+                self.draw_colrv1_paint(
+                    paint=rec.Paint,
+                    parent=group,
+                    ctm=ctm,
+                    visited_glyphs=visited_glyphs,
+                )
+                parent.add_item(item=group, _copy=False)
+            finally:
+                visited_glyphs.remove(ref_name)
             return parent, target_path
 
         if paint.Format in (
@@ -526,7 +557,11 @@ class COLRFont(Type3Font):
             transform = self._transform_from_paint(paint)
             new_ctm = ctm @ transform
             return self.draw_colrv1_paint(
-                paint=paint.Paint, parent=parent, target_path=target_path, ctm=new_ctm
+                paint=paint.Paint,
+                parent=parent,
+                target_path=target_path,
+                ctm=new_ctm,
+                visited_glyphs=visited_glyphs,
             )
 
         if paint.Format in (
@@ -542,6 +577,7 @@ class COLRFont(Type3Font):
                 paint=paint.BackdropPaint,
                 parent=backdrop_node,
                 ctm=ctm,
+                visited_glyphs=visited_glyphs,
             )
             if backdrop_path is not None:
                 backdrop_node.add_item(item=backdrop_path, _copy=False)
@@ -551,6 +587,7 @@ class COLRFont(Type3Font):
                 paint=paint.SourcePaint,
                 parent=source_node,
                 ctm=ctm,
+                visited_glyphs=visited_glyphs,
             )
             if source_path is not None:
                 source_node.add_item(item=source_path, _copy=False)
