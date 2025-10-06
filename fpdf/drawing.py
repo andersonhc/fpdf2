@@ -235,26 +235,63 @@ class GradientPaint:
 
         if isinstance(self.gradient, LinearGradient):
             x1, y1, x2, y2 = self.gradient.coords
-            colors = self.gradient.colors
-            bounds = self.gradient.bounds
-            stops = (
-                [(0.0, colors[0])]
-                + list(zip(bounds, colors[1:-1]))
-                + [(1.0, colors[-1])]
-            )
+            raw_stops = getattr(self.gradient, "_raw_stops", None)
+            if raw_stops is None:
+                colors = self.gradient.colors
+                bounds = self.gradient.bounds
+                stops = (
+                    [(0.0, colors[0])]
+                    + list(zip(bounds, colors[1:-1]))
+                    + [(1.0, colors[-1])]
+                )
+            else:
+                stops = raw_stops
+
+            spread_bbox = bbox
+            if (
+                bbox is not None
+                and self.units == GradientUnits.USER_SPACE_ON_USE
+                and self.gradient_transform is not None
+            ):
+                try:
+                    spread_bbox = bbox.transformed(self.gradient_transform.inverse())
+                except ValueError:
+                    spread_bbox = bbox
+
             return shape_linear_gradient(
-                x1, y1, x2, y2, stops, spread_method=self.spread_method, bbox=bbox
+                x1,
+                y1,
+                x2,
+                y2,
+                stops,
+                spread_method=self.spread_method,
+                bbox=spread_bbox,
             )
 
         if isinstance(self.gradient, RadialGradient):
             (fx, fy, fr, cx, cy, r) = self.gradient.coords
-            colors = self.gradient.colors
-            bounds = self.gradient.bounds
-            stops = (
-                [(0.0, colors[0])]
-                + list(zip(bounds, colors[1:-1]))
-                + [(1.0, colors[-1])]
-            )
+            raw_stops = getattr(self.gradient, "_raw_stops", None)
+            if raw_stops is None:
+                colors = self.gradient.colors
+                bounds = self.gradient.bounds
+                stops = (
+                    [(0.0, colors[0])]
+                    + list(zip(bounds, colors[1:-1]))
+                    + [(1.0, colors[-1])]
+                )
+            else:
+                stops = raw_stops
+            spread_bbox = bbox
+            if (
+                bbox is not None
+                and self.units == GradientUnits.USER_SPACE_ON_USE
+                and self.gradient_transform is not None
+            ):
+                try:
+                    spread_bbox = bbox.transformed(self.gradient_transform.inverse())
+                except ValueError:
+                    spread_bbox = bbox
+
             return shape_radial_gradient(
                 cx,
                 cy,
@@ -264,7 +301,7 @@ class GradientPaint:
                 fy=fy,
                 fr=fr,
                 spread_method=self.spread_method,
-                bbox=bbox,
+                bbox=spread_bbox,
             )
 
         return self.gradient  # unknown gradient type, return as is
