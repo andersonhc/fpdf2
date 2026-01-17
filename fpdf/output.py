@@ -660,6 +660,8 @@ class ResourceCatalog:
         self.graphics_styles = OrderedDict()
         self.soft_mask_xobjects = []
         self.form_xobjects = []
+        self.form_xobject_resources = []
+        self.form_font_ids = set()
         self.last_reserved_object_id = 0
         self.font_registry: Dict[str, Union[CoreFont, TTFFont]] = {}
         self.next_xobject_index = 1
@@ -720,6 +722,15 @@ class ResourceCatalog:
         self.next_xobject_index += 1
         self.form_xobjects.append((index, xobject))
         return index
+
+    def register_form_xobject_resources(self, xobject) -> None:
+        if getattr(xobject, "_form_resources_registered", False):
+            return
+        xobject._form_resources_registered = True
+        self.form_xobject_resources.append(xobject)
+
+    def register_form_font(self, font_id: int) -> None:
+        self.form_font_ids.add(font_id)
 
     def scan_stream(self, rendered: str) -> list[tuple[PDFResourceType, str]]:
         """Parse a content stream and return discovered resources"""
@@ -1057,22 +1068,13 @@ class OutputProducer:
 
     def _add_annotations_as_objects(self):
         sig_annotation_obj = None
+        for xobj in self.fpdf._resource_catalog.form_xobject_resources:
+            if not getattr(xobj, "_appearance_registered", False):
+                self._add_pdf_obj(xobj)
+                xobj._appearance_registered = True
         for page_obj in self.fpdf.pages.values():
             for annot_obj in page_obj.annots:
                 if isinstance(annot_obj, PDFAnnotation):  # distinct from AnnotationDict
-                    # For form fields, add their appearance XObjects first
-                    if isinstance(annot_obj, FormField):
-                        # Add appearance stream XObjects before the annotation that references them.
-                        # These attributes are set by _generate_appearance() which is called
-                        # during field creation. TextField uses _appearance_normal; Checkbox
-                        # uses _appearance_off and _appearance_yes for its toggle states.
-                        if hasattr(annot_obj, '_appearance_normal') and annot_obj._appearance_normal:
-                            self._add_pdf_obj(annot_obj._appearance_normal)
-                        if hasattr(annot_obj, '_appearance_off') and annot_obj._appearance_off:
-                            self._add_pdf_obj(annot_obj._appearance_off)
-                        if hasattr(annot_obj, '_appearance_yes') and annot_obj._appearance_yes:
-                            self._add_pdf_obj(annot_obj._appearance_yes)
-
                     self._add_pdf_obj(annot_obj)
                     if isinstance(annot_obj.v, Signature):
                         assert (
@@ -1488,6 +1490,8 @@ class OutputProducer:
         font_objs_per_index = self._add_fonts(
             img_objs_per_index, gfxstate_objs_per_name, pattern_objs_per_name
         )
+        self._font_objs_per_index = font_objs_per_index
+        self._resolve_form_xobject_resources(font_objs_per_index)
         shading_objs_per_name = self._add_shadings()
         self._finalize_form_xobjects(
             img_objs_per_index,
@@ -1548,6 +1552,21 @@ class OutputProducer:
                     page_gfxstate_objs_per_name,
                     page_shading_objs_per_name,
                     page_pattern_objs_per_name,
+                )
+
+    def _resolve_form_xobject_resources(self, font_objs_per_index):
+        for xobj in self.fpdf._resource_catalog.form_xobject_resources:
+            font_ids = xobj.resource_font_ids
+            if not font_ids:
+                continue
+            font_entries = {}
+            for font_id in sorted(font_ids):
+                font_obj = font_objs_per_index.get(font_id)
+                if font_obj:
+                    font_entries[f"/F{font_id}"] = pdf_ref(font_obj.id)
+            if font_entries:
+                xobj._resources_str = pdf_dict(
+                    {"/Font": pdf_dict(font_entries)}, field_join=" "
                 )
 
     def _add_resources_dict(
@@ -1831,27 +1850,34 @@ class OutputProducer:
 
             acro_fields.extend(all_form_fields)
 
-            # Build default resources with standard fonts for form fields
+            # Build default resources with fonts used by form fields
             default_resources = None
             default_appearance = None
             if all_form_fields:
-                # /DR dictionary with Helvetica and ZapfDingbats fonts
-                # These are standard PDF fonts that don't require embedding
-                default_resources = (
-                    "<</Font <<"
-                    "/Helv <</Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding>> "
-                    "/ZaDb <</Type /Font /Subtype /Type1 /BaseFont /ZapfDingbats>>"
-                    ">>>>"
-                )
-                # Default Appearance string (/DA) per PDF spec 12.7.3.3.
-                # The parentheses are required - this is a PDF literal string value.
-                # Format: "(content_stream_fragment)" e.g., "(/Helv 0 Tf 0 g)"
-                default_appearance = "(/Helv 0 Tf 0 g)"
+                if fpdf._resource_catalog.form_font_ids:
+                    font_entries = {}
+                    ordered_font_ids = sorted(fpdf._resource_catalog.form_font_ids)
+                    for font_id in ordered_font_ids:
+                        font_obj = getattr(self, "_font_objs_per_index", {}).get(
+                            font_id
+                        )
+                        if font_obj:
+                            font_entries[f"/F{font_id}"] = pdf_ref(font_obj.id)
+                    if font_entries:
+                        default_resources = pdf_dict(
+                            {"/Font": pdf_dict(font_entries)}, field_join=" "
+                        )
+                        first_font_key = next(iter(font_entries))
+                        default_appearance = f"({first_font_key} 0 Tf 0 g)"
 
+            need_appearances = any(
+                isinstance(field, FormField) and not field.a_p
+                for field in all_form_fields
+            )
             catalog_obj.acro_form = AcroForm(
                 fields=PDFArray(acro_fields),
                 sig_flags=sig_flags,
-                need_appearances=True,
+                need_appearances=need_appearances,
                 default_appearance=default_appearance,
                 default_resources=default_resources,
             )

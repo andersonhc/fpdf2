@@ -88,7 +88,6 @@ from .enums import (
     Corner,
     DocumentCompliance,
     EncryptionMethod,
-    FieldFlag,
     FileAttachmentAnnotationName,
     MethodReturnValue,
     OutputIntentSubType,
@@ -3194,9 +3193,10 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
             password=password,
             read_only=read_only,
             required=required,
+            resource_catalog=self._resource_catalog,
         )
 
-        field._generate_appearance()
+        field.generate_appearance()
         self.pages[self.page].annots.append(field)
 
         return field
@@ -3215,6 +3215,7 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
         border_width: float = 1,
         read_only: bool = False,
         required: bool = False,
+        appearance=None,
     ):
         """
         Adds an interactive checkbox to the page.
@@ -3231,6 +3232,7 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
             border_width (float): border width
             read_only (bool): if True, checkbox cannot be toggled
             required (bool): if True, checkbox must be checked before form submission
+            appearance: optional custom checkbox appearance specification
         """
         self._set_min_pdf_version("1.4")
 
@@ -3246,9 +3248,11 @@ class FPDF(GraphicsStateMixin, TextRegionMixin):
             border_width=border_width,
             read_only=read_only,
             required=required,
+            appearance=appearance,
+            resource_catalog=self._resource_catalog,
         )
 
-        field._generate_appearance()
+        field.generate_appearance()
         self.pages[self.page].annots.append(field)
 
         return field
