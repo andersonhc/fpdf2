@@ -54,7 +54,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L12-L38" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L12-L33" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class Action(ABC):
     def __init__(self, next_action: Optional[&#34;Action&#34;] = None) -&gt; None:
@@ -71,12 +71,7 @@ el.replaceWith(d);
     ) -&gt; str:
         raise NotImplementedError
 
-    def _serialize(
-        self,
-        key_values: Optional[dict[str, object]] = None,
-        _security_handler: Optional[&#34;StandardSecurityHandler&#34;] = None,
-        _obj_id: Optional[int] = None,
-    ) -&gt; str:
+    def _serialize(self, key_values: Optional[dict[str, object]] = None, _security_handler: Optional[&#34;StandardSecurityHandler&#34;] = None, _obj_id: Optional[int] = None) -&gt; str:
         if key_values is None:
             key_values = {}
         if self.next:
@@ -113,7 +108,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L20-L25" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L20-L25" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(
     self,
@@ -134,7 +129,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L77-L95" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L72-L90" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class GoToAction(Action):
     def __init__(
@@ -178,7 +173,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L86-L95" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L81-L90" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(
     self,
@@ -203,7 +198,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L98-L115" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L93-L110" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class GoToRemoteAction(Action):
     def __init__(
@@ -246,7 +241,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L106-L115" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L101-L110" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(
     self,
@@ -271,7 +266,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L118-L134" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L113-L129" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class LaunchAction(Action):
     &#34;As of 2022, this does not seem honored by neither Adobe Acrobat nor Sumatra readers.&#34;
@@ -312,7 +307,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L125-L134" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L120-L129" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(
     self,
@@ -337,7 +332,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L58-L74" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L53-L69" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class NamedAction(Action):
     def __init__(self, action_name: str, next_action: Optional[Action] = None) -&gt; None:
@@ -379,7 +374,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L65-L74" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L60-L69" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(
     self,
@@ -404,7 +399,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L41-L55" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L36-L50" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class URIAction(Action):
     def __init__(self, uri: str, next_action: Optional[Action] = None) -&gt; None:
@@ -444,7 +439,7 @@ inheritance.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/09422560fcd1dfa191b5dc5620decc2f9389954c/fpdf/actions.py#L46-L55" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/9b0af98710ddfd191584ee7eae18d8a592f10f03/fpdf/actions.py#L41-L50" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serialize(
     self,
