@@ -24,7 +24,12 @@ class Action(ABC):
     ) -> str:
         raise NotImplementedError
 
-    def _serialize(self, key_values: Optional[dict[str, object]] = None, _security_handler: Optional["StandardSecurityHandler"] = None, _obj_id: Optional[int] = None) -> str:
+    def _serialize(
+        self,
+        key_values: Optional[dict[str, object]] = None,
+        _security_handler: Optional["StandardSecurityHandler"] = None,
+        _obj_id: Optional[int] = None,
+    ) -> str:
         if key_values is None:
             key_values = {}
         if self.next:
@@ -38,7 +43,9 @@ class URIAction(Action):
         super().__init__(next_action)
         self.uri = uri
 
-    def serialize(self, _security_handler: Optional["StandardSecurityHandler"] = None,
+    def serialize(
+        self,
+        _security_handler: Optional["StandardSecurityHandler"] = None,
         _obj_id: Optional[int] = None,
     ) -> str:
         return super()._serialize(
