@@ -38,9 +38,7 @@ class URIAction(Action):
         super().__init__(next_action)
         self.uri = uri
 
-    def serialize(
-        self,
-        _security_handler: Optional["StandardSecurityHandler"] = None,
+    def serialize(self, _security_handler: Optional["StandardSecurityHandler"] = None,
         _obj_id: Optional[int] = None,
     ) -> str:
         return super()._serialize(
