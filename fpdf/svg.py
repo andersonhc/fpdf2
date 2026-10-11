@@ -13,7 +13,6 @@ Usage documentation at: <https://py-pdf.github.io/fpdf2/SVG.html>
 import logging
 import math
 import re
-import warnings
 from copy import deepcopy
 from dataclasses import dataclass
 from os import PathLike
@@ -32,14 +31,8 @@ from .enums import (
 )
 from .errors import FPDFSvgLimitExceeded
 
-try:
-    from defusedxml.ElementTree import fromstring as parse_xml_str
-except ImportError:
-    warnings.warn(
-        "defusedxml could not be imported - fpdf2 will not be able to sanitize SVG images provided"
-    )
-    # nosemgrep: python.lang.security.use-defused-xml.use-defused-xml
-    from xml.etree.ElementTree import fromstring as parse_xml_str  # nosec
+# nosemgrep: python.lang.security.use-defused-xml.use-defused-xml
+from xml.etree.ElementTree import fromstring as parse_xml_str  # nosec B405
 
 from . import html
 from .drawing import (
@@ -946,7 +939,7 @@ class SVGObject:
         )  # Store parsed gradients by ID
         self.width: Optional[Percent | float] = None
         self.height: Optional[Percent | float] = None
-        # disabling bandit rule as we use defusedxml:
+        # Expat provides entity amplification limits; CI tests verify rejection:
         svg_tree: "Element" = parse_xml_str(svg_text)  # nosec B314
 
         if svg_tree.tag not in xmlns_lookup("svg", "svg"):
