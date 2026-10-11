@@ -105,6 +105,18 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Report Python and Expat versions
+        shell: bash
+        run: |
+          python - <<'PY'
+          import platform
+          import pyexpat
+          import sys
+
+          print(f"Python: {sys.version}")
+          print(f"Platform: {platform.platform()}")
+          print(f"Expat: {pyexpat.EXPAT_VERSION}")
+          PY
       - name: Install system dependencies ⚙️
         if: ${{ startsWith(matrix.platform, 'ubuntu') }}
         # Ghostscript is needed for test/table/test_table_extraction.py
