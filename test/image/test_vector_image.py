@@ -2,7 +2,8 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
-from defusedxml.common import EntitiesForbidden
+from xml.etree.ElementTree import ParseError
+from xml.parsers.expat import errors
 
 import fpdf
 from test.conftest import assert_pdf_equal
@@ -170,30 +171,36 @@ def test_svg_image_from_bytes(tmp_path):
     assert_pdf_equal(pdf, HERE / "svg_image_from_bytesio.pdf", tmp_path)
 
 
-def test_svg_image_billion_laughs():
-    "cf. https://pypi.org/project/defusedxml/#attack-vectors"
+def assert_svg_amplification_rejected(dtd, content):
+    svg = (
+        '<?xml version="1.0"?>'
+        f"<!DOCTYPE svg [{dtd}]>"
+        '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+        f"<desc>{content}</desc>"
+        '<rect width="10" height="10"/>'
+        "</svg>"
+    ).encode("utf-8")
     pdf = fpdf.FPDF()
     pdf.add_page()
-    with pytest.raises(EntitiesForbidden):
-        pdf.image(
-            BytesIO(
-                b'<?xml version="1.0"?>'
-                b"<!DOCTYPE lolz ["
-                b'  <!ENTITY lol "lol">'
-                b"  <!ELEMENT lolz (#PCDATA)>"
-                b'  <!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">'
-                b'  <!ENTITY lol2 "&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;">'
-                b'  <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">'
-                b'  <!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">'
-                b'  <!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">'
-                b'  <!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">'
-                b'  <!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">'
-                b'  <!ENTITY lol8 "&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;">'
-                b'  <!ENTITY lol9 "&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;">'
-                b"]>"
-                b"<lolz>&lol9;</lolz>"
-            )
-        )
+    with pytest.raises(ParseError) as exc:
+        pdf.image(BytesIO(svg))
+    # Expat populates these module attributes dynamically.
+    # pylint: disable-next=no-member
+    assert exc.value.code == errors.codes[errors.XML_ERROR_AMPLIFICATION_LIMIT_BREACH]
+
+
+def test_svg_image_billion_laughs():
+    # Potential expansion: 30 MB; keep the fixture bounded on unprotected runtimes.
+    declarations = ['<!ENTITY e0 "lol">']
+    for level in range(1, 8):
+        references = f"&e{level - 1};" * 10
+        declarations.append(f'<!ENTITY e{level} "{references}">')
+    assert_svg_amplification_rejected("".join(declarations), "&e7;")
+
+
+def test_svg_image_quadratic_entity_expansion():
+    # Repetition of one large entity, without nesting; potential expansion: 32 MiB.
+    assert_svg_amplification_rejected('<!ENTITY e "' + "x" * 4096 + '">', "&e;" * 8192)
 
 
 def test_svg_image_fit_rect(tmp_path):
