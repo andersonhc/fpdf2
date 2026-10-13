@@ -56,7 +56,7 @@ in non-backward-compatible ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L308-L323" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L308-L326" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def color_as_decimal(
     color: Optional[str] = &#34;#000000&#34;,
@@ -73,6 +73,9 @@ in non-backward-compatible ways.</p>
         return color_from_rgb_string(color.lower())
     # Checks if color is a name and gets the hex value
     hexcolor = COLOR_DICT.get(color.lower(), color)
+    # Like browsers, a legacy HTML color of six hex digits may omit the &#34;#&#34;
+    if re.fullmatch(r&#34;[0-9a-fA-F]{6}&#34;, hexcolor):
+        hexcolor = &#34;#&#34; + hexcolor
     return color_from_hex_string(hexcolor)</code></pre>
 </details>
 <div class="desc"><p>Convert a web color name to a (R, G, B) color tuple.
@@ -85,7 +88,7 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1492-L1505" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1515-L1528" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def ol_prefix(ol_type: str, index: int) -&gt; int | str:
     if ol_type == &#34;1&#34;:
@@ -111,7 +114,7 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L326-L336" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L339-L349" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def parse_css_style(style_attr: str) -&gt; dict[str, str]:
     &#34;&#34;&#34;Parse `style=&#34;...&#34;` HTML attributes, and return a dict of key-value&#34;&#34;&#34;
@@ -134,14 +137,16 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1479-L1489" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1500-L1512" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def ul_prefix(ul_type: str, is_ttf_font: bool) -&gt; str:
-    if ul_type == &#34;disc&#34;:
+    # Like browsers, the keywords are case-insensitive: type=&#34;DISC&#34; is a disc
+    keyword = ul_type.lower()
+    if keyword == &#34;disc&#34;:
         return BULLET_UNICODE if is_ttf_font else MESSAGE_WAITING_WIN1252
-    if ul_type == &#34;circle&#34;:
+    if keyword == &#34;circle&#34;:
         return RING_OPERATOR_UNICODE if is_ttf_font else DEGREE_SIGN_WIN1252
-    if ul_type == &#34;square&#34;:
+    if keyword == &#34;square&#34;:
         # Windows-1252 has no square, so core fonts fall back to the bullet
         return BLACK_SMALL_SQUARE_UNICODE if is_ttf_font else MESSAGE_WAITING_WIN1252
     if len(ul_type) == 1:
@@ -163,7 +168,7 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L358-L1455" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L371-L1476" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class HTML2FPDF(HTMLParser):
     &#34;Render basic HTML to FPDF&#34;
@@ -407,8 +412,6 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
         indent: Union[float, Align] = 0,
         bullet: str = &#34;&#34;,
     ) -&gt; None:
-        # Note that currently top_margin is ignored if bullet is also provided,
-        # due to the behaviour of TextRegion._render_column_lines()
         self._end_paragraph()
         self.align = align
         if isinstance(indent, Align):
@@ -416,7 +419,7 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
             if not self.align:
                 self.align = indent
             indent = 0
-        if not top_margin and not self.follows_heading:
+        if not top_margin and not bullet and not self.follows_heading:
             top_margin = self.font_size_pt / self.pdf.k
         prev_family = self.pdf.font_family
         prev_style = self.pdf.font_style
@@ -528,10 +531,15 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
             if align is None and self.tr is not None:
                 align = self.tr.get(&#34;align&#34;)
             if align:
-                align = align.upper()
-            bgcolor_str = self.td_th.get(&#34;bgcolor&#34;)
+                try:
+                    align = Align.coerce(align)
+                except ValueError:
+                    # like browsers, and like &lt;p&gt;, ignore a value such as &#34;middle&#34;,
+                    # keeping the default: &lt;th&gt; cells are centered
+                    align = Align.C if self.td_th.get(&#34;tag&#34;) == &#34;th&#34; else None
+            bgcolor_str = _without_transparent(self.td_th.get(&#34;bgcolor&#34;))
             if bgcolor_str is None and self.tr is not None:
-                bgcolor_str = self.tr.get(&#34;bgcolor&#34;)
+                bgcolor_str = _without_transparent(self.tr.get(&#34;bgcolor&#34;))
             bgcolor = color_as_decimal(bgcolor_str)
             colspan = _parse_html_span(self.td_th.get(&#34;colspan&#34;))
             rowspan = _parse_html_span(self.td_th.get(&#34;rowspan&#34;))
@@ -732,7 +740,7 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
             )
             if &#34;color&#34; in css_style:
                 self.font_color = color_as_decimal(css_style[&#34;color&#34;])
-            elif &#34;color&#34; in attrs_dict:
+            elif _without_transparent(attrs_dict.get(&#34;color&#34;)) is not None:
                 # &#34;color&#34; attributes are not valid in HTML,
                 # but we support it for backward compatibility:
                 self.font_color = color_as_decimal(attrs_dict[&#34;color&#34;])
@@ -846,7 +854,11 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
                 except ValueError:
                     start = 1
             self.bullet.append(start - 1)
-            self.ol_type[self.indent] = attrs_dict.get(&#34;type&#34;) or &#34;1&#34;
+            ol_type = attrs_dict.get(&#34;type&#34;) or &#34;1&#34;
+            # like browsers, an unknown type (they are case-sensitive) gives numbers
+            self.ol_type[self.indent] = (
+                ol_type if ol_type in (&#34;1&#34;, &#34;a&#34;, &#34;A&#34;, &#34;i&#34;, &#34;I&#34;) else &#34;1&#34;
+            )
             line_height_str = css_style.get(&#34;line-height&#34;) or attrs_dict.get(
                 &#34;line-height&#34;
             )
@@ -902,13 +914,13 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
             else:
                 b_margin = l_margin = t_margin = 0.0
             l_margin = self._normalize_l_margin(l_margin)
-            self._ln(t_margin)
             numeric_indent = 0.0 if isinstance(l_margin, Align) else l_margin
             self._new_paragraph(
                 line_height=(
                     self.line_height_stack[-1] if self.line_height_stack else None
                 ),
                 indent=numeric_indent * self.indent,
+                top_margin=t_margin,
                 bottom_margin=b_margin,
                 bullet=bullet,
             )
@@ -922,7 +934,7 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
                     color=self.font_color,
                 )
             )
-            if &#34;color&#34; in attrs_dict:
+            if _without_transparent(attrs_dict.get(&#34;color&#34;)) is not None:
                 self.font_color = color_as_decimal(attrs_dict[&#34;color&#34;])
             if &#34;font-size&#34; in css_style:
                 font_size_str = css_style.get(&#34;font-size&#34;) or &#34;&#34;
@@ -1190,7 +1202,8 @@ cf. <a href="https://en.wikipedia.org/wiki/Web_colors#HTML_color_names">https://
             if &#34;inserted&#34; not in self.td_th:
                 # handle_data() was not called =&gt; we call it to produce an empty cell:
                 bgcolor = color_as_decimal(
-                    self.td_th.get(&#34;bgcolor&#34;) or self.tr.get(&#34;bgcolor&#34;, None)
+                    _without_transparent(self.td_th.get(&#34;bgcolor&#34;))
+                    or _without_transparent(self.tr.get(&#34;bgcolor&#34;, None))
                 )
                 style = FontFace(fill_color=bgcolor) if bgcolor else None
                 colspan = _parse_html_span(self.td_th.get(&#34;colspan&#34;))
@@ -1330,7 +1343,7 @@ mapping of HTML tag names to numeric values representing their horizontal left i
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1454-L1455" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1475-L1476" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, message: str) -&gt; None:
     raise RuntimeError(message)</code></pre>
@@ -1344,7 +1357,7 @@ mapping of HTML tag names to numeric values representing their horizontal left i
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1406-L1412" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1427-L1433" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def feed(self, data: str) -&gt; None:
     super().feed(data)
@@ -1365,7 +1378,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L694-L782" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L705-L798" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def handle_data(self, data: str) -&gt; None:
     if self._in_title:
@@ -1394,10 +1407,15 @@ as you want (may include '\n').</p></div>
         if align is None and self.tr is not None:
             align = self.tr.get(&#34;align&#34;)
         if align:
-            align = align.upper()
-        bgcolor_str = self.td_th.get(&#34;bgcolor&#34;)
+            try:
+                align = Align.coerce(align)
+            except ValueError:
+                # like browsers, and like &lt;p&gt;, ignore a value such as &#34;middle&#34;,
+                # keeping the default: &lt;th&gt; cells are centered
+                align = Align.C if self.td_th.get(&#34;tag&#34;) == &#34;th&#34; else None
+        bgcolor_str = _without_transparent(self.td_th.get(&#34;bgcolor&#34;))
         if bgcolor_str is None and self.tr is not None:
-            bgcolor_str = self.tr.get(&#34;bgcolor&#34;)
+            bgcolor_str = _without_transparent(self.tr.get(&#34;bgcolor&#34;))
         bgcolor = color_as_decimal(bgcolor_str)
         colspan = _parse_html_span(self.td_th.get(&#34;colspan&#34;))
         rowspan = _parse_html_span(self.td_th.get(&#34;rowspan&#34;))
@@ -1466,7 +1484,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1293-L1404" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1313-L1425" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def handle_endtag(self, tag: str) -&gt; None:
     while (
@@ -1558,7 +1576,8 @@ as you want (may include '\n').</p></div>
         if &#34;inserted&#34; not in self.td_th:
             # handle_data() was not called =&gt; we call it to produce an empty cell:
             bgcolor = color_as_decimal(
-                self.td_th.get(&#34;bgcolor&#34;) or self.tr.get(&#34;bgcolor&#34;, None)
+                _without_transparent(self.td_th.get(&#34;bgcolor&#34;))
+                or _without_transparent(self.tr.get(&#34;bgcolor&#34;, None))
             )
             style = FontFace(fill_color=bgcolor) if bgcolor else None
             colspan = _parse_html_span(self.td_th.get(&#34;colspan&#34;))
@@ -1590,7 +1609,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L797-L1291" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L813-L1311" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -&gt; None:
     self._pre_started = False
@@ -1720,7 +1739,7 @@ as you want (may include '\n').</p></div>
         )
         if &#34;color&#34; in css_style:
             self.font_color = color_as_decimal(css_style[&#34;color&#34;])
-        elif &#34;color&#34; in attrs_dict:
+        elif _without_transparent(attrs_dict.get(&#34;color&#34;)) is not None:
             # &#34;color&#34; attributes are not valid in HTML,
             # but we support it for backward compatibility:
             self.font_color = color_as_decimal(attrs_dict[&#34;color&#34;])
@@ -1834,7 +1853,11 @@ as you want (may include '\n').</p></div>
             except ValueError:
                 start = 1
         self.bullet.append(start - 1)
-        self.ol_type[self.indent] = attrs_dict.get(&#34;type&#34;) or &#34;1&#34;
+        ol_type = attrs_dict.get(&#34;type&#34;) or &#34;1&#34;
+        # like browsers, an unknown type (they are case-sensitive) gives numbers
+        self.ol_type[self.indent] = (
+            ol_type if ol_type in (&#34;1&#34;, &#34;a&#34;, &#34;A&#34;, &#34;i&#34;, &#34;I&#34;) else &#34;1&#34;
+        )
         line_height_str = css_style.get(&#34;line-height&#34;) or attrs_dict.get(
             &#34;line-height&#34;
         )
@@ -1890,13 +1913,13 @@ as you want (may include '\n').</p></div>
         else:
             b_margin = l_margin = t_margin = 0.0
         l_margin = self._normalize_l_margin(l_margin)
-        self._ln(t_margin)
         numeric_indent = 0.0 if isinstance(l_margin, Align) else l_margin
         self._new_paragraph(
             line_height=(
                 self.line_height_stack[-1] if self.line_height_stack else None
             ),
             indent=numeric_indent * self.indent,
+            top_margin=t_margin,
             bottom_margin=b_margin,
             bullet=bullet,
         )
@@ -1910,7 +1933,7 @@ as you want (may include '\n').</p></div>
                 color=self.font_color,
             )
         )
-        if &#34;color&#34; in attrs_dict:
+        if _without_transparent(attrs_dict.get(&#34;color&#34;)) is not None:
             self.font_color = color_as_decimal(attrs_dict[&#34;color&#34;])
         if &#34;font-size&#34; in css_style:
             font_size_str = css_style.get(&#34;font-size&#34;) or &#34;&#34;
@@ -2097,7 +2120,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1414-L1434" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1435-L1455" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def put_link(self, text: str) -&gt; None:
     &#34;Insert a hyperlink&#34;
@@ -2130,7 +2153,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1437-L1451" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1458-L1472" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def render_toc(self, pdf: &#34;FPDF&#34;, outline: list[OutlineSection]) -&gt; None:
     &#34;This method can be overridden by subclasses to customize the Table of Contents style.&#34;
@@ -2160,7 +2183,7 @@ as you want (may include '\n').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/py-pdf/fpdf2/blob/287743f0502c0fbc6b894d41f944ec745f66d920/fpdf/html.py#L1508-L1523" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/py-pdf/fpdf2/blob/e925fd2103967dd2a2d49861653c899d7ed7cb95/fpdf/html.py#L1531-L1546" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class HTMLMixin:
     &#34;&#34;&#34;
